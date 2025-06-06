@@ -7,7 +7,7 @@ function Home() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     alert(`회원가입 요청: ${username}`);
   };
