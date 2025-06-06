@@ -59,3 +59,11 @@
   background-color: #000;
   color: #fff;
 }
+
+.homeContainer {
+  @apply flex h-screen;
+}
+
+.mainContent {
+  @apply flex-1 flex flex-col overflow-hidden;
+}

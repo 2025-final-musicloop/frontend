@@ -1,0 +1,5 @@
+/* src/components/Sidebar.module.css */
+
+.sidebarContainer {
+  @apply w-20 bg-white flex flex-col items-center py-6 space-y-3 border-r border-gray-200;
+}

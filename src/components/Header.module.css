@@ -1,0 +1,5 @@
+/* src/components/Header.module.css */
+
+.headerContainer {
+  @apply flex justify-end p-6;
+}

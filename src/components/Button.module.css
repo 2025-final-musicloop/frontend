@@ -1,0 +1,25 @@
+/* src/components/Button.module.css */
+
+.buttonBase {
+  @apply rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
+}
+
+.sizeSm {
+  @apply py-2 px-4 text-sm;
+}
+.sizeMd {
+  @apply py-3 px-8 text-base;
+}
+.sizeLg {
+  @apply py-4 px-12 text-lg;
+}
+
+.variantPrimary {
+  @apply bg-white text-gray-800 font-bold hover:bg-opacity-90;
+}
+.variantSecondary {
+  @apply bg-transparent text-gray-700 font-medium border border-gray-300 hover:bg-gray-100 hover:border-gray-400;
+}
+.variantOutline {
+  @apply bg-transparent text-primary border border-primary hover:bg-primary hover:text-white;
+}

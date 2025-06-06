@@ -5,7 +5,7 @@ import Make from './pages/Make/Make';
 import Board from './pages/Board/Board';
 import './App.css';
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
       <div className="page">
@@ -17,6 +17,6 @@ function App() {
       </div>
     </Router>
   );
-}
+};
 
 export default App;
