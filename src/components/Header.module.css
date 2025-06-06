@@ -3,3 +3,7 @@
 .headerContainer {
   @apply flex justify-end p-6;
 }
+
+.startButtonWrapper {
+  @apply flex items-center justify-center p-1 rounded-xl bg-gradient-to-r from-primary to-secondary-purple shadow-xl hover:shadow-2xl transition-shadow duration-500 ease-out mb-4;
+}

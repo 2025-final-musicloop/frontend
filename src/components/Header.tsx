@@ -6,9 +6,11 @@ import type { HeaderProps } from '../types';
 export const Header: React.FC<HeaderProps> = ({ onLogin }) => {
   return (
     <header className={styles.headerContainer}>
-      <Button variant="primary" size="md" onClick={onLogin}>
-        Login
-      </Button>
+      <div className={styles.startButtonWrapper}>
+        <Button variant="primary" size="md" onClick={onLogin}>
+          Login
+        </Button>
+      </div>
     </header>
   );
 };

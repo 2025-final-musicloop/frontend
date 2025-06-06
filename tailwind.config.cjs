@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'], // Tailwind가 클래스명을 추출할 경로
+  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx,css,module.css}'], // Tailwind가 클래스명을 추출할 경로
   theme: {
     extend: {
       colors: {
