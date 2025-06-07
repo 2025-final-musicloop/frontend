@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
@@ -13,6 +14,7 @@ import HeroSection from '../../components/HeroSection';
 const Home: React.FC = () => {
   // 현재 활성화된 메뉴를 추적하는 상태입니다. 초기값은 'home'입니다.
   const [activeMenu, setActiveMenu] = useState<string>('home');
+  const navigate = useNavigate();
 
   /**
    * 메뉴 항목 클릭 시 호출되는 핸들러 함수입니다.
@@ -20,7 +22,11 @@ const Home: React.FC = () => {
    */
   const handleMenuClick = (menuId: string) => {
     setActiveMenu(menuId);
-    // React Router로 페이지 이동이 필요하면 여기서 navigate(menuId) 등을 호출
+    if (menuId === 'home') {
+      navigate('/');
+    } else {
+      navigate(`/${menuId}`);
+    }
   };
 
   /**

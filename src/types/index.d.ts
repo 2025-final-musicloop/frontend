@@ -61,4 +61,15 @@ export interface BlobProps {
 // 7) Header 관련 Props
 export interface HeaderProps {
   onLogin?: () => void;
+  isLoggedIn?: boolean;
+}
+
+// --------------------------------------------------------
+// 8) MusicCard 관련 Props
+export interface MusicCardProps {
+  id: string;
+  title: string;
+  artist: string;
+  imageUrl: string;
+  audioSrc: string;
 }

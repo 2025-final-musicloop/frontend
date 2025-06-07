@@ -1,0 +1,19 @@
+.pageContainer {
+  display: flex;
+  height: 100vh;
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+.mainContent {
+  flex: 1;
+  padding: 2rem; /* p-8 */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.boardContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* space-y-6 */
+}
