@@ -57,18 +57,42 @@ npm run dev
 
 ---
 
-## 📂 프로젝트 구조 및 파일 설명
+## 📂 프로젝트 구조 (Project Structure)
 
 ```
-src/
-├── assets/             # 🖼️ 이미지, 아이콘 등 정적 리소스
-├── components/         # 🧩 재사용 가능한 공통 UI 컴포넌트
-├── constants/          # 📐 메뉴, 색상 등 애플리케이션 전반에서 사용되는 상수
-├── pages/              # 📄 각 페이지를 구성하는 메인 컴포넌트
-├── styles/             # 🎨 전역 CSS 파일 및 Tailwind 설정
-├── types/              # ✍️ 프로젝트 전반에서 사용되는 TypeScript 타입 정의
-├── App.tsx             # 🌐 최상위 애플리케이션 컴포넌트 및 라우팅 설정
-└── main.tsx            # 🚀 애플리케이션 진입점 (DOM 렌더링)
+music-project/
+├── .vscode/              # VSCode 에디터 설정 (저장 시 자동 포맷 등)
+├── public/               # 정적 파일 (index.html에서 직접 참조)
+├── src/                  # 소스 코드 루트
+│   ├── assets/           # 🖼️ 이미지, 아이콘 등 정적 리소스
+│   │   └── react.svg
+│   ├── components/       # 🧩 재사용 가능한 공통 UI 컴포넌트
+│   │   ├── BlobBackground.tsx
+│   │   ├── Button.tsx
+│   │   ├── Header.tsx
+│   │   ├── HeroSection.tsx
+│   │   ├── Sidebar.tsx
+│   │   └── SidebarItem.tsx
+│   ├── constants/        # 📐 메뉴, 색상 등 애플리케이션 전반에서 사용되는 상수
+│   ├── pages/            # 📄 각 페이지를 구성하는 메인 컴포넌트 (라우팅 단위)
+│   │   └── Home/
+│   │       ├── Home.tsx
+│   │       └── Home.module.css
+│   ├── styles/           # 🎨 전역 CSS 파일 및 Tailwind 설정
+│   │   └── globals.css
+│   ├── types/            # ✍️ 프로젝트 전반에서 사용되는 TypeScript 타입 정의
+│   │   └── index.d.ts
+│   ├── App.tsx           # 🌐 최상위 애플리케이션 컴포넌트 및 라우팅 설정
+│   └── main.tsx          # 🚀 애플리케이션 진입점 (DOM 렌더링)
+├── .gitignore            # Git 추적 제외 파일 목록
+├── .prettierrc           # Prettier 포맷터 설정
+├── eslint.config.js      # ESLint 린터 설정
+├── index.html            # 애플리케이션의 기본 HTML 템플릿
+├── package.json          # 프로젝트 정보 및 의존성 패키지 목록
+├── postcss.config.cjs    # PostCSS 설정 (Tailwind, Autoprefixer 플러그인)
+├── tailwind.config.cjs   # Tailwind CSS 커스텀 설정
+├── tsconfig.json         # TypeScript 컴파일러 설정
+└── vite.config.js        # Vite 빌드 도구 설정
 ```
 
 ### 주요 파일 및 디렉터리 역할
@@ -78,14 +102,15 @@ src/
   - `tailwind.config.cjs`: Tailwind CSS의 핵심 설정 파일. 커스텀 디자인 시스템(색상, 폰트, 애니메이션)을 정의합니다.
   - `postcss.config.cjs`: PostCSS 설정 파일. `tailwindcss`와 `autoprefixer` 플러그인을 등록하여 CSS를 처리합니다.
   - `vite.config.js`: Vite 빌드 도구의 설정 파일입니다.
+  - `.vscode/settings.json`: 에디터에서 저장 시 Prettier 포매팅과 ESLint 수정을 자동으로 실행하도록 설정합니다.
 
 - **`/src`**
-  - `main.tsx`: React 애플리케이션의 진입점. `ReactDOM`이 `App` 컴포넌트를 렌더링하고 전역 스타일을 주입합니다.
+  - `main.tsx`: React 애플리케이션의 진입점. `ReactDOM`이 `App` 컴포넌트를 렌더링하고 `index.css`를 주입합니다.
   - `App.tsx`: 애플리케이션의 최상위 컴포넌트. `react-router-dom`을 사용하여 페이지 라우팅을 관리합니다.
-  - `/components`: `Button`, `Sidebar`, `HeroSection` 등과 같이 재사용 가능한 작은 UI 조각들이 위치합니다. 각 컴포넌트는 `.tsx` 파일과 `.module.css` 파일을 한 쌍으로 가집니다.
+  - `/components`: `Button`, `Sidebar`, `HeroSection` 등과 같이 재사용 가능한 작은 UI 조각들이 위치합니다. 각 컴포넌트는 `.tsx` 파일과 선택적으로 `.module.css` 파일을 가집니다.
   - `/pages`: `Home` 페이지와 같이 여러 컴포넌트를 조합하여 하나의 완전한 페이지를 구성하는 컴포넌트들이 위치합니다.
-  - `/styles`: `globals.css` 파일이 위치하며, 폰트 임포트, Tailwind 지시문 주입, 전역 스타일 등을 정의합니다.
-  - `/constants`: `menus.ts` (메뉴 구조), `colors.ts` (색상 팔레트) 등 애플리케이션 전체에서 공유되는 고정 값들을 정의합니다.
+  - `/styles`: `globals.css` 등 전역적으로 사용될 CSS 파일이 위치합니다.
+  - `/constants`: 메뉴 구조, 색상 팔레트 등 애플리케이션 전체에서 공유되는 고정 값들을 정의합니다.
   - `/types`: `index.d.ts` 파일이 있으며, 컴포넌트 `props` 등 프로젝트에서 공통으로 사용되는 TypeScript 타입들을 선언합니다.
 
 ---
@@ -126,37 +151,3 @@ src/
 7.  코드 리뷰를 거친 후, 승인되면 `develop` 브랜치에 머지됩니다.
 
 궁금한 점이 있다면 언제든지 이슈(Issue)를 등록하여 질문해주세요.
-
-```bash
-music/
-├── .git/
-├── .vscode/
-├── node_modules/
-├── public/
-│   └── vite.svg
-├── src/
-│   ├── assets/
-│   │   └── react.svg
-│   ├── pages/
-│   │   ├── Board/
-│   │   │   └── Board.tsx
-│   │   ├── Home/
-│   │   │   ├── Home.module.css
-│   │   │   └── Home.tsx
-│   │   └── Make/
-│   │       └── Make.tsx
-│   ├── App.css
-│   ├── App.tsx
-│   ├── index.css
-│   └── main.tsx
-├── .gitignore
-├── .prettierrc
-├── eslint.config.js
-├── index.html
-├── package-lock.json
-├── package.json
-├── README.md
-├── tsconfig.json
-├── tsconfig.node.json
-└── vite.config.js
-```

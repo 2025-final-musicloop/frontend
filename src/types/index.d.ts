@@ -16,6 +16,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 export interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  border?: 'primary' | 'secondary';
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   children: React.ReactNode;
   className?: string;
