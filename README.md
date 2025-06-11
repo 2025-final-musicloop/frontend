@@ -69,15 +69,23 @@ music-project/
 │   ├── components/       # 🧩 재사용 가능한 공통 UI 컴포넌트
 │   │   ├── BlobBackground.tsx
 │   │   ├── Button.tsx
+│   │   ├── ExploreHeader.tsx
 │   │   ├── Header.tsx
 │   │   ├── HeroSection.tsx
+│   │   ├── MusicCard.tsx
 │   │   ├── Sidebar.tsx
 │   │   └── SidebarItem.tsx
 │   ├── constants/        # 📐 메뉴, 색상 등 애플리케이션 전반에서 사용되는 상수
 │   ├── pages/            # 📄 각 페이지를 구성하는 메인 컴포넌트 (라우팅 단위)
-│   │   └── Home/
-│   │       ├── Home.tsx
-│   │       └── Home.module.css
+│   │   ├── Explore/
+│   │   │   ├── Explore.tsx
+│   │   │   └── Explore.module.css
+│   │   ├── Home/
+│   │   │   ├── Home.tsx
+│   │   │   └── Home.module.css
+│   │   └── Make/
+│   │       ├── Make.tsx
+│   │       └── Make.module.css
 │   ├── styles/           # 🎨 전역 CSS 파일 및 Tailwind 설정
 │   │   └── globals.css
 │   ├── types/            # ✍️ 프로젝트 전반에서 사용되는 TypeScript 타입 정의
@@ -107,8 +115,8 @@ music-project/
 - **`/src`**
   - `main.tsx`: React 애플리케이션의 진입점. `ReactDOM`이 `App` 컴포넌트를 렌더링하고 `index.css`를 주입합니다.
   - `App.tsx`: 애플리케이션의 최상위 컴포넌트. `react-router-dom`을 사용하여 페이지 라우팅을 관리합니다.
-  - `/components`: `Button`, `Sidebar`, `HeroSection` 등과 같이 재사용 가능한 작은 UI 조각들이 위치합니다. 각 컴포넌트는 `.tsx` 파일과 선택적으로 `.module.css` 파일을 가집니다.
-  - `/pages`: `Home` 페이지와 같이 여러 컴포넌트를 조합하여 하나의 완전한 페이지를 구성하는 컴포넌트들이 위치합니다.
+  - `/components`: `Button`, `Sidebar`, `MusicCard` 등과 같이 재사용 가능한 작은 UI 조각들이 위치합니다. 각 컴포넌트는 `.tsx` 파일과 선택적으로 `.module.css` 파일을 가집니다.
+  - `/pages`: `Home`, `Explore`, `Make` 페이지와 같이 여러 컴포넌트를 조합하여 하나의 완전한 페이지를 구성하는 컴포넌트들이 위치합니다.
   - `/styles`: `globals.css` 등 전역적으로 사용될 CSS 파일이 위치합니다.
   - `/constants`: 메뉴 구조, 색상 팔레트 등 애플리케이션 전체에서 공유되는 고정 값들을 정의합니다.
   - `/types`: `index.d.ts` 파일이 있으며, 컴포넌트 `props` 등 프로젝트에서 공통으로 사용되는 TypeScript 타입들을 선언합니다.

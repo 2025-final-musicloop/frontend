@@ -33,7 +33,7 @@ const Home: React.FC = () => {
    * 헤더의 로그인 버튼 클릭 시 호출되는 핸들러 함수입니다.
    */
   const handleLogin = () => {
-    console.log('로그인 클릭');
+    navigate('/login');
   };
 
   /**

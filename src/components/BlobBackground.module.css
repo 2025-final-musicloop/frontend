@@ -4,6 +4,6 @@
   @apply absolute inset-0 -z-10;
 }
 
-.blob {
+/* .blob {
   @apply absolute w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob;
-}
+} */

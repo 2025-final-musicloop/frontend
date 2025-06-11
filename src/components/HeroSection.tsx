@@ -28,13 +28,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartClick, onIntroC
       </h1>
 
       {/* 부제목 */}
-      <p className={styles.subTitle}>당신의 흥얼거림에 생명을 불어넣으세요.</p>
+      <p className={styles.subTitle}>문구</p>
 
       {/* 설명 문구 */}
       <p className={styles.description}>
-        마음속 멜로디를 가볍게 흥얼거려보세요.
+        서비스 소개
         <br />
-        AI가 그 멜로디를 분석하여 멋진 반주를 즉석에서 만들어 드립니다.
+        서비스 설명
       </p>
 
       {/* "지금 시작하기" 버튼 */}

@@ -7,7 +7,7 @@ export const Header: React.FC<HeaderProps> = ({ onLogin }) => {
   return (
     <header className={styles.headerContainer}>
       <div className={styles.startButtonWrapper}>
-        <Button variant="primary" size="md" onClick={onLogin}>
+        <Button variant="primary" size="md" border="primary" onClick={onLogin}>
           Login
         </Button>
       </div>
