@@ -43,11 +43,23 @@ const Explore: React.FC = () => {
     }
   };
 
+  const handleWritePost = () => {
+    navigate('/write-post');
+  };
+
   return (
     <div className={styles.pageContainer}>
       <Sidebar activeMenu="explore" onMenuClick={handleMenuClick} />
       <main className={styles.mainContent}>
         <ExploreHeader isLoggedIn={isLoggedIn} />
+
+        <div className={styles.boardHeader}>
+          <h2 className={styles.boardTitle}>게시판</h2>
+          <button onClick={handleWritePost} className={styles.writeButton}>
+            글 작성
+          </button>
+        </div>
+
         <div className={styles.boardContainer}>
           {dummyMusicData.map((music) => (
             <MusicCard
