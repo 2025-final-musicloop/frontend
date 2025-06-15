@@ -4,6 +4,7 @@ import Home from './pages/Home/Home';
 import Make from './pages/Make/Make';
 import Explore from './pages/Explore/Explore';
 import WritePost from './pages/WritePost/WritePost';
+import PostDetail from './pages/PostDetail/PostDetail';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import './App.css';
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <Route path="/make" element={<Make />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/write-post" element={<WritePost />} />
+        <Route path="/posts/:postId" element={<PostDetail />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
