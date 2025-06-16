@@ -67,9 +67,9 @@ export interface HeaderProps {
 // --------------------------------------------------------
 // 8) MusicCard 관련 Props
 export interface MusicCardProps {
-  id: string;
+  id: number;
   title: string;
   artist: string;
-  imageUrl: string;
-  audioSrc: string;
+  //imageUrl: string;
+  //audioSrc: string;
 }

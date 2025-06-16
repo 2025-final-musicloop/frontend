@@ -1,16 +1,33 @@
-// src/api/posts.ts
 import axios from 'axios';
 
-export const createPost = async (title: string, content: string, token: string) => {
-  const response = await axios.post(
+export interface Post {
+  postId: number;
+  title: string;
+  content: string;
+  author: string;
+  created_at: string;
+}
+
+export const getPosts = async (ordering: string = '-created_at') => {
+  const res = await axios.get<Post[]>(
+    `http://localhost:8000/api/list-posts/?ordering=${ordering}`
+  );
+  return res.data;
+};
+
+export const createPost = async (
+  title: string,
+  content: string,
+  accessToken: string
+) => {
+  const res = await axios.post(
     'http://localhost:8000/api/create-post/',
     { title, content },
     {
       headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
       },
     }
   );
-  return response.data;
+  return res.data;
 };
