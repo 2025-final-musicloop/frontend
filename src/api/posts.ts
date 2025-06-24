@@ -8,10 +8,12 @@ export interface Post {
   created_at: string;
 }
 
+const API_BASE = 'http://localhost:8000/api/posts';
+
 export const getPosts = async (ordering: string = '-created_at') => {
-  const res = await axios.get<Post[]>(
-    `http://localhost:8000/api/list-posts/?ordering=${ordering}`
-  );
+  const res = await axios.get<Post[]>(`${API_BASE}/list-posts/`, {
+    params: { ordering },
+  });
   return res.data;
 };
 
@@ -21,7 +23,7 @@ export const createPost = async (
   accessToken: string
 ) => {
   const res = await axios.post(
-    'http://localhost:8000/api/create-post/',
+    `${API_BASE}/create-post/`,
     { title, content },
     {
       headers: {

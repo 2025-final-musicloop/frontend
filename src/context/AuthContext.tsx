@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [accessToken, setAccessToken] = useState<string>('');
 
-  // 🔐 JWT 만료 확인 함수
+  // JWT 만료 확인 함수
   const checkTokenExpiration = (token: string) => {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -42,16 +42,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // 🧹 자동 로그아웃 처리 함수
+  // 자동 로그아웃 처리 함수
   const handleTokenExpiration = () => {
-    console.log('🔒 토큰이 만료되어 자동 로그아웃됩니다.');
+    console.log('토큰이 만료되어 자동 로그아웃됩니다.');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setUser(null);
     setAccessToken('');
   };
 
-  // 🚀 자동 로그인
+  // 자동 로그인
   useEffect(() => {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           handleTokenExpiration();
         })
         .then(() => {
-          setLoading(false); // ✅ 항상 실행됨
+          setLoading(false); // 항상 실행됨
         });
     } else {
       setLoading(false);
@@ -91,9 +91,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await logoutAPI();
-      console.log('✅ 로그아웃 성공');
+      console.log('로그아웃 성공');
     } catch (error) {
-      console.error('❌ 로그아웃 실패:', error);
+      console.error('로그아웃 실패:', error);
     } finally {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');

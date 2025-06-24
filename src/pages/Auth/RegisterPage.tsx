@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
 import Button from '../../components/Button';
 import BackButton from '../../components/BackButton';
-import { signup } from '../../api/auth'; // ✅ API 연결
+import { signup } from '../../api/auth'; // API 연결
 
 const RegisterPage: React.FC = () => {
   const [nickname, setNickname] = useState('');
@@ -14,12 +14,12 @@ const RegisterPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // ✅ signup 요청 시 username으로 email 전달
+      // signup 요청 시 username으로 email 전달
       await signup(email, password, nickname);
       alert('회원가입 성공!');
       navigate('/login');
     } catch (err) {
-      alert('회원가입 실패 😥');
+      alert('회원가입 실패');
       console.error('회원가입 에러:', err);
     }
   };

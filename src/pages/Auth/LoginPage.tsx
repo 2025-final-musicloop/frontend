@@ -18,12 +18,12 @@ const LoginPage: React.FC = () => {
       const res = await login(email, password);
       const { access, refresh } = res;
 
-      // ✅ accessToken 저장 (context + localStorage)
+      // accessToken 저장 (context + localStorage)
       setAccessToken(access);
       localStorage.setItem('accessToken', access);
       localStorage.setItem('refreshToken', refresh);
 
-      // ✅ user 정보 저장 (API 응답이 username, id 등 포함해야 함)
+      // user 정보 저장 (API 응답이 username, id 등 포함해야 함)
       // 예시로 임시 유저 정보 설정
       setUser({ username: email, id: 1 }); // 👉 여기서 실제 사용자 정보를 넘겨주세요
 
@@ -31,7 +31,7 @@ const LoginPage: React.FC = () => {
       navigate('/');
     } catch (err) {
       console.error('로그인 실패:', err);
-      alert('로그인 실패 😥');
+      alert('로그인 실패 ');
     }
   };
 

@@ -21,16 +21,16 @@ const Explore: React.FC = () => {
       try {
         setLoading(true);
         setError(null);
-        console.log(`🚀 Explore: 게시글 불러오기 (정렬 기준: ${orderBy})`);
+        console.log(`Explore: 게시글 불러오기 (정렬 기준: ${orderBy})`);
 
         const postsData = await getPosts(orderBy);
-        console.log('📋 받은 게시글:', postsData);
+        console.log('받은 게시글:', postsData);
 
         setPosts(postsData);
-        console.log('✅ 게시글 조회 성공:', postsData.length, '개');
+        console.log('게시글 조회 성공:', postsData.length, '개');
       } catch (err: any) {
-        console.error('❌ 게시글 조회 실패:', err);
-        console.error('❌ 상세:', err.response?.data || err.message);
+        console.error('게시글 조회 실패:', err);
+        console.error('상세:', err.response?.data || err.message);
 
         if (err.response?.status === 404) {
           setError('게시글 목록을 찾을 수 없습니다.');

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const API = 'http://localhost:8000/api/accounts';  // accounts 앱 경로 포함
 
-// ✅ 응답 타입 명시
+// 응답 타입 명시
 interface SignupResponse {
   message: string;
 }
@@ -17,7 +17,7 @@ interface LogoutResponse {
   message: string;
 }
 
-// ✅ 회원가입 요청
+// 회원가입 요청
 export const signup = async (email: string, password: string, nickname: string) => {
   const response = await axios.post(`${API}/register/`, {
     username: email,
@@ -28,7 +28,7 @@ export const signup = async (email: string, password: string, nickname: string) 
   return response.data;
 };
 
-// ✅ 로그인 요청
+// 로그인 요청
 export const login = async (username: string, password: string): Promise<LoginResponse> => {
   const response = await axios.post<LoginResponse>(`${API}/login/`, {
     username,
@@ -42,7 +42,7 @@ export const login = async (username: string, password: string): Promise<LoginRe
   return response.data;
 };
 
-// ✅ 로그아웃 요청
+// 로그아웃 요청
 export const logout = async (): Promise<LogoutResponse> => {
   const refreshToken = localStorage.getItem('refreshToken');
 
@@ -62,7 +62,7 @@ export const logout = async (): Promise<LogoutResponse> => {
 
     return response.data;
   } catch (error) {
-    console.error('❌ 로그아웃 요청 실패:', error);
+    console.error('로그아웃 요청 실패:', error);
     throw error;
   }
 };

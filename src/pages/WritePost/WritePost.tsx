@@ -10,7 +10,7 @@ const WritePost: React.FC = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const navigate = useNavigate();
-  const { accessToken } = useContext(AuthContext); // ✅ accessToken 가져오기
+  const { accessToken } = useContext(AuthContext); // accessToken 가져오기
 
   const handleMenuClick = (menuId: string) => {
     if (menuId === 'home') {
@@ -23,7 +23,7 @@ const WritePost: React.FC = () => {
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  console.log('📦 accessToken:', accessToken); // ✅ 디버깅용 로그 추가
+  console.log('accessToken:', accessToken); // 디버깅용 로그 추가
 
   if (!accessToken || accessToken.trim() === '') {
     alert('로그인이 필요합니다. accessToken이 없습니다.');
@@ -33,10 +33,10 @@ const WritePost: React.FC = () => {
 
   try {
     const result = await createPost(title, content, accessToken);
-    console.log('✅ 글 작성 성공:', result);
+    console.log('글 작성 성공:', result);
     navigate('/explore');
   } catch (error: any) {
-    console.error('❌ 글 작성 오류:', error);
+    console.error('글 작성 오류:', error);
 
     // 서버에서 에러 메시지가 있는 경우 표시
     if (error.response && error.response.data && error.response.data.detail) {
