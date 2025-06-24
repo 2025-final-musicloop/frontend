@@ -8,6 +8,8 @@ export interface Post {
   created_at: string;
 }
 
+const API_BASE = 'http://localhost:8000/api/posts';
+
 export const getPosts = async (ordering: string = '-created_at') => {
   const res = await axios.get<Post[]>(`http://localhost:8000/api/posts/list-posts/?ordering=${ordering}`);
   return res.data;
