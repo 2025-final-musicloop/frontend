@@ -1,0 +1,341 @@
+# Design System & Visual Guidelines
+
+## 🎨 Design Philosophy
+
+### Core Design Principles:
+
+- **Modern & Clean**: Minimalist approach with clean lines and ample white space
+- **Gradient Focus**: Primary use of purple-to-pink gradients for visual impact
+- **Blob Animation**: Organic, flowing background elements for dynamic feel
+- **Typography Hierarchy**: Clear text hierarchy with bold headlines and readable body text
+- **Interactive Elements**: Smooth transitions and hover effects for better UX
+
+## 🌈 Color Palette
+
+### Primary Colors:
+
+```css
+/* Primary Purple Gradient */
+primary: #4F46E5 (Indigo-600)
+primary-dark: #4338CA (Indigo-700)
+primary-light: #A855F7 (Purple-500)
+
+/* Secondary Colors */
+secondary-pink: #EC4899 (Pink-500)
+secondary-purple: #A855F7 (Purple-500)
+
+/* Background Colors */
+background: #F8F9FA (Gray-50)
+white: #FFFFFF
+```
+
+### MUST DO:
+
+- **ALWAYS** use the primary purple gradient for main CTAs and important elements
+- **ALWAYS** use secondary pink/purple for accent elements
+- **ALWAYS** maintain proper contrast ratios (4.5:1 minimum)
+- **ALWAYS** use consistent color naming in CSS variables
+
+### NEVER DO:
+
+- ❌ Use colors outside the defined palette
+- ❌ Create gradients that don't follow the purple-to-pink theme
+- ❌ Use colors without proper contrast consideration
+
+## 📝 Typography System
+
+### Font Stack:
+
+```css
+font-family: 'Inter', 'Noto Sans KR', 'sans-serif';
+```
+
+### Typography Scale:
+
+```css
+/* Headlines */
+.text-7xl: font-size: 4.5rem; font-weight: 800; /* Main Hero Title */
+.text-4xl: font-size: 2.25rem; font-weight: 700; /* Section Headers */
+.text-2xl: font-size: 1.5rem; font-weight: 600; /* Sub Headers */
+
+/* Body Text */
+.text-xl: font-size: 1.25rem; font-weight: 500; /* Subtitle */
+.text-base: font-size: 1rem; font-weight: 400; /* Body Text */
+.text-sm: font-size: 0.875rem; font-weight: 400; /* Small Text */
+```
+
+### MUST DO:
+
+- **ALWAYS** use the defined font stack
+- **ALWAYS** apply proper font weights for hierarchy
+- **ALWAYS** use gradient text for main headlines
+- **ALWAYS** maintain readable line heights (1.5-1.7)
+
+### NEVER DO:
+
+- ❌ Use fonts outside the defined stack
+- ❌ Mix different font weights randomly
+- ❌ Use text colors that don't meet contrast requirements
+
+## 🎯 Component Design Patterns
+
+### Hero Section Pattern:
+
+```tsx
+// ✅ CORRECT - Hero Section Structure
+<section className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 text-center">
+  {/* Background Blobs */}
+  <BlobBackground />
+
+  {/* Gradient Title */}
+  <h1 className="from-primary to-secondary-purple mb-6 bg-gradient-to-r bg-clip-text text-7xl font-extrabold text-transparent">
+    AI 반주 생성
+  </h1>
+
+  {/* Subtitle */}
+  <p className="mb-3 text-xl font-medium text-gray-700">문구</p>
+
+  {/* Description */}
+  <p className="mb-12 max-w-md text-base leading-relaxed text-gray-500">
+    서비스 소개
+    <br />
+    서비스 설명
+  </p>
+
+  {/* CTA Button */}
+  <div className="from-primary to-secondary-purple mb-4 flex items-center justify-center rounded-xl bg-gradient-to-r p-1 shadow-xl transition-shadow duration-500 ease-out hover:shadow-2xl">
+    <Button variant="primary" size="lg">
+      지금 시작하기
+    </Button>
+  </div>
+
+  {/* Secondary Buttons */}
+  <div className="mt-4 flex space-x-4">
+    <Button variant="secondary" size="md">
+      서비스 소개
+    </Button>
+    <Button variant="secondary" size="md">
+      문의하기
+    </Button>
+  </div>
+</section>
+```
+
+### Button Design Pattern:
+
+```tsx
+// ✅ CORRECT - Button Variants
+const Button: React.FC<ButtonProps> = ({ variant = 'primary', size = 'md', ... }) => {
+  const sizeClasses = {
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-8 py-3 text-base',
+    lg: 'px-12 py-4 text-lg'
+  };
+
+  const variantClasses = {
+    primary: 'bg-white font-bold text-gray-800 hover:bg-opacity-90',
+    secondary: 'bg-transparent font-medium text-gray-700 hover:bg-gray-100',
+    outline: 'bg-transparent text-primary hover:bg-primary hover:text-white'
+  };
+
+  return (
+    <button
+      className={`rounded-lg transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 ${sizeClasses[size]} ${variantClasses[variant]}`}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+```
+
+## 🎭 Background & Animation System
+
+### Blob Background Pattern:
+
+```tsx
+// ✅ CORRECT - Blob Background Implementation
+export const BlobBackground: React.FC = () => {
+  return (
+    <div className="absolute inset-0 -z-10">
+      <div
+        className="animate-blob absolute h-96 w-96 rounded-full bg-purple-300 opacity-30 mix-blend-multiply blur-3xl filter"
+        style={{ top: '25%', left: '25%', animationDelay: '0ms' }}
+      />
+      <div
+        className="animate-blob absolute h-96 w-96 rounded-full bg-pink-300 opacity-30 mix-blend-multiply blur-3xl filter"
+        style={{ top: '50%', left: '50%', animationDelay: '2000ms' }}
+      />
+      <div
+        className="animate-blob absolute h-96 w-96 rounded-full bg-indigo-300 opacity-30 mix-blend-multiply blur-3xl filter"
+        style={{ bottom: '25%', right: '25%', animationDelay: '4000ms' }}
+      />
+    </div>
+  );
+};
+```
+
+### Animation Keyframes:
+
+```css
+@keyframes blob {
+  0% {
+    transform: scale(1) translate(0px, 0px);
+  }
+  33% {
+    transform: scale(1.1) translate(30px, -50px);
+  }
+  66% {
+    transform: scale(0.9) translate(-20px, 20px);
+  }
+  100% {
+    transform: scale(1) translate(0px, 0px);
+  }
+}
+
+.animate-blob {
+  animation: blob 15s infinite ease-in-out;
+}
+```
+
+### MUST DO:
+
+- **ALWAYS** use blob animations for background elements
+- **ALWAYS** apply smooth transitions (duration-300)
+- **ALWAYS** use proper z-index layering (-z-10 for backgrounds)
+- **ALWAYS** maintain consistent animation timing
+
+### NEVER DO:
+
+- ❌ Create jarring or abrupt animations
+- ❌ Use animations that interfere with readability
+- ❌ Overuse animations to the point of distraction
+
+## 📱 Layout & Spacing System
+
+### Container Patterns:
+
+```css
+/* Main Container */
+.homeContainer {
+  @apply flex h-screen;
+}
+
+/* Content Area */
+.mainContent {
+  @apply flex flex-1 flex-col overflow-hidden;
+}
+
+/* Hero Section */
+.heroSection {
+  @apply relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 text-center;
+}
+```
+
+### Spacing Scale:
+
+```css
+/* Spacing Units */
+space-1: 0.25rem; /* 4px */
+space-2: 0.5rem; /* 8px */
+space-4: 1rem; /* 16px */
+space-6: 1.5rem; /* 24px */
+space-8: 2rem; /* 32px */
+space-12: 3rem; /* 48px */
+space-16: 4rem; /* 64px */
+space-24: 6rem; /* 96px */
+```
+
+### MUST DO:
+
+- **ALWAYS** use consistent spacing units
+- **ALWAYS** center content vertically and horizontally in hero sections
+- **ALWAYS** maintain proper padding for mobile responsiveness
+- **ALWAYS** use flexbox for layout management
+
+### NEVER DO:
+
+- ❌ Use arbitrary spacing values
+- ❌ Create layouts that don't work on mobile
+- ❌ Overcrowd elements without proper spacing
+
+## 🎨 Visual Effects & Shadows
+
+### Shadow System:
+
+```css
+/* Light Shadow */
+shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+/* Medium Shadow */
+shadow:
+  0 1px 3px 0 rgba(0, 0, 0, 0.1),
+  0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+/* Large Shadow */
+shadow-xl:
+  0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+/* Extra Large Shadow */
+shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+```
+
+### Gradient Patterns:
+
+```css
+/* Primary Gradient */
+bg-gradient-to-r from-primary to-secondary-purple
+
+/* Text Gradient */
+bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary-purple
+```
+
+### MUST DO:
+
+- **ALWAYS** use shadows to create depth and hierarchy
+- **ALWAYS** apply hover effects with shadow transitions
+- **ALWAYS** use gradients for primary CTAs and important text
+- **ALWAYS** maintain consistent shadow intensity across components
+
+### NEVER DO:
+
+- ❌ Use shadows that don't match the design system
+- ❌ Create gradients that don't follow the purple-to-pink theme
+- ❌ Overuse shadows to the point of visual noise
+
+## 🚨 Critical Design Rules
+
+### IMMEDIATE ACTIONS REQUIRED:
+
+1. **ALWAYS** use the defined color palette for all new components
+2. **ALWAYS** follow the typography hierarchy for text elements
+3. **ALWAYS** implement blob backgrounds for hero sections
+4. **ALWAYS** use consistent spacing and layout patterns
+5. **NEVER** deviate from the established design patterns
+
+### ENFORCEMENT:
+
+- All new components MUST follow the established design patterns
+- All color usage MUST be from the defined palette
+- All typography MUST follow the hierarchy system
+- All animations MUST be smooth and purposeful
+- All layouts MUST be responsive and accessible
+
+## 📋 Design Checklist
+
+### Before Implementing Any Component:
+
+- [ ] Does it use the correct color palette?
+- [ ] Does it follow the typography hierarchy?
+- [ ] Does it have proper spacing and layout?
+- [ ] Does it include appropriate hover states?
+- [ ] Does it work on mobile devices?
+- [ ] Does it maintain accessibility standards?
+- [ ] Does it follow the established animation patterns?
+- [ ] Does it use consistent shadow and gradient effects?
+      description:
+      globs:
+      alwaysApply: false
+
+---
