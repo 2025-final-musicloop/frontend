@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Header.module.css';
-import Button from './Button';
-import type { HeaderProps } from '../types';
-import { AuthContext } from '../context/AuthContext';
+import Button from '../ui/Button';
+import type { HeaderProps } from '../../types';
+import { AuthContext } from '../../context/AuthContext';
 
 const Header: React.FC<HeaderProps> = ({ onLogin }) => {
   const { user, logout } = useContext(AuthContext);
@@ -32,11 +32,11 @@ const Header: React.FC<HeaderProps> = ({ onLogin }) => {
     <header className={styles.headerContainer}>
       <div className={styles.startButtonWrapper}>
         {user ? (
-          <Button variant="secondary" size="md" border="secondary" onClick={handleLogoutClick}>
+          <Button variant="secondary" size="md" onClick={handleLogoutClick}>
             Logout
           </Button>
         ) : (
-          <Button variant="primary" size="md" border="primary" onClick={handleLoginClick}>
+          <Button variant="primary" size="md" onClick={handleLoginClick}>
             Login
           </Button>
         )}

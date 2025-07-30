@@ -1,8 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar';
-import ExploreHeader from '../../components/ExploreHeader';
-import MusicCard from '../../components/MusicCard';
+import Sidebar from '../../components/layout/Sidebar';
+import ExploreHeader from '../../components/common/ExploreHeader';
+import MusicCard from '../../components/music/MusicCard';
 import styles from './Explore.module.css';
 import { AuthContext } from '../../context/AuthContext';
 import { getPosts } from '../../api/posts';
@@ -111,12 +111,7 @@ const Explore: React.FC = () => {
           ) : (
             <div className={styles.postsGrid}>
               {posts.map((post) => (
-                <MusicCard
-                  key={post.postId}
-                  id={post.postId}
-                  title={post.title}
-                  artist={post.author}
-                />
+                <MusicCard key={post.postId} id={post.postId} title={post.title} artist={post.author} />
               ))}
             </div>
           )}

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
-import Button from '../../components/Button';
-import BackButton from '../../components/BackButton';
+import Button from '../../components/ui/Button';
+import BackButton from '../../components/ui/BackButton';
 import { signup } from '../../api/auth'; // ✅ API 연결
 
 const RegisterPage: React.FC = () => {
@@ -35,23 +35,11 @@ const RegisterPage: React.FC = () => {
         <h2>회원가입</h2>
         <div className={styles.inputGroup}>
           <label htmlFor="nickname">닉네임</label>
-          <input
-            type="text"
-            id="nickname"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            required
-          />
+          <input type="text" id="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} required />
         </div>
         <div className={styles.inputGroup}>
           <label htmlFor="email">이메일</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
         <div className={styles.inputGroup}>
           <label htmlFor="password">비밀번호</label>

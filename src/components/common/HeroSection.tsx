@@ -2,8 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import styles from './HeroSection.module.css';
 import BlobBackground from './BlobBackground';
-import Button from './Button';
-import type { HeroSectionProps } from '../types';
+import Button from '../ui/Button';
+import type { HeroSectionProps } from '../../types';
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onStartClick, onIntroClick, onContactClick }) => {
   return (
@@ -47,10 +47,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartClick, onIntroC
 
       {/* 서비스 소개 / 문의하기 버튼 그룹 */}
       <div className={styles.buttonGroup}>
-        <Button variant="secondary" size="md" border="secondary" onClick={onIntroClick}>
+        <Button variant="secondary" size="md" onClick={onIntroClick}>
           서비스 소개
         </Button>
-        <Button variant="secondary" size="md" border="secondary" onClick={onContactClick}>
+        <Button variant="secondary" size="md" onClick={onContactClick}>
           문의하기
         </Button>
       </div>

@@ -1,8 +1,15 @@
 import React from 'react';
 import styles from './BlobBackground.module.css';
-import type { BlobProps } from '../types';
+import type { BlobBackgroundProps } from '../../types';
 
-const Blob: React.FC<BlobProps> = ({ top, left, bottom, right, bgColor, delay = 0 }) => {
+const Blob: React.FC<{
+  top?: string;
+  left?: string;
+  bottom?: string;
+  right?: string;
+  bgColor: string;
+  delay?: number;
+}> = ({ top, left, bottom, right, bgColor, delay = 0 }) => {
   const positionStyle: React.CSSProperties = {
     top: top,
     left: left,

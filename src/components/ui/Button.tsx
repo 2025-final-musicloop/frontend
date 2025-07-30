@@ -1,15 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Button.module.css';
-import type { ButtonProps } from '../types';
+import type { ButtonProps } from '../../types';
 
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',
-  border,
   onClick,
   children,
   className = '',
+  disabled = false,
+  type = 'button',
 }) => {
   const sizeClass = size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd;
 
@@ -18,15 +19,14 @@ export const Button: React.FC<ButtonProps> = ({
       ? styles.variantSecondary
       : variant === 'outline'
         ? styles.variantOutline
-        : styles.variantPrimary;
+        : variant === 'ghost'
+          ? styles.variantGhost
+          : styles.variantPrimary;
 
-  const borderClass =
-    border === 'primary' ? styles.borderPrimary : border === 'secondary' ? styles.borderSecondary : '';
-
-  const combined = classNames(styles.buttonBase, sizeClass, variantClass, borderClass, className);
+  const combined = classNames(styles.buttonBase, sizeClass, variantClass, className);
 
   return (
-    <button onClick={onClick} className={combined}>
+    <button onClick={onClick} className={combined} disabled={disabled} type={type}>
       {children}
     </button>
   );

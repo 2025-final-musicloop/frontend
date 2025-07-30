@@ -1,8 +1,8 @@
-import React, { useState , useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
-import Button from '../../components/Button';
-import BackButton from '../../components/BackButton';
+import Button from '../../components/ui/Button';
+import BackButton from '../../components/ui/BackButton';
 import { login } from '../../api/auth';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { setAccessToken, login: setUser } = useContext(AuthContext);
 
- const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await login(email, password);

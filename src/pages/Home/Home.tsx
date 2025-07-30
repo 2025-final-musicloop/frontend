@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
-import Sidebar from '../../components/Sidebar';
-import Header from '../../components/Header';
-import HeroSection from '../../components/HeroSection';
+import Sidebar from '../../components/layout/Sidebar';
+import Header from '../../components/layout/Header';
+import HeroSection from '../../components/common/HeroSection';
 
 const Home: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<string>('home');
@@ -40,11 +40,7 @@ const Home: React.FC = () => {
       <Sidebar activeMenu={activeMenu} onMenuClick={handleMenuClick} />
       <main className={styles.mainContent}>
         <Header onLogin={handleLogin} />
-        <HeroSection
-          onStartClick={handleStart}
-          onIntroClick={handleIntro}
-          onContactClick={handleContact}
-        />
+        <HeroSection onStartClick={handleStart} onIntroClick={handleIntro} onContactClick={handleContact} />
       </main>
     </div>
   );

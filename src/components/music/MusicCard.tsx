@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './MusicCard.module.css';
-import type { MusicCardProps } from '../types';
+import type { MusicCardProps } from '../../types';
 
 const MusicCard: React.FC<MusicCardProps> = ({ id, title, artist /*, imageUrl, audioSrc */ }) => {
   const handlePlay = (e: React.MouseEvent) => {

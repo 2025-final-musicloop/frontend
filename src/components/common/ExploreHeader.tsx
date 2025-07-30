@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styles from './ExploreHeader.module.css';
-import type { HeaderProps } from '../types';
+import type { ExploreHeaderProps } from '../../types';
 
-export const ExploreHeader: React.FC<HeaderProps> = ({ isLoggedIn }) => {
+export const ExploreHeader: React.FC<ExploreHeaderProps> = ({ isLoggedIn }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
