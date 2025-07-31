@@ -4,6 +4,9 @@ import { logout as logoutAPI } from '../api/auth';
 
 interface User {
   username: string;
+  name?: string;
+  email?: string;
+  profileImage?: string;
   id: number;
 }
 

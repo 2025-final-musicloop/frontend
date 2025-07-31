@@ -9,123 +9,6 @@
 - **Blob Animation**: Organic, flowing background elements for dynamic feel
 - **Typography Hierarchy**: Clear text hierarchy with bold headlines and readable body text
 - **Interactive Elements**: Smooth transitions and hover effects for better UX
-- **Height Constraints**: All content must fit within viewport height without overflow
-
-## 📐 Layout & Height Constraints
-
-### Viewport Height Principles:
-
-1. **Screen Height Limitation**: All page containers must use `height: 100vh` to prevent exceeding viewport height
-2. **Content Overflow Prevention**: All content must not exceed display vertical height
-3. **Scroll Area Separation**: Headers should be fixed, only main content should be scrollable
-4. **Flexbox Layout**: Use `display: flex`, `flex-direction: column` for vertical layout composition
-5. **Overflow Control**: Apply `overflow: hidden` to containers, only `overflow-y: auto` to scroll areas
-6. **Responsive Consideration**: Apply same height constraints on mobile devices
-
-### Basic Layout Structure:
-
-```css
-/* Basic Container Structure */
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* Fixed Header */
-.header {
-  flex-shrink: 0;
-  /* Header styles */
-}
-
-/* Scrollable Main Content */
-.scrollableContent {
-  flex: 1;
-  overflow-y: auto;
-  /* Content styles */
-}
-```
-
-### Component-Specific Height Optimization:
-
-#### Detail Selection Page (`DetailSelection`):
-
-```css
-.container {
-  height: 100vh;
-  overflow: hidden;
-}
-
-.selectionContainer {
-  flex: 1;
-  overflow-y: auto;
-  max-height: calc(100vh - header-height - footer-height);
-}
-```
-
-#### Completion Page (`CompletionPage`):
-
-```css
-.container {
-  height: 100vh;
-  overflow: hidden;
-}
-
-.scrollableContent {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem 1.5rem;
-}
-```
-
-### Responsive Height Handling:
-
-```css
-@media (max-width: 768px) {
-  .container {
-    height: 100vh;
-  }
-
-  .scrollableContent {
-    padding: 0.75rem 1rem;
-  }
-}
-```
-
-### Fixed Elements Handling:
-
-```css
-/* Fixed Test Buttons */
-.fixedTestButtons {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 1000;
-}
-
-/* Fixed Header */
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-```
-
-### MUST DO:
-
-- **ALWAYS** use `height: 100vh` for page containers
-- **ALWAYS** prevent content from exceeding viewport height
-- **ALWAYS** separate scrollable areas from fixed elements
-- **ALWAYS** use flexbox for vertical layout management
-- **ALWAYS** apply height constraints consistently across all devices
-
-### NEVER DO:
-
-- ❌ Create layouts that exceed viewport height
-- ❌ Allow content to overflow without proper scroll areas
-- ❌ Use arbitrary height values instead of viewport units
-- ❌ Ignore height constraints on mobile devices
 
 ## 🌈 Color Palette
 
@@ -429,8 +312,7 @@ bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary-purple
 2. **ALWAYS** follow the typography hierarchy for text elements
 3. **ALWAYS** implement blob backgrounds for hero sections
 4. **ALWAYS** use consistent spacing and layout patterns
-5. **ALWAYS** enforce viewport height constraints
-6. **NEVER** deviate from the established design patterns
+5. **NEVER** deviate from the established design patterns
 
 ### ENFORCEMENT:
 
@@ -439,7 +321,6 @@ bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary-purple
 - All typography MUST follow the hierarchy system
 - All animations MUST be smooth and purposeful
 - All layouts MUST be responsive and accessible
-- All content MUST fit within viewport height without overflow
 
 ## 📋 Design Checklist
 
@@ -453,7 +334,5 @@ bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary-purple
 - [ ] Does it maintain accessibility standards?
 - [ ] Does it follow the established animation patterns?
 - [ ] Does it use consistent shadow and gradient effects?
-- [ ] Does it fit within viewport height without overflow?
-- [ ] Does it have proper scroll areas for overflow content?
 
 ---

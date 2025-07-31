@@ -8,12 +8,16 @@ import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import Huming from './pages/Huming/Huming';
 import GenreConversion from './pages/GenreConversion/GenreConversion';
+import PostDetail from './pages/PostDetail/PostDetail';
+import MyPage from './pages/MyPage/MyPage';
 import Sidebar from './components/layout/Sidebar';
+import { useAuth } from './hooks/useAuth';
 import './App.css';
 
 const App: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [activeMenu, setActiveMenu] = useState<string>('home');
 
   // 현재 경로에 따라 활성 메뉴 설정
@@ -68,8 +72,9 @@ const App: React.FC = () => {
           <Route path="/huming" element={<Huming />} />
           <Route path="/genre" element={<GenreConversion />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/post/:id" element={<PostDetail />} />
           <Route path="/build" element={<Make />} />
-          <Route path="/my" element={<LoginPage />} />
+          <Route path="/my" element={user ? <MyPage /> : <LoginPage />} />
           <Route path="/write-post" element={<WritePost />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
