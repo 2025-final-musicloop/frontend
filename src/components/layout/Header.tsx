@@ -13,7 +13,7 @@ const Header: React.FC<HeaderProps> = ({ onLogin }) => {
     if (onLogin) {
       onLogin();
     } else {
-      navigate('/login');
+      navigate('/my');
     }
   };
 

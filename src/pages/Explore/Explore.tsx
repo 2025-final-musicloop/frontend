@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/layout/Sidebar';
 import ExploreHeader from '../../components/common/ExploreHeader';
 import MusicCard from '../../components/music/MusicCard';
 import styles from './Explore.module.css';
@@ -47,14 +46,10 @@ const Explore: React.FC = () => {
     fetchPosts();
   }, [orderBy]);
 
-  const handleMenuClick = (menuId: string) => {
-    navigate(menuId === 'home' ? '/' : `/${menuId}`);
-  };
-
   const handleWritePost = () => {
     if (!user) {
       alert('로그인이 필요합니다.');
-      navigate('/login');
+      navigate('/my');
       return;
     }
     navigate('/write-post');
@@ -65,58 +60,50 @@ const Explore: React.FC = () => {
   };
 
   return (
-    <div className={styles.pageContainer}>
-      <Sidebar activeMenu="explore" onMenuClick={handleMenuClick} />
-      <main className={styles.mainContent}>
-        <ExploreHeader isLoggedIn={!!user} />
+    <div className={styles.mainContent}>
+      <ExploreHeader isLoggedIn={!!user} />
 
-        <div className={styles.boardHeader}>
-          <h2 className={styles.boardTitle}>게시판</h2>
-          <div className={styles.sortContainer}>
-            <label htmlFor="sort">정렬:</label>
-            <select
-              id="sort"
-              value={orderBy}
-              onChange={(e) => setOrderBy(e.target.value)}
-              className={styles.sortSelect}
-            >
-              <option value="-created_at">최신순</option>
-              <option value="created_at">오래된순</option>
-              <option value="title">제목순</option>
-            </select>
+      <div className={styles.boardHeader}>
+        <h2 className={styles.boardTitle}>게시판</h2>
+        <div className={styles.sortContainer}>
+          <label htmlFor="sort">정렬:</label>
+          <select id="sort" value={orderBy} onChange={(e) => setOrderBy(e.target.value)} className={styles.sortSelect}>
+            <option value="-created_at">최신순</option>
+            <option value="created_at">오래된순</option>
+            <option value="title">제목순</option>
+          </select>
+        </div>
+        <button onClick={handleWritePost} className={styles.writeButton}>
+          글 작성
+        </button>
+      </div>
+
+      <div className={styles.boardContainer}>
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingSpinner}></div>
+            <p>게시글을 불러오는 중...</p>
           </div>
-          <button onClick={handleWritePost} className={styles.writeButton}>
-            글 작성
-          </button>
-        </div>
-
-        <div className={styles.boardContainer}>
-          {loading ? (
-            <div className={styles.loadingContainer}>
-              <div className={styles.loadingSpinner}></div>
-              <p>게시글을 불러오는 중...</p>
-            </div>
-          ) : error ? (
-            <div className={styles.errorContainer}>
-              <h3>오류</h3>
-              <p>{error}</p>
-              <button onClick={handleRetry} className={styles.retryButton}>
-                다시 시도
-              </button>
-            </div>
-          ) : posts.length === 0 ? (
-            <div className={styles.emptyContainer}>
-              <h3>게시글이 없습니다</h3>
-            </div>
-          ) : (
-            <div className={styles.postsGrid}>
-              {posts.map((post) => (
-                <MusicCard key={post.postId} id={post.postId} title={post.title} artist={post.author} />
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+        ) : error ? (
+          <div className={styles.errorContainer}>
+            <h3>오류</h3>
+            <p>{error}</p>
+            <button onClick={handleRetry} className={styles.retryButton}>
+              다시 시도
+            </button>
+          </div>
+        ) : posts.length === 0 ? (
+          <div className={styles.emptyContainer}>
+            <h3>게시글이 없습니다</h3>
+          </div>
+        ) : (
+          <div className={styles.postsGrid}>
+            {posts.map((post) => (
+              <MusicCard key={post.postId} id={post.postId} title={post.title} artist={post.author} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,0 +1,208 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.uploadArea {
+  width: 100%;
+  padding: 3rem 2rem;
+  border: 3px dashed #667eea;
+  border-radius: 20px;
+  background: #f8f9ff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.uploadArea:hover {
+  border-color: #5a6fd8;
+  background: #f0f2ff;
+  transform: translateY(-2px);
+}
+
+.uploadArea.dragOver {
+  border-color: #4f46e5;
+  background: #eef2ff;
+  transform: scale(1.02);
+}
+
+.uploadContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.uploadIcon {
+  font-size: 4rem;
+  color: #667eea;
+  margin-bottom: 1rem;
+}
+
+.uploadTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.uploadText {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.uploadHint {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+  font-style: italic;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #f0f9ff;
+  border: 1px solid #0ea5e9;
+  border-radius: 10px;
+  color: #0c4a6e;
+  font-weight: 500;
+}
+
+.fileInfo .material-icons {
+  color: #0ea5e9;
+}
+
+.fileSize {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #f87171;
+  border-radius: 10px;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.error .material-icons {
+  color: #dc2626;
+}
+
+.primaryButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.primaryButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.primaryButton .material-icons {
+  font-size: 1.2rem;
+}
+
+/* 고정된 테스트 버튼 스타일 */
+.fixedTestButtons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 1000;
+}
+
+.testButton {
+  padding: 0.5rem 1rem;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.testButton:hover {
+  background: #ff5252;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
+@media (max-width: 768px) {
+  .uploadArea {
+    padding: 2rem 1rem;
+  }
+
+  .uploadIcon {
+    font-size: 3rem;
+  }
+
+  .uploadTitle {
+    font-size: 1.3rem;
+  }
+
+  .uploadText {
+    font-size: 0.9rem;
+  }
+
+  .primaryButton {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .fixedTestButtons {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .testButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+  }
+}

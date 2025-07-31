@@ -1,9 +1,3 @@
-.pageContainer {
-  display: flex;
-  height: 100vh;
-  background-color: #f3f4f6;
-}
-
 .mainContent {
   flex: 1;
   padding: 2rem;

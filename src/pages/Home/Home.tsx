@@ -1,25 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
-import Sidebar from '../../components/layout/Sidebar';
 import Header from '../../components/layout/Header';
 import HeroSection from '../../components/common/HeroSection';
 
 const Home: React.FC = () => {
-  const [activeMenu, setActiveMenu] = useState<string>('home');
   const navigate = useNavigate();
 
-  const handleMenuClick = (menuId: string) => {
-    setActiveMenu(menuId);
-    if (menuId === 'home') {
-      navigate('/');
-    } else {
-      navigate(`/${menuId}`);
-    }
-  };
-
   const handleLogin = () => {
-    navigate('/login');
+    navigate('/my');
   };
 
   const handleStart = () => {
@@ -36,12 +25,9 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className={styles.homeContainer}>
-      <Sidebar activeMenu={activeMenu} onMenuClick={handleMenuClick} />
-      <main className={styles.mainContent}>
-        <Header onLogin={handleLogin} />
-        <HeroSection onStartClick={handleStart} onIntroClick={handleIntro} onContactClick={handleContact} />
-      </main>
+    <div className={styles.mainContent}>
+      <Header onLogin={handleLogin} />
+      <HeroSection onStartClick={handleStart} onIntroClick={handleIntro} onContactClick={handleContact} />
     </div>
   );
 };
