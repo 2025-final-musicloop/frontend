@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './PostDetail.module.css';
+import Button from '../../components/ui/Button';
+import { useAuth } from '../../hooks/useAuth';
 
 interface PostDetailData {
   id: string;
@@ -22,6 +24,7 @@ interface PostDetailData {
 const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
@@ -44,6 +47,10 @@ const PostDetail: React.FC = () => {
     plays: 1542,
   });
 
+  // TODO: 실제 API 데이터에 authorId(또는 ownerId)를 포함해 비교하도록 교체 필요
+  const postOwnerId = 1;
+  const isOwner = user?.id === postOwnerId;
+
   const handlePlay = () => {
     setIsPlaying(!isPlaying);
     // 실제 오디오 재생 로직은 나중에 구현
@@ -57,6 +64,20 @@ const PostDetail: React.FC = () => {
 
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const handleEdit = () => {
+    if (!isOwner) return;
+    navigate(`/posts/${postData.id}/edit`);
+  };
+
+  const handleDelete = () => {
+    if (!isOwner) return;
+    const ok = confirm('정말 이 게시물을 삭제하시겠습니까?');
+    if (!ok) return;
+    // TODO: 삭제 API 연동 후 라우팅
+    alert('삭제가 완료되었습니다.');
+    navigate('/');
   };
 
   const formatDate = (dateString: string) => {
@@ -129,6 +150,18 @@ const PostDetail: React.FC = () => {
               <span className={styles.statValue}>{postData.likes.toLocaleString()}</span>
             </div>
           </div>
+
+          {/* 액션 버튼 (곡 정보 블록 내부로 이동) */}
+          <div className={styles.actionSection}>
+            <Button variant="primary" size="md" onClick={handleLike} className={styles.actionButton}>
+              <span className={styles.actionIcon}>{isLiked ? '❤️' : '🤍'}</span>
+              좋아요
+            </Button>
+            <Button variant="primary" size="md" className={styles.actionButton}>
+              <span className={styles.actionIcon}>📤</span>
+              공유
+            </Button>
+          </div>
         </div>
 
         {/* 상세 정보 */}
@@ -170,16 +203,26 @@ const PostDetail: React.FC = () => {
           <p className={styles.description}>{postData.description}</p>
         </div>
 
-        {/* 액션 버튼 */}
-        <div className={styles.actionSection}>
-          <button onClick={handleLike} className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}>
-            <span className={styles.actionIcon}>{isLiked ? '❤️' : '🤍'}</span>
-            좋아요
-          </button>
-          <button className={styles.actionButton}>
-            <span className={styles.actionIcon}>📤</span>
-            공유
-          </button>
+        {/* 하단 관리 버튼 (소유자만 활성화) */}
+        <div className={styles.footerActions}>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={handleEdit}
+            disabled={!isOwner}
+            className={styles.manageButton}
+          >
+            ✏️ 수정
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={handleDelete}
+            disabled={!isOwner}
+            className={styles.manageButton}
+          >
+            🗑️ 삭제
+          </Button>
         </div>
       </div>
     </div>
