@@ -273,6 +273,34 @@
   justify-content: center;
 }
 
+.publishButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border: none;
+  border-radius: 25px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  justify-content: center;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.publishButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.publishButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .downloadButton {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;

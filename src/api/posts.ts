@@ -27,3 +27,35 @@ export const createPost = async (title: string, content: string, accessToken: st
   );
   return res.data;
 };
+
+// 음악 파일과 메타데이터를 함께 업로드하는 게시글 생성 (multipart/form-data)
+// 분리된 엔드포인트: create-music-post/
+export const createMusicPost = async (
+  params: {
+    title: string;
+    content: string;
+    audioFile: File;
+    details?: Record<string, unknown>;
+    author?: string | number;
+  },
+  accessToken: string,
+) => {
+  const formData = new FormData();
+  formData.append('title', params.title);
+  formData.append('content', params.content);
+  formData.append('audio', params.audioFile);
+  if (params.details) {
+    formData.append('details', JSON.stringify(params.details));
+  }
+  if (params.author !== undefined) {
+    formData.append('author', String(params.author));
+  }
+
+  const res = await axios.post(`${API_BASE}/create-music-post/`, formData, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return res.data;
+};
