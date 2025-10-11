@@ -59,3 +59,39 @@ export const createMusicPost = async (
   });
   return res.data;
 };
+
+// 단일 게시글 조회
+export const getPostById = async (postId: number, accessToken?: string) => {
+  const res = await axios.get<Post>(`${API_BASE}/detail-post/${postId}/`, {
+    headers: accessToken
+      ? {
+          Authorization: `Bearer ${accessToken}`,
+        }
+      : undefined,
+  });
+  return res.data;
+};
+
+// 게시글 수정
+export const updatePost = async (postId: number, title: string, content: string, accessToken: string) => {
+  const res = await axios.put(
+    `${API_BASE}/update-post/${postId}/`,
+    { title, content },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return res.data;
+};
+
+// 게시글 삭제
+export const deletePost = async (postId: number, accessToken: string) => {
+  const res = await axios.delete(`${API_BASE}/delete-post/${postId}/`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return res.data;
+};

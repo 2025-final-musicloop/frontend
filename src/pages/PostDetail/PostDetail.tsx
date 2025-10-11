@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './PostDetail.module.css';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
+import { deletePost } from '../../api/posts';
+import { AuthContext } from '../../context/AuthContext';
 
 interface PostDetailData {
   id: string;
@@ -25,6 +27,7 @@ const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { accessToken } = useContext(AuthContext);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
@@ -71,13 +74,28 @@ const PostDetail: React.FC = () => {
     navigate(`/posts/${postData.id}/edit`);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!isOwner) return;
     const ok = confirm('정말 이 게시물을 삭제하시겠습니까?');
     if (!ok) return;
-    // TODO: 삭제 API 연동 후 라우팅
-    alert('삭제가 완료되었습니다.');
-    navigate('/');
+    try {
+      if (!id) return;
+      if (!accessToken || accessToken.trim() === '') {
+        alert('로그인이 필요합니다.');
+        navigate('/my');
+        return;
+      }
+      await deletePost(Number(id), accessToken);
+      alert('삭제가 완료되었습니다.');
+      navigate('/explore');
+    } catch (error: any) {
+      console.error('글 삭제 오류:', error);
+      if (error.response && error.response.data && error.response.data.detail) {
+        alert(`글 삭제 실패: ${error.response.data.detail}`);
+      } else {
+        alert('글 삭제에 실패했습니다. 다시 시도해주세요.');
+      }
+    }
   };
 
   const formatDate = (dateString: string) => {

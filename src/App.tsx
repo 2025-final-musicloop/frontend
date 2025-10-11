@@ -9,6 +9,7 @@ import RegisterPage from './pages/Auth/RegisterPage';
 import Huming from './pages/Huming/Huming';
 import GenreConversion from './pages/GenreConversion/GenreConversion';
 import PostDetail from './pages/PostDetail/PostDetail';
+import PostEdit from './pages/PostEdit/PostEdit';
 import MyPage from './pages/MyPage/MyPage';
 import Sidebar from './components/layout/Sidebar';
 import { useAuth } from './hooks/useAuth';
@@ -30,6 +31,7 @@ const App: React.FC = () => {
     else if (path === '/build') setActiveMenu('build');
     else if (path === '/my') setActiveMenu('my');
     else if (path === '/write-post') setActiveMenu('explore');
+    else if (path.startsWith('/posts/') && path.endsWith('/edit')) setActiveMenu('explore');
     else if (path === '/login' || path === '/register') setActiveMenu('my');
   }, [location.pathname]);
 
@@ -73,6 +75,7 @@ const App: React.FC = () => {
           <Route path="/genre" element={<GenreConversion />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/post/:id" element={<PostDetail />} />
+          <Route path="/posts/:id/edit" element={<PostEdit />} />
           <Route path="/build" element={<Make />} />
           <Route path="/my" element={user ? <MyPage /> : <LoginPage />} />
           <Route path="/write-post" element={<WritePost />} />
