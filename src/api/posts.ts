@@ -33,3 +33,24 @@ export const createPost = async (
   );
   return res.data;
 };
+
+
+// existing functions
+
+export async function getPostById(id: number) {
+  // Replace with your actual API call logic
+  const response = await fetch(`/api/posts/${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch post');
+  }
+  return await response.json();
+}
+
+export function updatePost(
+  id: number,
+  title: string,
+  content: string,
+  accessToken: string
+) {
+  // implementation
+}
