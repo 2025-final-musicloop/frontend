@@ -1,0 +1,62 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem; /* mb-8 */
+}
+
+.searchWrapper {
+  position: relative;
+  width: 66.66%; /* w-2/3 */
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1.5rem; /* py-3 px-6 - adjusted for icon */
+  font-size: 1.125rem; /* text-lg */
+  background-color: white;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 9999px; /* rounded-full */
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-sm */
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.searchInput:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #1164c9; /* focus:ring-2 focus:ring-blue-500 */
+}
+
+.searchIcon {
+  position: absolute;
+  right: 1.5rem; /* right-6 */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af; /* text-gray-400 */
+  pointer-events: none; /* Make icon non-interactive */
+}
+
+.notificationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem; /* 48px */
+  height: 3rem; /* 48px */
+  background-color: white;
+  border-radius: 9999px; /* rounded-full */
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.notificationButton:hover {
+  background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+
+.notificationButton .material-icons {
+  color: #374151; /* text-gray-700 */
+}

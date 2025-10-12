@@ -1,0 +1,21 @@
+/* src/components/HeroSection.module.css */
+
+.heroSection {
+  @apply relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 text-center;
+}
+
+.subTitle {
+  @apply mb-3 text-xl font-medium text-gray-700;
+}
+
+.description {
+  @apply mb-12 max-w-md text-base leading-relaxed text-gray-500;
+}
+
+.startButtonWrapper {
+  @apply mb-4 flex items-center justify-center rounded-xl bg-gradient-to-r from-primary to-secondary-purple p-1 shadow-xl transition-shadow duration-500 ease-out hover:shadow-2xl;
+}
+
+.buttonGroup {
+  @apply mt-4 flex space-x-4;
+}
