@@ -56,7 +56,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     // 다운로드 로직 구현
     const link = document.createElement('a');
     link.href = result?.musicUrl || '';
-    link.download = `${title || '장르변환음악'}.mp3`;
+    link.download = `${title || '허밍음악'}.mp3`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -82,7 +82,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>장르 변환 완료!</h1>
+        <h1 className={styles.title}>음악 제작 완료!</h1>
       </div>
 
       <div className={styles.scrollableContent}>
@@ -160,15 +160,16 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
 
           <button className={styles.regenerateButton} onClick={handleRegenerate}>
             <span className="material-icons">refresh</span>
-            다시 변환하기
+            다시 만들기
           </button>
         </div>
 
         {details && Object.keys(details).length > 0 && (
           <div className={styles.detailsInfo}>
-            <h4>변환 설정</h4>
+            <h4>사용된 설정</h4>
             <div className={styles.detailsList}>
               {details.genre && <span className={styles.detailItem}>장르: {details.genre}</span>}
+              {details.instrument && <span className={styles.detailItem}>악기: {details.instrument}</span>}
               {details.mood && <span className={styles.detailItem}>분위기: {details.mood}</span>}
             </div>
           </div>
@@ -178,7 +179,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
       {/* 고정된 테스트 버튼들 */}
       <div className={styles.fixedTestButtons}>
         <button className={styles.testButton} onClick={handleTestRegenerate}>
-          다시 변환하기
+          다시 만들기
         </button>
       </div>
 
