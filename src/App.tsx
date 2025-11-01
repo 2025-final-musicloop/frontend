@@ -11,6 +11,10 @@ import GenreConversion from './pages/GenreConversion/GenreConversion';
 import PostDetail from './pages/PostDetail/PostDetail';
 import PostEdit from './pages/PostEdit/PostEdit';
 import MyPage from './pages/MyPage/MyPage';
+import MyPostsPage from './pages/MyPosts/MyPostsPage';        // ← 추가!
+import MyWorksPage from './pages/MyWorks/MyWorksPage';        // ← 추가!
+import FavoritesPage from './pages/Favorites/FavoritesPage';  // ← 추가!
+import EditProfilePage from './pages/EditProfile/EditProfilePage'; // ← 추가!
 import Sidebar from './components/layout/Sidebar';
 import { useAuth } from './hooks/useAuth';
 import './App.css';
