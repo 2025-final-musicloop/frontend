@@ -34,6 +34,10 @@ const App: React.FC = () => {
     else if (path === '/explore') setActiveMenu('explore');
     else if (path === '/build') setActiveMenu('build');
     else if (path === '/my') setActiveMenu('my');
+    else if (path === '/my-posts') setActiveMenu('my');        // ← 추가!
+    else if (path === '/my-works') setActiveMenu('my');        // ← 추가!
+    else if (path === '/favorites') setActiveMenu('my');       // ← 추가!
+    else if (path === '/edit-profile') setActiveMenu('my');    // ← 추가!
     else if (path === '/write-post') setActiveMenu('explore');
     else if (path.startsWith('/posts/') && path.endsWith('/edit')) setActiveMenu('explore');
     else if (path === '/login' || path === '/register') setActiveMenu('my');
