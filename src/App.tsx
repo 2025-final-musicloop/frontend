@@ -11,6 +11,10 @@ import GenreConversion from './pages/GenreConversion/GenreConversion';
 import PostDetail from './pages/PostDetail/PostDetail';
 import PostEdit from './pages/PostEdit/PostEdit';
 import MyPage from './pages/MyPage/MyPage';
+import MyPostsPage from './pages/MyPosts/MyPostsPage';        // ← 추가!
+import MyWorksPage from './pages/MyWorks/MyWorksPage';        // ← 추가!
+import FavoritesPage from './pages/Favorites/FavoritesPage';  // ← 추가!
+import EditProfilePage from './pages/EditProfile/EditProfilePage'; // ← 추가!
 import Sidebar from './components/layout/Sidebar';
 import { useAuth } from './hooks/useAuth';
 import './App.css';
@@ -30,6 +34,10 @@ const App: React.FC = () => {
     else if (path === '/explore') setActiveMenu('explore');
     else if (path === '/build') setActiveMenu('build');
     else if (path === '/my') setActiveMenu('my');
+    else if (path === '/my-posts') setActiveMenu('my');        // ← 추가!
+    else if (path === '/my-works') setActiveMenu('my');        // ← 추가!
+    else if (path === '/favorites') setActiveMenu('my');       // ← 추가!
+    else if (path === '/edit-profile') setActiveMenu('my');    // ← 추가!
     else if (path === '/write-post') setActiveMenu('explore');
     else if (path.startsWith('/posts/') && path.endsWith('/edit')) setActiveMenu('explore');
     else if (path === '/login' || path === '/register') setActiveMenu('my');
@@ -78,6 +86,10 @@ const App: React.FC = () => {
           <Route path="/posts/:id/edit" element={<PostEdit />} />
           <Route path="/build" element={<Make />} />
           <Route path="/my" element={user ? <MyPage /> : <LoginPage />} />
+          <Route path="/my-posts" element={user ? <MyPostsPage /> : <LoginPage />} />        // ← 추가!
+          <Route path="/my-works" element={user ? <MyWorksPage /> : <LoginPage />} />        // ← 추가!
+          <Route path="/favorites" element={user ? <FavoritesPage /> : <LoginPage />} />     // ← 추가!
+          <Route path="/edit-profile" element={user ? <EditProfilePage /> : <LoginPage />} />   // ← 추가!
           <Route path="/write-post" element={<WritePost />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
