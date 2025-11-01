@@ -82,6 +82,10 @@ const App: React.FC = () => {
           <Route path="/posts/:id/edit" element={<PostEdit />} />
           <Route path="/build" element={<Make />} />
           <Route path="/my" element={user ? <MyPage /> : <LoginPage />} />
+          <Route path="/my-posts" element={user ? <MyPostsPage /> : <LoginPage />} />        // ← 추가!
+          <Route path="/my-works" element={user ? <MyWorksPage /> : <LoginPage />} />        // ← 추가!
+          <Route path="/favorites" element={user ? <FavoritesPage /> : <LoginPage />} />     // ← 추가!
+          <Route path="/edit-profile" element={user ? <EditProfilePage /> : <LoginPage />} />   // ← 추가!
           <Route path="/write-post" element={<WritePost />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
