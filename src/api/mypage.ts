@@ -198,4 +198,3 @@ export const togglePostLike = async (
   );
   return res.data;
 };
-```
