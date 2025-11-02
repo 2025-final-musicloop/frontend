@@ -55,6 +55,36 @@
   min-height: 400px;
 }
 
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.75rem 2rem;
+  background: white;
+  color: #6b7280;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: #667eea;
+}
+
+.tab.activeTab {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
 .emptyState {
   text-align: center;
   padding: 5rem 2rem;
