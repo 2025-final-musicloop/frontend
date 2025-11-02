@@ -64,3 +64,41 @@ export interface FavoriteMusic {
   music: Music;
   created_at: string;
 }
+
+// 기존 타입들은 그대로 두고...
+
+// 👇 아래 타입들만 추가
+export interface Work {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt?: string;
+  audioUrl?: string;
+  genre?: string;
+}
+
+export interface Post {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt?: string;
+  views?: number;
+  likes?: number;
+  comments?: number;
+}
+
+export interface Favorite {
+  id: string;
+  title: string;
+  type: 'work' | 'post';
+  author?: string;
+  createdAt: string;
+}
+
+export interface UserProfile {
+  username: string;
+  email: string;
+  bio: string;
+  avatar: string;
+}
