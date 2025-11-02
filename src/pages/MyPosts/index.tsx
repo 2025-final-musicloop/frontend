@@ -1,52 +1,66 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './MyPosts.module.css';
-import { getMyPosts, deletePost } from '../../api/mypage';
-import type { Post } from '../../types/mypage';
+import styles from './MyWorks.module.css';
+import { getMyMusic } from '../../api/mypage';
+import type { Music } from '../../types/api';
 
-const MyPosts = () => {
+const MyWorks = () => {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [works, setWorks] = useState<Music[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'latest' | 'oldest'>('latest');
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    fetchWorks();
+  }, [sortOrder, currentPage]);
 
-  const fetchPosts = async () => {
+  const fetchWorks = async () => {
     try {
       setIsLoading(true);
-      const data = await getMyPosts();
-      setPosts(data);
+      const ordering = sortOrder === 'latest' ? '-created_at' : 'created_at';
+      const data = await getMyMusic({
+        ordering,
+        page: currentPage,
+        limit: 10,
+      });
+      setWorks(data.results);
+      setTotalPages(Math.ceil(data.count / 10));
     } catch (error) {
-      console.error('게시물을 불러오는데 실패했습니다:', error);
+      console.error('작업물을 불러오는데 실패했습니다:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDelete = async (postId: string) => {
-    if (window.confirm('정말 삭제하시겠습니까?')) {
-      try {
-        await deletePost(postId);
-        setPosts(posts.filter(post => post.id !== postId));
-      } catch (error) {
-        console.error('삭제 실패:', error);
-        alert('삭제에 실패했습니다.');
-      }
+  const handleSearch = async () => {
+    try {
+      setIsLoading(true);
+      const ordering = sortOrder === 'latest' ? '-created_at' : 'created_at';
+      const data = await getMyMusic({
+        search: searchTerm,
+        ordering,
+        page: 1,
+        limit: 10,
+      });
+      setWorks(data.results);
+      setTotalPages(Math.ceil(data.count / 10));
+      setCurrentPage(1);
+    } catch (error) {
+      console.error('검색 실패:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const filteredPosts = posts
-    .filter(post => post.title.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      if (sortOrder === 'latest') {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    });
+  const handleDelete = async (workId: number) => {
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      // 실제 삭제 API는 추가 구현 필요
+      alert('삭제 기능은 백엔드 API 완성 후 구현됩니다.');
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -54,8 +68,8 @@ const MyPosts = () => {
         <button onClick={() => navigate(-1)} className={styles.backButton}>
           ← 돌아가기
         </button>
-        <h1 className={styles.title}>내 게시물</h1>
-        <p className={styles.subtitle}>총 {posts.length}개</p>
+        <h1 className={styles.title}>내 작업물</h1>
+        <p className={styles.subtitle}>총 {works.length}개</p>
       </div>
 
       <div className={styles.content}>
@@ -63,12 +77,15 @@ const MyPosts = () => {
           <div className={styles.searchWrapper}>
             <input
               type="text"
-              placeholder="게시물 검색..."
+              placeholder="작업물 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               className={styles.searchInput}
             />
-            <button className={styles.searchButton}>🔍 검색</button>
+            <button onClick={handleSearch} className={styles.searchButton}>
+              🔍 검색
+            </button>
           </div>
 
           <div className={styles.sortButtons}>
@@ -87,68 +104,85 @@ const MyPosts = () => {
           </div>
 
           <button
-            onClick={() => navigate('/board/new')}
+            onClick={() => navigate('/humming')}
             className={styles.createButton}
           >
-            ✏️ 새 게시물
+            🎵 새 작업물 업로드
           </button>
         </div>
 
         {isLoading ? (
           <div className={styles.emptyState}>
-            <p className={styles.emptyText}>게시물을 불러오는 중...</p>
+            <p className={styles.emptyText}>작업물을 불러오는 중...</p>
           </div>
-        ) : filteredPosts.length === 0 ? (
+        ) : works.length === 0 ? (
           <div className={styles.emptyState}>
             <p className={styles.emptyText}>
-              {searchTerm ? '검색 결과가 없습니다.' : '게시물을 불러오는데 실패했습니다.'}
+              {searchTerm ? '검색 결과가 없습니다.' : '작업물을 불러오는데 실패했습니다.'}
             </p>
-            <button onClick={() => navigate('/board')} className={styles.retryButton}>
+            <button onClick={() => navigate('/humming')} className={styles.retryButton}>
               다시 시도
             </button>
           </div>
         ) : (
-          <div className={styles.postsList}>
-            {filteredPosts.map((post) => (
-              <div key={post.id} className={styles.postCard}>
-                <div className={styles.postInfo}>
-                  <h3 className={styles.postTitle}>{post.title}</h3>
-                  <p className={styles.postPreview}>{post.content}</p>
-                  <div className={styles.postMeta}>
-                    <span className={styles.postDate}>
-                      {new Date(post.createdAt).toLocaleDateString('ko-KR')}
-                    </span>
-                    <span className={styles.postStats}>
-                      👁 {post.views || 0} · ❤️ {post.likes || 0} · 💬 {post.comments || 0}
-                    </span>
+          <>
+            <div className={styles.worksList}>
+              {works.map((work) => (
+                <div key={work.id} className={styles.workCard}>
+                  <div className={styles.workInfo}>
+                    <h3 className={styles.workTitle}>{work.title}</h3>
+                    {work.genre && (
+                      <span className={styles.workGenre}>🎸 {work.genre}</span>
+                    )}
+                    <p className={styles.workDate}>
+                      {new Date(work.created_at).toLocaleDateString('ko-KR')}
+                    </p>
+                  </div>
+                  <div className={styles.workActions}>
+                    <button
+                      onClick={() => navigate(`/music/${work.id}`)}
+                      className={styles.viewButton}
+                    >
+                      보기
+                    </button>
+                    <button
+                      onClick={() => handleDelete(work.id)}
+                      className={styles.deleteButton}
+                    >
+                      삭제
+                    </button>
                   </div>
                 </div>
-                <div className={styles.postActions}>
-                  <button
-                    onClick={() => navigate(`/board/${post.id}`)}
-                    className={styles.viewButton}
-                  >
-                    보기
-                  </button>
-                  <button
-                    onClick={() => navigate(`/board/${post.id}/edit`)}
-                    className={styles.editButton}
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() => handleDelete(post.id)}
-                    className={styles.deleteButton}
-                  >
-                    삭제
-                  </button>
-                </div>
+              ))}
+            </div>
+
+            {/* 페이지네이션 */}
+            {totalPages > 1 && (
+              <div className={styles.pagination}>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className={styles.pageButton}
+                >
+                  이전
+                </button>
+                <span className={styles.pageInfo}>
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className={styles.pageButton}
+                >
+                  다음
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
   );
 };
-export default MyPosts;
+
+export default MyWorks;
