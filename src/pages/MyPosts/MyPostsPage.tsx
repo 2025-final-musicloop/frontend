@@ -251,5 +251,3 @@ const MyPostsPage: React.FC = () => {
 };
 
 export default MyPostsPage;
-```
-
