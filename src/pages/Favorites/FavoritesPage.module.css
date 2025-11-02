@@ -291,13 +291,6 @@
     align-items: flex-start;
   }
 }
-```
-
-<br>
-
-## 💬 커밋 메시지
-```
-feat: /* src/pages/Favorites/FavoritesPage.module.css */
 
 .container {
   max-width: 1000px;
