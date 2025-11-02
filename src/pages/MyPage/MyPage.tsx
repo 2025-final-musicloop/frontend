@@ -13,23 +13,23 @@ const MyPage: React.FC = () => {
   };
 
   const handleEditProfile = () => {
-    navigate('/edit-profile');
+    navigate('/my/profile/edit');  // ✅ 수정!
   };
 
   const handleMyWorks = () => {
-    navigate('/my-works');
+    navigate('/my/works');  // ✅ 수정!
   };
 
   const handleCollaborations = () => {
-    navigate('/collaborations');
+    navigate('/collaborations');  // 이건 그대로
   };
 
   const handleMyPosts = () => {
-    navigate('/my-posts');
+    navigate('/my/posts');  // ✅ 수정!
   };
 
   const handleFavorites = () => {
-    navigate('/favorites');
+    navigate('/my/favorites');  // ✅ 수정!
   };
 
   return (
