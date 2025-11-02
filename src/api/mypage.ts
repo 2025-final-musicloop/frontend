@@ -198,3 +198,130 @@ export const togglePostLike = async (
   );
   return res.data;
 };
+
+// 기존 import와 함수들은 그대로 두고...
+
+// 👇 아래 함수들만 추가
+import type { Work, Post, Favorite, UserProfile } from '../types/mypage';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+
+// 내 작업물 가져오기
+export const getMyWorks = async (): Promise<Work[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/works`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) throw new Error('작업물을 가져오는데 실패했습니다');
+    return await response.json();
+  } catch (error) {
+    console.error('getMyWorks error:', error);
+    return [];
+  }
+};
+
+// 작업물 삭제
+export const deleteWork = async (workId: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/works/${workId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('작업물 삭제에 실패했습니다');
+  } catch (error) {
+    console.error('deleteWork error:', error);
+    throw error;
+  }
+};
+
+// 내 게시물 가져오기
+export const getMyPosts = async (): Promise<Post[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/posts`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('게시물을 가져오는데 실패했습니다');
+    return await response.json();
+  } catch (error) {
+    console.error('getMyPosts error:', error);
+    return [];
+  }
+};
+
+// 게시물 삭제
+export const deletePost = async (postId: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('게시물 삭제에 실패했습니다');
+  } catch (error) {
+    console.error('deletePost error:', error);
+    throw error;
+  }
+};
+
+// 즐겨찾기 가져오기
+export const getFavorites = async (): Promise<Favorite[]> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/favorites`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('즐겨찾기를 가져오는데 실패했습니다');
+    return await response.json();
+  } catch (error) {
+    console.error('getFavorites error:', error);
+    return [];
+  }
+};
+
+// 즐겨찾기 제거
+export const removeFavorite = async (favoriteId: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/favorites/${favoriteId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('즐겨찾기 제거에 실패했습니다');
+  } catch (error) {
+    console.error('removeFavorite error:', error);
+    throw error;
+  }
+};
+
+// 사용자 프로필 가져오기
+export const getUserProfile = async (): Promise<UserProfile> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/profile`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) throw new Error('프로필을 가져오는데 실패했습니다');
+    return await response.json();
+  } catch (error) {
+    console.error('getUserProfile error:', error);
+    return { username: '', email: '', bio: '', avatar: '' };
+  }
+};
+
+// 사용자 프로필 업데이트
+export const updateUserProfile = async (profile: UserProfile): Promise<UserProfile> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/my/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profile),
+    });
+    if (!response.ok) throw new Error('프로필 업데이트에 실패했습니다');
+    return await response.json();
+  } catch (error) {
+    console.error('updateUserProfile error:', error);
+    throw error;
+  }
+};
