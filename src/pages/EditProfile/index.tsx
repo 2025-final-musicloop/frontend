@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './EditProfile.module.css';
-import { getUserProfile, updateUserProfile } from '../../api/mypage';
+import { getMyProfile, updateProfile } from '../../api/mypage';
 import type { UserProfile } from '../../types/mypage';
 
 const EditProfile = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile>({
+    id: 0,
     username: '',
     email: '',
     bio: '',
-    avatar: '',
+    profile_image: null,
+    created_at: '',
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
 
   useEffect(() => {
     fetchProfile();
@@ -22,8 +26,11 @@ const EditProfile = () => {
   const fetchProfile = async () => {
     try {
       setIsLoading(true);
-      const data = await getUserProfile();
+      const data = await getMyProfile();
       setProfile(data);
+      if (data.profile_image) {
+        setPreviewUrl(data.profile_image);
+      }
     } catch (error) {
       console.error('프로필을 불러오는데 실패했습니다:', error);
     } finally {
@@ -36,16 +43,42 @@ const EditProfile = () => {
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      // 미리보기 URL 생성
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setIsSaving(true);
-      await updateUserProfile(profile);
+      
+      const updateData: {
+        username?: string;
+        email?: string;
+        bio?: string;
+        profile_image?: File;
+      } = {};
+
+      if (profile.username) updateData.username = profile.username;
+      if (profile.email) updateData.email = profile.email;
+      if (profile.bio) updateData.bio = profile.bio;
+      if (selectedImage) updateData.profile_image = selectedImage;
+
+      await updateProfile(updateData);
       alert('프로필이 성공적으로 업데이트되었습니다.');
       navigate('/my');
-    } catch (error) {
+    } catch (error: any) {
       console.error('프로필 업데이트 실패:', error);
-      alert('프로필 업데이트에 실패했습니다.');
+      alert(error.response?.data?.message || '프로필 업데이트에 실패했습니다.');
     } finally {
       setIsSaving(false);
     }
@@ -75,15 +108,22 @@ const EditProfile = () => {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.avatarSection}>
             <div className={styles.avatarWrapper}>
-              {profile.avatar ? (
-                <img src={profile.avatar} alt="프로필" className={styles.avatar} />
+              {previewUrl ? (
+                <img src={previewUrl} alt="프로필" className={styles.avatar} />
               ) : (
                 <div className={styles.avatarPlaceholder}>👤</div>
               )}
             </div>
-            <button type="button" className={styles.changeAvatarButton}>
+            <label htmlFor="profile-image" className={styles.changeAvatarButton}>
               📷 사진 변경
-            </button>
+              <input
+                id="profile-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+              />
+            </label>
           </div>
 
           <div className={styles.formGroup}>
@@ -125,7 +165,7 @@ const EditProfile = () => {
             <textarea
               id="bio"
               name="bio"
-              value={profile.bio}
+              value={profile.bio || ''}
               onChange={handleChange}
               className={styles.textarea}
               placeholder="자기소개를 입력하세요"
