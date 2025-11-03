@@ -32,7 +32,7 @@ const App: React.FC = () => {
   React.useEffect(() => {
     const path = location.pathname;
     if (path === '/') setActiveMenu('home');
-    else if (path === '/huming') setActiveMenu('huming');
+    else if (path === '/humming') setActiveMenu('huming');  // huming ->humming 으로 수정
     else if (path === '/genre') setActiveMenu('genre');
     else if (path === '/explore') setActiveMenu('explore');
     else if (path === '/build') setActiveMenu('build');
@@ -54,7 +54,7 @@ const App: React.FC = () => {
         navigate('/');
         break;
       case 'huming':
-        navigate('/huming');
+        navigate('/humming');
         break;
       case 'genre':
         navigate('/genre');
