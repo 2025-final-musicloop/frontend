@@ -1,67 +1,128 @@
-.container {
+/* EditProfile.module.css - Explore 스타일 기반 */
+
+.pageContainer {
+  display: flex;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 3rem;
-  position: relative;
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.boardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .backButton {
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
+  background: white;
+  color: #4f46e5;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #4f46e5 0%, #a855f7 100%) border-box;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .backButton:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateX(-2px);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.title {
-  font-size: 3rem;
+.titleSection {
+  flex: 1;
+}
+
+.boardTitle {
+  font-size: 2.25rem;
   font-weight: 700;
-  color: white;
   margin: 0;
-  margin-bottom: 1rem;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #4f46e5 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
 }
 
-.content {
+.contentWrapper {
   max-width: 800px;
   margin: 0 auto;
-  background: white;
-  border-radius: 24px;
+  width: 100%;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 3rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  min-height: 300px;
 }
 
-.loadingState {
-  text-align: center;
-  padding: 5rem 2rem;
+.loadingContainer p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
-.loadingText {
-  font-size: 1.5rem;
-  color: white;
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #4f46e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.formCard {
+  background: white;
+  border-radius: 1rem;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  border: 1px solid #f3f4f6;
 }
 
 .form {
@@ -84,8 +145,13 @@
   height: 150px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid #667eea;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  border: 4px solid transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #4f46e5 0%, #a855f7 100%) border-box;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .avatar {
@@ -100,26 +166,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #a855f7 100%);
   font-size: 4rem;
   color: white;
 }
 
 .changeAvatarButton {
-  padding: 0.75rem 2rem;
+  padding: 0.75rem 1.5rem;
   background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
-  border-radius: 12px;
-  font-size: 1rem;
+  color: #4f46e5;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #4f46e5 0%, #a855f7 100%) border-box;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .changeAvatarButton:hover {
-  background: #667eea;
-  color: white;
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .formGroup {
@@ -129,26 +203,30 @@
 }
 
 .label {
-  font-size: 1.1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #1f2937;
 }
 
 .input,
 .textarea {
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  font-size: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-family: inherit;
-  transition: all 0.3s ease;
+  background: white;
+  transition: all 0.2s;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 .input:focus,
 .textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
 .textarea {
@@ -165,13 +243,16 @@
 
 .cancelButton,
 .saveButton {
-  padding: 1rem 2.5rem;
+  padding: 0.75rem 2rem;
   border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .cancelButton {
@@ -183,32 +264,54 @@
 .cancelButton:hover {
   background: #f9fafb;
   border-color: #d1d5db;
+  transform: translateY(-1px);
 }
 
 .saveButton {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-  min-width: 180px;
+  background: white;
+  color: #4f46e5;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(135deg, #4f46e5 0%, #a855f7 100%) border-box;
+  min-width: 150px;
 }
 
 .saveButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .saveButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* 반응형 디자인 */
+/* Responsive Design */
 @media (max-width: 768px) {
-  .title {
-    font-size: 2rem;
+  .mainContent {
+    padding: 1rem;
   }
 
-  .content {
+  .boardHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .headerLeft {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .boardTitle {
+    font-size: 1.875rem;
+  }
+
+  .formCard {
     padding: 1.5rem;
   }
 
