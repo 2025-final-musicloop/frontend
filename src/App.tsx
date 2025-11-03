@@ -82,7 +82,7 @@ const App: React.FC = () => {
       <main className="flex flex-1 flex-col overflow-hidden">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/huming" element={<Huming />} />
+          <Route path="/humming" element={<Huming />} /> //huming->humming 으로 수정
           <Route path="/genre" element={<GenreConversion />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/post/:id" element={<PostDetail />} />
