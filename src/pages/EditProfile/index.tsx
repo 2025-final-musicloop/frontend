@@ -38,16 +38,17 @@ const EditProfile = () => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
+    setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setSelectedImage(file);
-      // 미리보기 URL 생성
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string);
@@ -60,7 +61,7 @@ const EditProfile = () => {
     e.preventDefault();
     try {
       setIsSaving(true);
-      
+
       const updateData: {
         username?: string;
         email?: string;
@@ -84,112 +85,131 @@ const EditProfile = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loadingState}>
-          <p className={styles.loadingText}>프로필을 불러오는 중...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <button onClick={() => navigate(-1)} className={styles.backButton}>
-          ← 돌아가기
-        </button>
-        <h1 className={styles.title}>프로필 편집</h1>
-        <p className={styles.subtitle}>내 정보를 수정해보세요</p>
-      </div>
-
-      <div className={styles.content}>
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.avatarSection}>
-            <div className={styles.avatarWrapper}>
-              {previewUrl ? (
-                <img src={previewUrl} alt="프로필" className={styles.avatar} />
-              ) : (
-                <div className={styles.avatarPlaceholder}>👤</div>
-              )}
+    <div className={styles.pageContainer}>
+      <div className={styles.mainContent}>
+        {/* 헤더 */}
+        <div className={styles.boardHeader}>
+          <div className={styles.headerLeft}>
+            <button onClick={() => navigate(-1)} className={styles.backButton}>
+              ← 돌아가기
+            </button>
+            <div className={styles.titleSection}>
+              <h1 className={styles.boardTitle}>프로필 편집</h1>
+              <p className={styles.subtitle}>내 정보를 수정해보세요</p>
             </div>
-            <label htmlFor="profile-image" className={styles.changeAvatarButton}>
-              📷 사진 변경
-              <input
-                id="profile-image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-              />
-            </label>
           </div>
+        </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="username" className={styles.label}>
-              사용자명
-            </label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={profile.username}
-              onChange={handleChange}
-              className={styles.input}
-              placeholder="사용자명을 입력하세요"
-              required
-            />
+        {/* 메인 컨텐츠 */}
+        {isLoading ? (
+          <div className={styles.loadingContainer}>
+            <div className={styles.loadingSpinner}></div>
+            <p>프로필을 불러오는 중...</p>
           </div>
+        ) : (
+          <div className={styles.contentWrapper}>
+            <div className={styles.formCard}>
+              <form onSubmit={handleSubmit} className={styles.form}>
+                {/* 프로필 이미지 섹션 */}
+                <div className={styles.avatarSection}>
+                  <div className={styles.avatarWrapper}>
+                    {previewUrl ? (
+                      <img
+                        src={previewUrl}
+                        alt="프로필"
+                        className={styles.avatar}
+                      />
+                    ) : (
+                      <div className={styles.avatarPlaceholder}>👤</div>
+                    )}
+                  </div>
+                  <label
+                    htmlFor="profile-image"
+                    className={styles.changeAvatarButton}
+                  >
+                    📷 사진 변경
+                    <input
+                      id="profile-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="email" className={styles.label}>
-              이메일
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={profile.email}
-              onChange={handleChange}
-              className={styles.input}
-              placeholder="이메일을 입력하세요"
-              required
-            />
-          </div>
+                {/* 사용자명 */}
+                <div className={styles.formGroup}>
+                  <label htmlFor="username" className={styles.label}>
+                    사용자명
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={profile.username}
+                    onChange={handleChange}
+                    className={styles.input}
+                    placeholder="사용자명을 입력하세요"
+                    required
+                  />
+                </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="bio" className={styles.label}>
-              소개
-            </label>
-            <textarea
-              id="bio"
-              name="bio"
-              value={profile.bio || ''}
-              onChange={handleChange}
-              className={styles.textarea}
-              placeholder="자기소개를 입력하세요"
-              rows={4}
-            />
-          </div>
+                {/* 이메일 */}
+                <div className={styles.formGroup}>
+                  <label htmlFor="email" className={styles.label}>
+                    이메일
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={profile.email}
+                    onChange={handleChange}
+                    className={styles.input}
+                    placeholder="이메일을 입력하세요"
+                    required
+                  />
+                </div>
 
-          <div className={styles.buttonGroup}>
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className={styles.cancelButton}
-            >
-              취소
-            </button>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className={styles.saveButton}
-            >
-              {isSaving ? '저장 중...' : '💾 저장하기'}
-            </button>
+                {/* 소개 */}
+                <div className={styles.formGroup}>
+                  <label htmlFor="bio" className={styles.label}>
+                    소개
+                  </label>
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={profile.bio || ''}
+                    onChange={handleChange}
+                    className={styles.textarea}
+                    placeholder="자기소개를 입력하세요"
+                    rows={4}
+                  />
+                </div>
+
+                {/* 버튼 그룹 */}
+                <div className={styles.buttonGroup}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className={styles.cancelButton}
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className={styles.saveButton}
+                  >
+                    {isSaving ? '저장 중...' : '💾 저장하기'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </form>
+        )}
       </div>
     </div>
   );
