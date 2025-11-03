@@ -32,7 +32,7 @@ const App: React.FC = () => {
   React.useEffect(() => {
     const path = location.pathname;
     if (path === '/') setActiveMenu('home');
-    else if (path === '/huming') setActiveMenu('huming');
+    else if (path === '/humming') setActiveMenu('huming');
     else if (path === '/genre') setActiveMenu('genre');
     else if (path === '/explore') setActiveMenu('explore');
     else if (path === '/build') setActiveMenu('build');
@@ -54,7 +54,7 @@ const App: React.FC = () => {
         navigate('/');
         break;
       case 'huming':
-        navigate('/huming');
+        navigate('/humming');
         break;
       case 'genre':
         navigate('/genre');
@@ -82,7 +82,7 @@ const App: React.FC = () => {
       <main className="flex flex-1 flex-col overflow-hidden">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/huming" element={<Huming />} />
+          <Route path="/humming" element={<Huming />} />
           <Route path="/genre" element={<GenreConversion />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/post/:id" element={<PostDetail />} />
