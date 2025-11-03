@@ -57,22 +57,27 @@ const MyWorks = () => {
 
   const handleDelete = async (workId: number) => {
     if (window.confirm('정말 삭제하시겠습니까?')) {
-      // 실제 삭제 API는 추가 구현 필요
       alert('삭제 기능은 백엔드 API 완성 후 구현됩니다.');
     }
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <button onClick={() => navigate(-1)} className={styles.backButton}>
-          ← 돌아가기
-        </button>
-        <h1 className={styles.title}>내 작업물</h1>
-        <p className={styles.subtitle}>총 {works.length}개</p>
-      </div>
+    <div className={styles.pageContainer}>
+      <div className={styles.mainContent}>
+        {/* 헤더 */}
+        <div className={styles.boardHeader}>
+          <div className={styles.headerLeft}>
+            <button onClick={() => navigate(-1)} className={styles.backButton}>
+              ← 돌아가기
+            </button>
+            <div className={styles.titleSection}>
+              <h1 className={styles.boardTitle}>내 작업물</h1>
+              <p className={styles.subtitle}>총 {works.length}개의 작업물</p>
+            </div>
+          </div>
+        </div>
 
-      <div className={styles.content}>
+        {/* 컨트롤 영역 */}
         <div className={styles.controls}>
           <div className={styles.searchWrapper}>
             <input
@@ -88,98 +93,117 @@ const MyWorks = () => {
             </button>
           </div>
 
-          <div className={styles.sortButtons}>
-            <button
-              onClick={() => setSortOrder('latest')}
-              className={`${styles.sortButton} ${sortOrder === 'latest' ? styles.active : ''}`}
-            >
-              최신순
-            </button>
-            <button
-              onClick={() => setSortOrder('oldest')}
-              className={`${styles.sortButton} ${sortOrder === 'oldest' ? styles.active : ''}`}
-            >
-              오래된순
-            </button>
-          </div>
-
-          <button
-            onClick={() => navigate('/humming')}
-            className={styles.createButton}
-          >
-            🎵 새 작업물 업로드
-          </button>
-        </div>
-
-        {isLoading ? (
-          <div className={styles.emptyState}>
-            <p className={styles.emptyText}>작업물을 불러오는 중...</p>
-          </div>
-        ) : works.length === 0 ? (
-          <div className={styles.emptyState}>
-            <p className={styles.emptyText}>
-              {searchTerm ? '검색 결과가 없습니다.' : '작업물을 불러오는데 실패했습니다.'}
-            </p>
-            <button onClick={() => navigate('/humming')} className={styles.retryButton}>
-              다시 시도
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className={styles.worksList}>
-              {works.map((work) => (
-                <div key={work.id} className={styles.workCard}>
-                  <div className={styles.workInfo}>
-                    <h3 className={styles.workTitle}>{work.title}</h3>
-                    {work.genre && (
-                      <span className={styles.workGenre}>🎸 {work.genre}</span>
-                    )}
-                    <p className={styles.workDate}>
-                      {new Date(work.created_at).toLocaleDateString('ko-KR')}
-                    </p>
-                  </div>
-                  <div className={styles.workActions}>
-                    <button
-                      onClick={() => navigate(`/music/${work.id}`)}
-                      className={styles.viewButton}
-                    >
-                      보기
-                    </button>
-                    <button
-                      onClick={() => handleDelete(work.id)}
-                      className={styles.deleteButton}
-                    >
-                      삭제
-                    </button>
-                  </div>
-                </div>
-              ))}
+          <div className={styles.controlsRow}>
+            <div className={styles.sortButtons}>
+              <button
+                onClick={() => setSortOrder('latest')}
+                className={`${styles.sortButton} ${sortOrder === 'latest' ? styles.active : ''}`}
+              >
+                최신순
+              </button>
+              <button
+                onClick={() => setSortOrder('oldest')}
+                className={`${styles.sortButton} ${sortOrder === 'oldest' ? styles.active : ''}`}
+              >
+                오래된순
+              </button>
             </div>
 
-            {/* 페이지네이션 */}
-            {totalPages > 1 && (
-              <div className={styles.pagination}>
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                  className={styles.pageButton}
-                >
-                  이전
-                </button>
-                <span className={styles.pageInfo}>
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
-                  className={styles.pageButton}
-                >
-                  다음
-                </button>
+            <button
+              onClick={() => navigate('/humming')}
+              className={styles.createButton}
+            >
+              🎵 새 작업물 만들기
+            </button>
+          </div>
+        </div>
+
+        {/* 메인 컨텐츠 */}
+        <div className={styles.boardContainer}>
+          {isLoading ? (
+            <div className={styles.loadingContainer}>
+              <div className={styles.loadingSpinner}></div>
+              <p>작업물을 불러오는 중...</p>
+            </div>
+          ) : works.length === 0 ? (
+            <div className={styles.emptyContainer}>
+              <h3>작업물이 없습니다</h3>
+              <p>
+                {searchTerm
+                  ? '검색 결과가 없습니다.'
+                  : '첫 번째 작업물을 만들어보세요!'}
+              </p>
+              <button
+                onClick={() => navigate('/humming')}
+                className={styles.retryButton}
+              >
+                작업물 만들기
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className={styles.worksList}>
+                {works.map((work) => (
+                  <div key={work.id} className={styles.workCard}>
+                    <div className={styles.workIcon}>🎵</div>
+                    <div className={styles.workInfo}>
+                      <h3 className={styles.workTitle}>{work.title}</h3>
+                      <div className={styles.workMeta}>
+                        {work.genre && (
+                          <span className={styles.workGenre}>
+                            {work.genre}
+                          </span>
+                        )}
+                        <span className={styles.workDate}>
+                          {new Date(work.created_at).toLocaleDateString('ko-KR')}
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.workActions}>
+                      <button
+                        onClick={() => navigate(`/music/${work.id}`)}
+                        className={styles.viewButton}
+                      >
+                        보기
+                      </button>
+                      <button
+                        onClick={() => handleDelete(work.id)}
+                        className={styles.deleteButton}
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-          </>
-        )}
+
+              {/* 페이지네이션 */}
+              {totalPages > 1 && (
+                <div className={styles.pagination}>
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className={styles.pageButton}
+                  >
+                    이전
+                  </button>
+                  <span className={styles.pageInfo}>
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    className={styles.pageButton}
+                  >
+                    다음
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
