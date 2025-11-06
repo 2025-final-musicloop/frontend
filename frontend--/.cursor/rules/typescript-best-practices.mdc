@@ -1,0 +1,311 @@
+# TypeScript Best Practices & Type Safety Rules
+
+## 🔒 Type Safety Enforcement
+
+### MUST DO:
+
+- **ALWAYS** use strict TypeScript configuration
+- **ALWAYS** define explicit return types for functions
+- **ALWAYS** use proper generic types for reusable functions
+- **ALWAYS** handle null/undefined cases explicitly
+
+### NEVER DO:
+
+- ❌ Use `any` type without proper type guards
+- ❌ Ignore TypeScript compiler errors
+- ❌ Use type assertions (`as`) without validation
+- ❌ Create functions without proper error handling
+
+## 🏗️ Interface Design Patterns
+
+### MUST DO:
+
+```typescript
+// ✅ CORRECT - Proper interface design
+export interface User {
+  id: number;
+  username: string;
+  email?: string; // Optional properties clearly marked
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  message?: string;
+  status: number;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+interface User {
+  id: any; // Don't use any
+  username: string;
+  [key: string]: any; // Don't use index signatures without constraints
+}
+```
+
+## 🔧 Component Props Patterns
+
+### MUST DO:
+
+```typescript
+// ✅ CORRECT - Well-defined component props
+export interface ButtonProps {
+  children: ReactNode;
+  onClick?: () => void;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  className?: string;
+  type?: 'button' | 'submit' | 'reset';
+}
+
+const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  type = 'button',
+  ...props
+}) => {
+  // Component implementation
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+const Button = (props: any) => {
+  // Don't use any
+  // Implementation
+};
+
+const Button = ({ children, ...rest }: any) => {
+  // Don't use any
+  // Implementation
+};
+```
+
+## 🛠️ Utility Function Patterns
+
+### MUST DO:
+
+```typescript
+// ✅ CORRECT - Type-safe utility functions
+export const formatRelativeTime = (date: string | Date): string => {
+  const now = new Date();
+  const targetDate = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - targetDate.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return '방금 전';
+  // ... more logic
+};
+
+export const setStorageItem = <T>(key: string, value: T): void => {
+  try {
+    const serializedValue = JSON.stringify(value);
+    localStorage.setItem(key, serializedValue);
+  } catch (error) {
+    console.error('로컬 스토리지 저장 실패:', error);
+  }
+};
+
+export const getStorageItem = <T>(key: string, defaultValue?: T): T | null => {
+  try {
+    const item = localStorage.getItem(key);
+    if (item === null) {
+      return defaultValue || null;
+    }
+    return JSON.parse(item);
+  } catch (error) {
+    console.error('로컬 스토리지 읽기 실패:', error);
+    return defaultValue || null;
+  }
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export const formatTime = (date: any): any => {
+  // Don't use any
+  // Implementation
+};
+
+export const saveToStorage = (key: string, value: any): void => {
+  // Don't use any
+  localStorage.setItem(key, JSON.stringify(value));
+};
+```
+
+## 🔍 Type Guards & Validation
+
+### MUST DO:
+
+```typescript
+// ✅ CORRECT - Type guards for runtime validation
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+export const isUser = (obj: unknown): obj is User => {
+  return obj !== null && typeof obj === 'object' && 'id' in obj && 'username' in obj;
+};
+
+export const validatePassword = (
+  password: string,
+): {
+  isValid: boolean;
+  errors: string[];
+} => {
+  const errors: string[] = [];
+
+  if (password.length < 8) {
+    errors.push('비밀번호는 최소 8자 이상이어야 합니다.');
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push('비밀번호는 대문자를 포함해야 합니다.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export const validateEmail = (email: any): boolean => {
+  // Don't use any
+  return email.includes('@');
+};
+
+export const checkUser = (user: any): boolean => {
+  // Don't use any
+  return user && user.name;
+};
+```
+
+## 🎯 Error Handling Patterns
+
+### MUST DO:
+
+```typescript
+// ✅ CORRECT - Proper error handling with types
+export const safeApiCall = async <T>(
+  apiFunction: () => Promise<T>,
+): Promise<{ data: T | null; error: string | null }> => {
+  try {
+    const data = await apiFunction();
+    return { data, error: null };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return { data: null, error: errorMessage };
+  }
+};
+
+export const handleAsyncError = async <T>(promise: Promise<T>): Promise<T> => {
+  try {
+    return await promise;
+  } catch (error) {
+    console.error('Async operation failed:', error);
+    throw new Error('Operation failed');
+  }
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export const apiCall = async (func: any): Promise<any> => {
+  // Don't use any
+  try {
+    return await func();
+  } catch (error) {
+    console.log(error); // Don't just log errors
+    return null;
+  }
+};
+```
+
+## 🔄 State Management Types
+
+### MUST DO:
+
+```typescript
+// ✅ CORRECT - Proper state management types
+export interface AppState {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (user: User) => void;
+  logout: () => void;
+  accessToken: string;
+  setAccessToken: (token: string) => void;
+}
+
+export type Action =
+  | { type: 'SET_USER'; payload: User }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'LOGOUT' };
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export interface State {
+  user: any; // Don't use any
+  loading: any;
+  error: any;
+}
+
+export type Action = any; // Don't use any
+```
+
+## 🚨 Critical TypeScript Rules
+
+### IMMEDIATE ACTIONS REQUIRED:
+
+1. **NEVER** use `any` type without proper type guards
+2. **ALWAYS** define explicit return types for functions
+3. **ALWAYS** handle null/undefined cases explicitly
+4. **ALWAYS** use proper generic types for reusable functions
+5. **NEVER** ignore TypeScript compiler errors
+
+### ENFORCEMENT:
+
+- All functions MUST have explicit return types
+- All component props MUST have proper TypeScript interfaces
+- All API responses MUST have proper type definitions
+- All error handling MUST include proper type checking
+- All utility functions MUST use generics for type safety
+  description:
+  globs:
+  alwaysApply: false
+
+---
