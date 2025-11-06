@@ -1,0 +1,20 @@
+/* src/components/SidebarItem.module.css */
+
+.sidebarItem {
+  @apply flex flex-col items-center cursor-pointer w-full py-3 rounded-xl transition-all duration-300 ease-in-out;
+}
+.inactive {
+  @apply text-gray-500;
+}
+.inactive:hover {
+  @apply text-primary;
+}
+.active {
+  @apply text-primary opacity-100 font-bold bg-primary-light/10;
+}
+.icon {
+  @apply text-2xl;
+}
+.text {
+  @apply text-xs mt-0.5 font-medium opacity-70;
+}

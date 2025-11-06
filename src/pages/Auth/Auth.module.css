@@ -1,0 +1,230 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  padding: 2rem;
+  z-index: 1;
+}
+
+.formCard {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  width: 100%;
+  max-width: 600px; /* 480px에서 25% 증가: 480 * 1.25 = 600px */
+  height: 90vh; /* 80vh에서 90vh로 변경 */
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, #4f46e5 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  flex-shrink: 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.form::-webkit-scrollbar-thumb {
+  background: rgba(79, 70, 229, 0.3);
+  border-radius: 3px;
+}
+
+.form::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 70, 229, 0.5);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.875rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  transform: translateY(-1px);
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.primaryButtonWrapper {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 0.5rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.primaryButtonWrapper::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #4f46e5 0%, #a855f7 100%);
+  border-radius: 16px;
+  z-index: -1;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.primaryButtonWrapper:hover::before {
+  opacity: 1;
+}
+
+.loginButton {
+  width: 100%;
+  background: white !important;
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  border-radius: 14px !important;
+  padding: 1rem 2rem !important;
+  font-size: 1.125rem !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+}
+
+.loginButton:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.loginButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.secondaryButtons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.registerButton {
+  width: 80% !important; /* 80%로 설정 */
+  background: transparent !important;
+  color: #6b7280 !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+.registerButton:hover {
+  background: #f9fafb !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .formCard {
+    padding: 2rem;
+    margin: 1rem;
+    height: 95vh; /* 90vh에서 95vh로 변경 */
+    max-width: 500px; /* 600px에서 약간 줄임 */
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .formCard {
+    padding: 1.5rem;
+    height: 100vh; /* 95vh에서 100vh로 변경 */
+    max-width: 100%; /* 모바일에서는 전체 너비 사용 */
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .form {
+    gap: 1rem;
+  }
+
+  .input {
+    padding: 0.75rem;
+  }
+}
