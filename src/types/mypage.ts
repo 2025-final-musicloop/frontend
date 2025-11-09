@@ -69,11 +69,11 @@ export interface FavoriteMusic {
 
 // 👇 아래 타입들만 추가
 export interface Work {
-  id: string;
+  id: number;              // ✅ string이 아니라 number
   title: string;
-  createdAt: string;
-  updatedAt?: string;
-  audioUrl?: string;
+  created_at: string;      // ✅ createdAt이 아니라 created_at
+  updated_at?: string;
+  audio_url?: string;
   genre?: string;
 }
 
@@ -89,11 +89,11 @@ export interface Post {
 }
 
 export interface Favorite {
-  id: string;
+  id: number;
   title: string;
   type: 'work' | 'post';
   author?: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface UserProfile {
