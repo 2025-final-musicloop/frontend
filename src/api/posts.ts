@@ -3,14 +3,17 @@
 import axios from 'axios';
 
 export interface Post {
-  postId: number;
+  id: number;
+  postId?: number;           // 호환성 (deprecated)
   title: string;
   content: string;
   author: string;
   created_at: string;
-  // 파일 URL을 받을 수 있도록 필드 추가
+  updated_at?: string;
   audio_file?: string;
   image?: string;
+  view_count?: number;       // MyPosts에서 사용
+  like_count?: number;       // MyPosts에서 사용
 }
 
 const API_BASE = 'http://localhost:8000/api/posts';
