@@ -3,19 +3,20 @@
 import axios from 'axios';
 
 export interface Post {
-  id: number;
-  postId?: number;           // 호환성 (deprecated)
+  id: number;                // postId 대신 id 사용
+  postId?: number;           // 호환성을 위해 유지 (deprecated)
   title: string;
   content: string;
-  author: string;
+  author: string;            // 백엔드가 string으로 반환
   created_at: string;
-  updated_at?: string;
+  updated_at?: string;       // 추가
   audio_file?: string;
   image?: string;
   view_count?: number;       // MyPosts에서 사용
   like_count?: number;       // MyPosts에서 사용
+  likes_count?: number;      // 호환성
+  comments_count?: number;   // 호환성
 }
-
 const API_BASE = 'http://localhost:8000/api/posts';
 
 export const getPosts = async (ordering: string = '-created_at') => {
