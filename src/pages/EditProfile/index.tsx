@@ -69,10 +69,17 @@ const EditProfile = () => {
         profile_image?: File;
       } = {};
 
-      if (profile.username) updateData.username = profile.username;
-      if (profile.email) updateData.email = profile.email;
-      if (profile.bio) updateData.bio = profile.bio;
+      // 변경된 값만 포함
+      if (profile.username?.trim()) updateData.username = profile.username;
+      if (profile.email?.trim()) updateData.email = profile.email;
+      if (profile.bio !== undefined) updateData.bio = profile.bio; // 빈 문자열도 허용
       if (selectedImage) updateData.profile_image = selectedImage;
+
+      // 업데이트할 데이터가 있는지 확인
+      if (Object.keys(updateData).length === 0) {
+        alert('변경된 내용이 없습니다.');
+        return;
+      }
 
       await updateProfile(updateData);
       alert('프로필이 성공적으로 업데이트되었습니다.');
@@ -151,8 +158,6 @@ const EditProfile = () => {
                     value={profile.username}
                     onChange={handleChange}
                     className={styles.input}
-                    placeholder="사용자명을 입력하세요"
-                    required
                   />
                 </div>
 
@@ -168,24 +173,22 @@ const EditProfile = () => {
                     value={profile.email}
                     onChange={handleChange}
                     className={styles.input}
-                    placeholder="이메일을 입력하세요"
-                    required
                   />
                 </div>
 
-                {/* 소개 */}
+                {/* 자기소개 */}
                 <div className={styles.formGroup}>
                   <label htmlFor="bio" className={styles.label}>
-                    소개
+                    자기소개
                   </label>
                   <textarea
                     id="bio"
                     name="bio"
-                    value={profile.bio || ''}
+                    value={profile.bio}
                     onChange={handleChange}
                     className={styles.textarea}
-                    placeholder="자기소개를 입력하세요"
                     rows={4}
+                    placeholder="자신에 대해 간단히 소개해주세요"
                   />
                 </div>
 
@@ -195,15 +198,16 @@ const EditProfile = () => {
                     type="button"
                     onClick={() => navigate(-1)}
                     className={styles.cancelButton}
+                    disabled={isSaving}
                   >
                     취소
                   </button>
                   <button
                     type="submit"
-                    disabled={isSaving}
                     className={styles.saveButton}
+                    disabled={isSaving}
                   >
-                    {isSaving ? '저장 중...' : '💾 저장하기'}
+                    {isSaving ? '저장 중...' : '저장'}
                   </button>
                 </div>
               </form>
