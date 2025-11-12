@@ -100,12 +100,12 @@ const Explore: React.FC = () => {
           <div className={styles.postsGrid}>
             {posts.map((post) => (
               <MusicCard
-              key={post.postId}
-              id={post.postId}
+              key={post.Id} //수정
+              id={post.Id} // 수정
               title={post.title}
               artist={post.author}
               music={{
-                id: post.postId,
+                id: post.Id, // 수정
                 title: post.title,
                 artist: post.author,
                 duration: 0,
