@@ -1,16 +1,21 @@
 // src/api/posts.ts
-
 import axios from 'axios';
 
 export interface Post {
-  postId: number;
+  id: number;                // postId 대신 id 사용
+  postId?: number;           // 호환성을 위해 유지 (deprecated)
   title: string;
   content: string;
-  author: string;
+  author: string;            // 백엔드가 string으로 반환
   created_at: string;
-  // 파일 URL을 받을 수 있도록 필드 추가
+  updated_at?: string;       // 추가
   audio_file?: string;
   image?: string;
+  view_count?: number;       // MyPosts에서 사용
+  like_count?: number;       // MyPosts에서 사용
+  likes_count?: number;      // 호환성
+  comments_count?: number;   // 호환성
+  is_liked?: boolean;        // ✅ 추가: 사용자가 좋아요했는지 여부
 }
 
 const API_BASE = 'http://localhost:8000/api/posts';
@@ -49,6 +54,7 @@ export const createPost = async (
   });
   return res.data;
 };
+
 export const createMusicPost = async (
   params: {
     title: string;
@@ -79,17 +85,11 @@ export const createMusicPost = async (
   return res.data;
 };
 
-
+// ✅ 수정: 게시물 상세 URL 변경 (posts/ 접두사 제거)
 export const getPostById = async (postId: number, accessToken?: string) => {
-  
-  // ❗️ API_BASE에 이미 /api/posts가 포함되어 있으므로 중복되는 경로를 제거합니다.
-  // ❗️ 수정 전: `${API_BASE}/api/posts/${postId}/`
-  const res = await axios.get<Post>(
-    `${API_BASE}/${postId}/`, // 👈 수정 후
-    { 
-      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
-    }
-  );
+  const res = await axios.get<Post>(`${API_BASE}/${postId}/`, {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+  });
   return res.data;
 };
 
@@ -135,5 +135,75 @@ export const deletePost = async (postId: number, accessToken: string) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+  return res.data;
+};
+
+// ========== ✅ 마이페이지용 API 추가 ==========
+
+// 내가 작성한 게시물 목록 조회
+export const getMyPosts = async (params?: {
+  ordering?: string;
+  page?: number;
+  limit?: number;
+}, accessToken?: string) => {
+  const token = accessToken || localStorage.getItem('access_token') || '';
+  
+  const queryParams = new URLSearchParams();
+  if (params?.ordering) queryParams.append('ordering', params.ordering);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const url = `${API_BASE}/my-posts/${queryString ? `?${queryString}` : ''}`;
+
+  const res = await axios.get<Post[]>(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
+
+// 좋아요한 게시물 목록 조회
+export const getFavoritePosts = async (params?: {
+  ordering?: string;
+  page?: number;
+  limit?: number;
+}, accessToken?: string) => {
+  const token = accessToken || localStorage.getItem('access_token') || '';
+  
+  const queryParams = new URLSearchParams();
+  if (params?.ordering) queryParams.append('ordering', params.ordering);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const url = `${API_BASE}/favorites/${queryString ? `?${queryString}` : ''}`;
+
+  const res = await axios.get<Post[]>(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
+
+// 게시물 좋아요 토글
+export const togglePostLike = async (postId: number, accessToken?: string) => {
+  const token = accessToken || localStorage.getItem('access_token') || '';
+  
+  const res = await axios.post<{
+    message: string;
+    is_liked: boolean;
+    likes_count: number;
+  }>(
+    `${API_BASE}/${postId}/like/`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return res.data;
 };
