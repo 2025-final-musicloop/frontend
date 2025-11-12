@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Favorites.module.css';
-import { getMyFavoritePosts, getMyFavoriteMusic } from '../../api/mypage';
-import type { FavoritePost, FavoriteMusic } from '../../types/mypage';
+import { getFavoritePosts } from '../../api/posts'; // ✅ posts API 사용
+import { getMyFavoriteMusic } from '../../api/mypage';
+import type { Post } from '../../api/posts'; // ✅ Post 타입 import
+import type { FavoriteMusic } from '../../types/mypage';
 
 type FavoriteItem = {
   id: number;
@@ -27,19 +29,21 @@ const Favorites = () => {
   const fetchFavorites = async () => {
     try {
       setIsLoading(true);
-
+      
+      // ✅ 수정: 새로운 API 사용
       const [postsData, musicData] = await Promise.all([
-        getMyFavoritePosts(1),
+        getFavoritePosts({ ordering: '-created_at' }),
         getMyFavoriteMusic(1),
       ]);
 
-      const postItems: FavoriteItem[] = postsData.results.map((item) => ({
-        id: item.id,
-        title: item.post.title,
+      // ✅ postsData는 이제 Post[] 배열로 직접 반환됨
+      const postItems: FavoriteItem[] = postsData.map((post) => ({
+        id: post.id,
+        title: post.title,
         type: 'post' as const,
-        author: item.post.author?.username,
-        createdAt: item.created_at,
-        postId: item.post.id,
+        author: post.author,
+        createdAt: post.created_at,
+        postId: post.id,
       }));
 
       const musicItems: FavoriteItem[] = musicData.results.map((item) => ({
@@ -65,7 +69,8 @@ const Favorites = () => {
 
   const handleRemove = async (favoriteId: number, type: 'post' | 'music') => {
     if (window.confirm('즐겨찾기에서 제거하시겠습니까?')) {
-      alert('제거 기능은 백엔드 API 완성 후 구현됩니다.');
+      // ✅ TODO: 좋아요 토글 API 사용하여 제거 구현
+      alert('제거 기능은 좋아요 토글 API로 구현 예정입니다.');
     }
   };
 
