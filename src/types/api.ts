@@ -26,14 +26,19 @@ export interface AuthResponse {
 }
 
 export interface Post {
-  id: number;
+  id: number;                // postId 대신 id 사용
+  postId?: number;           // 호환성을 위해 유지 (deprecated)
   title: string;
   content: string;
-  author: User;
+  author: string;            // User → string으로 변경
   created_at: string;
-  updated_at: string;
-  likes_count?: number;
-  comments_count?: number;
+  updated_at?: string;       // optional로 변경
+  audio_file?: string;       // 추가
+  image?: string;            // 추가
+  view_count?: number;       // 추가
+  like_count?: number;       // 추가
+  likes_count?: number;      // 호환성 유지
+  comments_count?: number;   // 호환성 유지
 }
 
 export interface CreatePostRequest {
