@@ -16,7 +16,7 @@ const API_BASE = 'http://localhost:8000/api';
 
 // localStorage에서 토큰 가져오기
 const getAccessToken = (): string => {
-  return localStorage.getItem('access_token') || '';
+  return localStorage.getItem('accessToken') || '';  // ✅ 'access_token' → 'accessToken'
 };
 
 // ========== 프로필 관련 ==========
@@ -94,10 +94,31 @@ export const getMyStatistics = async (accessToken?: string): Promise<UserStatist
   return res.data;
 };
 
-// ========== 내 게시물 관련 ========== ⭐ 핵심 기능!
+// ========== 내 게시물 관련 ==========
 
-// ✅ 수정: posts.ts와 중복되므로 여기서는 제거하거나 posts.ts 것을 사용하도록 변경
-// getMyPosts는 posts.ts에 있으므로 여기서는 제거
+// 🆕 다시 추가! MyPosts에서 사용하므로 필요해요
+export const getMyPosts = async (
+  params?: MyPostsParams,
+  accessToken?: string
+): Promise<PaginatedResponse<Post>> => {
+  const token = accessToken || getAccessToken();
+  
+  const queryParams = new URLSearchParams();
+  if (params?.ordering) queryParams.append('ordering', params.ordering);
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const url = `${API_BASE}/posts/my-posts/${queryString ? `?${queryString}` : ''}`;
+
+  const res = await axios.get<PaginatedResponse<Post>>(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
 
 // 내 음악 게시물 조회
 export const getMyMusic = async (
@@ -125,14 +146,13 @@ export const getMyMusic = async (
 
 // ========== 좋아요 관련 ==========
 
-// ✅ 수정: 새로운 백엔드 API 경로로 변경
 // 내가 좋아요한 게시물 조회
 export const getMyFavoritePosts = async (
   page: number = 1,
   accessToken?: string
-): Promise<Post[]> => {
+): Promise<PaginatedResponse<FavoritePost>> => {  // ✅ 반환 타입 수정!
   const token = accessToken || getAccessToken();
-  const res = await axios.get<Post[]>(
+  const res = await axios.get<PaginatedResponse<FavoritePost>>(
     `${API_BASE}/posts/favorites/?page=${page}`,
     {
       headers: {
@@ -160,5 +180,38 @@ export const getMyFavoriteMusic = async (
   return res.data;
 };
 
-// ✅ 게시물 좋아요 토글은 posts.ts로 이동되었으므로 여기서 제거
-// togglePostLike는 posts.ts에서 import해서 사용
+// 🆕 게시물 좋아요 토글 (Favorites에서 사용)
+export const togglePostLike = async (
+  postId: number,
+  accessToken?: string
+): Promise<{ message: string; is_liked: boolean }> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.post<{ message: string; is_liked: boolean }>(
+    `${API_BASE}/posts/${postId}/like/`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+};
+
+// 음악 좋아요 토글
+export const toggleMusicLike = async (
+  musicId: number,
+  accessToken?: string
+): Promise<{ message: string; is_liked: boolean }> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.post<{ message: string; is_liked: boolean }>(
+    `${API_BASE}/music/${musicId}/like/`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+};
