@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './MyWorks.module.css';
-import { getMyMusic } from '../../api/mypage';
+import { getMyMusic } from '../../api/mypage';  // ✅ 여기!
 import type { Music } from '../../types/api';
 
 const MyWorks = () => {
@@ -64,7 +64,6 @@ const MyWorks = () => {
   return (
     <div className={styles.pageContainer}>
       <div className={styles.mainContent}>
-        {/* 헤더 */}
         <div className={styles.boardHeader}>
           <div className={styles.headerLeft}>
             <button onClick={() => navigate(-1)} className={styles.backButton}>
@@ -77,7 +76,6 @@ const MyWorks = () => {
           </div>
         </div>
 
-        {/* 컨트롤 영역 */}
         <div className={styles.controls}>
           <div className={styles.searchWrapper}>
             <input
@@ -108,17 +106,9 @@ const MyWorks = () => {
                 오래된순
               </button>
             </div>
-
-            <button
-              onClick={() => navigate('/huming')}
-              className={styles.createButton}
-            >
-              🎵 새 작업물 만들기
-            </button>
           </div>
         </div>
 
-        {/* 메인 컨텐츠 */}
         <div className={styles.boardContainer}>
           {isLoading ? (
             <div className={styles.loadingContainer}>
@@ -133,30 +123,20 @@ const MyWorks = () => {
                   ? '검색 결과가 없습니다.'
                   : '첫 번째 작업물을 만들어보세요!'}
               </p>
-              <button
-                onClick={() => navigate('/huming')}
-                className={styles.retryButton}
-              >
-                작업물 만들기
-              </button>
             </div>
           ) : (
             <>
-              <div className={styles.worksList}>
+              <div className={styles.postsList}>
                 {works.map((work) => (
                   <div key={work.id} className={styles.workCard}>
-                    <div className={styles.workIcon}>🎵</div>
                     <div className={styles.workInfo}>
                       <h3 className={styles.workTitle}>{work.title}</h3>
+                      <p className={styles.workPreview}>{work.content}</p>
                       <div className={styles.workMeta}>
-                        {work.genre && (
-                          <span className={styles.workGenre}>
-                            {work.genre}
-                          </span>
-                        )}
                         <span className={styles.workDate}>
                           {new Date(work.created_at).toLocaleDateString('ko-KR')}
                         </span>
+                        {work.genre && <span className={styles.workGenre}>🎵 {work.genre}</span>}
                       </div>
                     </div>
                     <div className={styles.workActions}>
@@ -177,7 +157,6 @@ const MyWorks = () => {
                 ))}
               </div>
 
-              {/* 페이지네이션 */}
               {totalPages > 1 && (
                 <div className={styles.pagination}>
                   <button
@@ -191,9 +170,7 @@ const MyWorks = () => {
                     {currentPage} / {totalPages}
                   </span>
                   <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                    }
+                    onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
                     className={styles.pageButton}
                   >
