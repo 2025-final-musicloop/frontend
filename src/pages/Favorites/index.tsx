@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Favorites.module.css';
-import { getFavoritePosts } from '../../api/posts'; // ✅ posts API 사용
-import { getMyFavoriteMusic } from '../../api/mypage';
-import type { Post } from '../../api/posts'; // ✅ Post 타입 import
-import type { FavoriteMusic } from '../../types/mypage';
+import { getMyFavoritePosts, getMyFavoriteMusic } from '../../api/mypage';  // 🔧 여기 수정!
+import type { FavoritePost, FavoriteMusic } from '../../types/mypage';
 
 type FavoriteItem = {
   id: number;
@@ -29,21 +27,19 @@ const Favorites = () => {
   const fetchFavorites = async () => {
     try {
       setIsLoading(true);
-      
-      // ✅ 수정: 새로운 API 사용
+
       const [postsData, musicData] = await Promise.all([
-        getFavoritePosts({ ordering: '-created_at' }),
+        getMyFavoritePosts(1),
         getMyFavoriteMusic(1),
       ]);
 
-      // ✅ postsData는 이제 Post[] 배열로 직접 반환됨
-      const postItems: FavoriteItem[] = postsData.map((post) => ({
-        id: post.id,
-        title: post.title,
+      const postItems: FavoriteItem[] = postsData.results.map((item) => ({
+        id: item.id,
+        title: item.post.title,
         type: 'post' as const,
-        author: post.author,
-        createdAt: post.created_at,
-        postId: post.id,
+        author: item.post.author?.username,
+        createdAt: item.created_at,
+        postId: item.post.id,
       }));
 
       const musicItems: FavoriteItem[] = musicData.results.map((item) => ({
@@ -69,8 +65,7 @@ const Favorites = () => {
 
   const handleRemove = async (favoriteId: number, type: 'post' | 'music') => {
     if (window.confirm('즐겨찾기에서 제거하시겠습니까?')) {
-      // ✅ TODO: 좋아요 토글 API 사용하여 제거 구현
-      alert('제거 기능은 좋아요 토글 API로 구현 예정입니다.');
+      alert('제거 기능은 백엔드 API 완성 후 구현됩니다.');
     }
   };
 
@@ -110,19 +105,19 @@ const Favorites = () => {
           <div className={styles.tabs}>
             <button
               onClick={() => setActiveTab('all')}
-              className={`${styles.tab} ${activeTab === 'all' ? styles.activeTab : ''}`}
+              className={`${styles.tab} ${activeTab === 'all' ? styles.active : ''}`}
             >
               전체
             </button>
             <button
               onClick={() => setActiveTab('posts')}
-              className={`${styles.tab} ${activeTab === 'posts' ? styles.activeTab : ''}`}
+              className={`${styles.tab} ${activeTab === 'posts' ? styles.active : ''}`}
             >
               게시물
             </button>
             <button
               onClick={() => setActiveTab('music')}
-              className={`${styles.tab} ${activeTab === 'music' ? styles.activeTab : ''}`}
+              className={`${styles.tab} ${activeTab === 'music' ? styles.active : ''}`}
             >
               음악
             </button>
@@ -138,45 +133,34 @@ const Favorites = () => {
             </div>
           ) : filteredFavorites.length === 0 ? (
             <div className={styles.emptyContainer}>
-              <div className={styles.emptyIcon}>⭐</div>
               <h3>즐겨찾기가 없습니다</h3>
-              <p>마음에 드는 게시물이나 음악에 좋아요를 눌러보세요!</p>
-              <button
-                onClick={() => navigate('/explore')}
-                className={styles.exploreButton}
-              >
-                둘러보기
-              </button>
+              <p>마음에 드는 콘텐츠를 즐겨찾기에 추가해보세요!</p>
             </div>
           ) : (
             <div className={styles.favoritesList}>
-              {filteredFavorites.map((favorite) => (
-                <div
-                  key={`${favorite.type}-${favorite.id}`}
-                  className={styles.favoriteCard}
-                >
-                  <div className={styles.favoriteIcon}>
-                    {favorite.type === 'music' ? '🎵' : '📝'}
-                  </div>
+              {filteredFavorites.map((item) => (
+                <div key={`${item.type}-${item.id}`} className={styles.favoriteCard}>
                   <div className={styles.favoriteInfo}>
-                    <h3 className={styles.favoriteTitle}>{favorite.title}</h3>
-                    <p className={styles.favoriteAuthor}>
-                      {favorite.author || '익명'} ·{' '}
-                      {favorite.type === 'music' ? '작업물' : '게시물'}
-                    </p>
+                    <div className={styles.typeLabel}>
+                      {item.type === 'post' ? '📝 게시물' : '🎵 음악'}
+                    </div>
+                    <h3 className={styles.favoriteTitle}>{item.title}</h3>
+                    {item.author && (
+                      <p className={styles.favoriteAuthor}>작성자: {item.author}</p>
+                    )}
                     <p className={styles.favoriteDate}>
-                      {new Date(favorite.createdAt).toLocaleDateString('ko-KR')}
+                      {new Date(item.createdAt).toLocaleDateString('ko-KR')}
                     </p>
                   </div>
                   <div className={styles.favoriteActions}>
                     <button
-                      onClick={() => handleItemClick(favorite)}
+                      onClick={() => handleItemClick(item)}
                       className={styles.viewButton}
                     >
                       보기
                     </button>
                     <button
-                      onClick={() => handleRemove(favorite.id, favorite.type)}
+                      onClick={() => handleRemove(item.id, item.type)}
                       className={styles.removeButton}
                     >
                       제거
