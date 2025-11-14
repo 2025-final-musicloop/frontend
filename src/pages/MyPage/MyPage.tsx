@@ -12,24 +12,25 @@ const MyPage: React.FC = () => {
     navigate('/login');
   };
 
- const handleEditProfile = () => {
-    navigate('/my/profile/edit');  // ✅ 수정!
+  const handleEditProfile = () => {
+    navigate('/my/profile/edit');
   };
 
   const handleMyWorks = () => {
-    navigate('/my/works');  // ✅ 수정!
+    navigate('/my/works');
   };
 
-  const handleCollaborations = () => {
-    navigate('/collaborations');  // 이건 그대로
-  };
+  // ❌ 삭제: handleCollaborations 함수 제거
+  // const handleCollaborations = () => {
+  //   navigate('/collaborations');
+  // };
 
   const handleMyPosts = () => {
-    navigate('/my/posts');  // ✅ 수정!
+    navigate('/my/posts');
   };
 
   const handleFavorites = () => {
-    navigate('/my/favorites');  // ✅ 수정!
+    navigate('/my/favorites');
   };
 
   return (
@@ -70,10 +71,11 @@ const MyPage: React.FC = () => {
             <div className={styles.menuArrow}>→</div>
           </div>
 
-          <div className={styles.menuItem} onClick={handleCollaborations}>
+          {/* ❌ 삭제: 공동 제작 메뉴 아이템 제거 */}
+          {/* <div className={styles.menuItem} onClick={handleCollaborations}>
             <span className={styles.menuText}>공동 제작</span>
             <div className={styles.menuArrow}>→</div>
-          </div>
+          </div> */}
 
           <div className={styles.menuItem} onClick={handleMyPosts}>
             <span className={styles.menuText}>내 게시물 리스트</span>
