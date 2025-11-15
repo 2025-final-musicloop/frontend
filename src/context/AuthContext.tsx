@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setAccessToken(accessToken);
 
       axios
-        .get('http://localhost:8000/api/user/', {
+        .get('http://localhost:8000/api/users/me/', {  // ✅ /api/user/ → /api/users/me/
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
