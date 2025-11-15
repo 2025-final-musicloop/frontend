@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
-import axios from 'axios';
 import { logout as logoutAPI } from '../api/auth';
+import { getMyProfile } from '../api/mypage';  // ✅ 추가!
 
 interface User {
   username: string;
@@ -56,31 +56,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // 🚀 자동 로그인
   useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      if (checkTokenExpiration(accessToken)) {
+    const token = localStorage.getItem('accessToken');
+    
+    if (token) {
+      // 토큰 만료 확인
+      if (checkTokenExpiration(token)) {
         handleTokenExpiration();
         setLoading(false);
         return;
       }
 
-      setAccessToken(accessToken);
+      setAccessToken(token);
 
-      axios
-        .get('http://localhost:8000/api/user/', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then((res) => {
-          setUser(res.data as User);
+      // ✅ getMyProfile 함수 사용 (권장)
+      getMyProfile(token)
+        .then((userData) => {
+          // UserProfile 타입을 User 타입으로 매핑
+          setUser({
+            id: userData.id,
+            username: userData.username,
+            email: userData.email,
+            name: userData.username, // 또는 별도의 name 필드가 있다면 사용
+            profileImage: userData.profile_image,
+          });
         })
         .catch((error) => {
-          console.error('사용자 정보 가져오기 실패:', error);
+          console.error('❌ 사용자 정보 가져오기 실패:', error);
           handleTokenExpiration();
         })
-        .then(() => {
-          setLoading(false); // ✅ 항상 실행됨
+        .finally(() => {
+          setLoading(false);
         });
     } else {
       setLoading(false);
