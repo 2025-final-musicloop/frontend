@@ -100,26 +100,23 @@ const Explore: React.FC = () => {
           <div className={styles.postsGrid}>
             {posts.map((post) => (
               <MusicCard
-              key={post.postId}
-              id={post.postId}
-              title={post.title}
-              artist={post.author}
-              music={{
-                id: post.postId,
-                title: post.title,
-                artist: post.author,
-                duration: 0,
-        // ⭐️ 이 부분이 핵심입니다 ⭐️
-        // 백엔드에서 받은 파일 경로로 완전한 URL을 만들어 전달합니다.
-               file_url: post.audio_file || '',
-               cover_image: post.image || '',
-        // ⭐️ 여기까지 ⭐️
-                created_at: post.created_at,
-                updated_at: post.created_at, // (updated_at이 없다면 created_at으로 대체)
-              }}
-    />
-          ))}
-        </div>
+                key={post.id}
+                id={post.id}
+                title={post.title}
+                artist={post.author}
+                music={{
+                  id: post.id,
+                  title: post.title,
+                  artist: post.author,
+                  duration: 0,
+                  file_url: post.audio_file || '',
+                  cover_image: post.image || '',
+                  created_at: post.created_at,
+                  updated_at: post.created_at,
+                }}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>
