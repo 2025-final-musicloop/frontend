@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styles from './PostDetail.module.css';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
-import { getPostById, deletePost, Post } from '../../api/posts';
+import { getPostById, deletePost, togglePostLike, Post } from '../../api/posts';
 
 const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +13,8 @@ const PostDetail: React.FC = () => {
   const [postData, setPostData] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -30,9 +32,11 @@ const PostDetail: React.FC = () => {
         }
         const data = await getPostById(numericId, accessToken || undefined);
         console.log('📋 상세 데이터:', data);
-        console.log('🎵 오디오 URL:', data.audio_file);
-        console.log('🖼️ 이미지 URL:', data.image);
+        console.log('🆔 ID:', data.id);
+        console.log('🆔 PostID:', data.postId);
         setPostData(data);
+        setIsLiked(data.is_liked || false);
+        setLikesCount(data.likes_count || 0);
       } catch (err) {
         console.error('❌ 상세 조회 실패:', err);
         setError('게시글을 불러오는 데 실패했습니다.');
@@ -49,9 +53,33 @@ const PostDetail: React.FC = () => {
 
   const isOwner = user?.username === authorName;
 
+  const handleLike = async () => {
+    if (!accessToken) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    if (!postData) return;
+
+    try {
+      const postIdToUse = postData.postId || postData.id;
+      const response = await togglePostLike(postIdToUse, accessToken);
+      
+      // 좋아요 상태 업데이트
+      setIsLiked(response.is_liked);
+      setLikesCount(response.likes_count);
+      
+      console.log('❤️ 좋아요 토글 성공:', response);
+    } catch (err) {
+      console.error('❌ 좋아요 실패:', err);
+      alert('좋아요 처리에 실패했습니다.');
+    }
+  };
+
   const handleEdit = () => {
     if (!isOwner || !postData) return;
-    navigate(`/posts/${postData.postId}/edit`);
+    const postIdToUse = postData.postId || postData.id;
+    console.log('✏️ 수정 ID:', postIdToUse);
+    navigate(`/posts/${postIdToUse}/edit`);
   };
 
   const handleDelete = async () => {
@@ -59,10 +87,13 @@ const PostDetail: React.FC = () => {
     if (confirm('정말 이 게시물을 삭제하시겠습니까?')) {
       try {
         if (!accessToken) return;
-        await deletePost(postData.postId, accessToken);
+        const postIdToUse = postData.postId || postData.id;
+        console.log('🗑️ 삭제 ID:', postIdToUse);
+        await deletePost(postIdToUse, accessToken);
         alert('삭제되었습니다.');
         navigate('/explore');
       } catch (err) {
+        console.error('❌ 삭제 실패:', err);
         alert('삭제에 실패했습니다.');
       }
     }
@@ -96,6 +127,57 @@ const PostDetail: React.FC = () => {
         <div className={styles.infoSection}>
           <h2 className={styles.title}>{postData.title}</h2>
           <p className={styles.artist}>작성자: {authorName}</p>
+          
+          {/* 좋아요 버튼 추가 */}
+          <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <button
+              onClick={handleLike}
+              style={{
+                background: isLiked 
+                  ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)' 
+                  : 'white',
+                color: isLiked ? 'white' : '#666',
+                border: isLiked ? 'none' : '2px solid #e5e7eb',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.75rem',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                transition: 'all 0.2s',
+                boxShadow: isLiked 
+                  ? '0 4px 6px -1px rgba(239, 68, 68, 0.3)' 
+                  : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+              }}
+              onMouseEnter={(e) => {
+                if (!isLiked) {
+                  e.currentTarget.style.borderColor = '#d1d5db';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isLiked) {
+                  e.currentTarget.style.borderColor = '#e5e7eb';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
+            >
+              <span style={{ fontSize: '1.25rem' }}>
+                {isLiked ? '❤️' : '🤍'}
+              </span>
+              <span>{isLiked ? '좋아요 취소' : '좋아요'}</span>
+              <span style={{ 
+                background: isLiked ? 'rgba(255, 255, 255, 0.3)' : '#f3f4f6',
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem'
+              }}>
+                {likesCount}
+              </span>
+            </button>
+          </div>
         </div>
         {postData.audio_file ? (
           <audio 
