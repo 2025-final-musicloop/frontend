@@ -1,5 +1,3 @@
-// src/pages/PostDetail/PostDetail.tsx
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './PostDetail.module.css';
@@ -45,7 +43,7 @@ const PostDetail: React.FC = () => {
 
   const handleEdit = () => {
     if (!isOwner || !postData) return;
-    navigate(`/posts/${postData.postId}/edit`);
+    navigate(`/posts/${postData.id}/edit`);
   };
 
   const handleDelete = async () => {
@@ -53,7 +51,7 @@ const PostDetail: React.FC = () => {
     if (confirm('정말 이 게시물을 삭제하시겠습니까?')) {
       try {
         if (!accessToken) return;
-        await deletePost(postData.postId, accessToken);
+        await deletePost(postData.id, accessToken);
         alert('삭제되었습니다.');
         navigate('/explore');
       } catch (err) {
