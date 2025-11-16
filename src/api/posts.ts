@@ -1,4 +1,3 @@
-// src/api/posts.ts
 import axios from 'axios';
 
 export interface Post {
@@ -100,7 +99,7 @@ export const getPostDetail = async (postId: number, accessToken?: string) => {
   return res.data;
 };
 
-// 게시물 수정을 위한 데이터 조회 (기존 유지)
+// ✅ 수정됨: 상세 조회용 엔드포인트로 변경
 export const getPostById = async (postId: number, accessToken?: string) => {
   const res = await axios.get<Post>(`${API_BASE}/${postId}/`, {
     headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
