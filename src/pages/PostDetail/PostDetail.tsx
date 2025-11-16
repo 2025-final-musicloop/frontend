@@ -39,7 +39,12 @@ const PostDetail: React.FC = () => {
     fetchPost();
   }, [id, accessToken]);
 
-  const isOwner = user?.username === postData?.author;
+  // ✅ author 처리 개선
+  const authorName = typeof postData?.author === 'string' 
+    ? postData.author 
+    : postData?.author?.username || '알 수 없음';
+
+  const isOwner = user?.username === authorName;
 
   const handleEdit = () => {
     if (!isOwner || !postData) return;
@@ -74,7 +79,7 @@ const PostDetail: React.FC = () => {
         {postData.image && <img src={`http://localhost:8000${postData.image}`} alt={postData.title} style={{ maxWidth: '100%', borderRadius: '8px' }} />}
         <div className={styles.infoSection}>
           <h2 className={styles.title}>{postData.title}</h2>
-          <p className={styles.artist}>작성자: {postData.author}</p>
+          <p className={styles.artist}>작성자: {authorName}</p>
         </div>
         {postData.audio_file && <audio controls src={`http://localhost:8000${postData.audio_file}`} style={{ width: '100%' }} />}
         <div className={styles.descriptionSection}>
