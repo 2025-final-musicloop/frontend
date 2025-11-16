@@ -84,8 +84,8 @@ const PostDetail: React.FC = () => {
             src={postData.image} 
             alt={postData.title} 
             style={{ 
-              maxWidth: '100%', 
-              maxHeight: '400px', 
+              maxWidth: '33%', 
+              maxHeight: '250px', 
               objectFit: 'contain', 
               borderRadius: '8px',
               display: 'block',
