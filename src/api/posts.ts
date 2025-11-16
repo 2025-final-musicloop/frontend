@@ -102,7 +102,7 @@ export const getPostDetail = async (postId: number, accessToken?: string) => {
 
 // 게시물 수정을 위한 데이터 조회 (기존 유지)
 export const getPostById = async (postId: number, accessToken?: string) => {
-  const res = await axios.get<Post>(`${API_BASE}/update-post/${postId}/`, {
+  const res = await axios.get<Post>(`${API_BASE}/${postId}/`, {
     headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
   });
   return res.data;
