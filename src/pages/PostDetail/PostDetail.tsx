@@ -43,7 +43,7 @@ const PostDetail: React.FC = () => {
 
   const handleEdit = () => {
     if (!isOwner || !postData) return;
-    navigate(`/posts/${postData.id}/edit`);
+    navigate(`/posts/${postData.postId}/edit`);
   };
 
   const handleDelete = async () => {
@@ -51,7 +51,7 @@ const PostDetail: React.FC = () => {
     if (confirm('정말 이 게시물을 삭제하시겠습니까?')) {
       try {
         if (!accessToken) return;
-        await deletePost(postData.id, accessToken);
+        await deletePost(postData.postId, accessToken);
         alert('삭제되었습니다.');
         navigate('/explore');
       } catch (err) {
