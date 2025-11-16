@@ -62,9 +62,9 @@ const PostDetail: React.FC = () => {
   const isOwner = user?.username === authorName;
 
   const handleEdit = () => {
-    if (!isOwner || !postData) return;
-    navigate(`/posts/${postData.postId}/edit`);
-  };
+  if (!isOwner || !postData) return;
+  navigate(`/posts/${postData.postId || postData.id}/edit`);  // ✅ id도 사용
+};
 
   const handleDelete = async () => {
     if (!isOwner || !postData) return;
