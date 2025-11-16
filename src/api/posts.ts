@@ -151,3 +151,17 @@ export const deletePost = async (postId: number, accessToken: string) => {
   });
   return res.data;
 };
+
+// 게시물 좋아요 토글
+export const togglePostLike = async (postId: number, accessToken: string) => {
+  const res = await axios.post(
+    `${API_BASE}/${postId}/like/`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+  return res.data;
+};
