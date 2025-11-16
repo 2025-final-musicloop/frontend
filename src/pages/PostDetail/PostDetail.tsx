@@ -35,6 +35,8 @@ const PostDetail: React.FC = () => {
         try {
           const detailData = await getPostDetail(numericId, accessToken || undefined);
           console.log('📋 상세 데이터:', detailData);
+          console.log('🎵 오디오 URL:', detailData.audio_file);
+          console.log('🖼️ 이미지 URL:', detailData.image);
           setPostData(detailData);
           setIsLiked(detailData.is_liked || false);
           setLikesCount(detailData.likes_count || detailData.like_count || 0);
@@ -42,6 +44,8 @@ const PostDetail: React.FC = () => {
           // 실패시 기존 API 사용
           const data = await getPostById(numericId, accessToken || undefined);
           console.log('📋 상세 데이터:', data);
+          console.log('🎵 오디오 URL:', data.audio_file);
+          console.log('🖼️ 이미지 URL:', data.image);
           setPostData(data);
           setLikesCount(data.like_count || 0);
         }
@@ -62,9 +66,9 @@ const PostDetail: React.FC = () => {
   const isOwner = user?.username === authorName;
 
   const handleEdit = () => {
-  if (!isOwner || !postData) return;
-  navigate(`/posts/${postData.postId || postData.id}/edit`);  // ✅ id도 사용
-};
+    if (!isOwner || !postData) return;
+    navigate(`/posts/${postData.postId || postData.id}/edit`);
+  };
 
   const handleDelete = async () => {
     if (!isOwner || !postData) return;
@@ -153,6 +157,7 @@ const PostDetail: React.FC = () => {
           </div>
         </div>
 
+        {/* ✅ 원본 오디오 코드 그대로 유지 */}
         {postData.audio_file ? (
           <audio 
             controls 
