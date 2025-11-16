@@ -39,6 +39,7 @@ const PostDetail: React.FC = () => {
     fetchPost();
   }, [id, accessToken]);
 
+  // ✅ author 처리 개선
   const authorName = typeof postData?.author === 'string' 
     ? postData.author 
     : postData?.author?.username || '알 수 없음';
@@ -75,12 +76,12 @@ const PostDetail: React.FC = () => {
         <h1 className={styles.pageTitle}>상세보기</h1>
       </div>
       <div className={styles.mainContent}>
-        {postData.image && <img src={postData.image} alt={postData.title} style={{ maxWidth: '100%', borderRadius: '8px' }} />}
+        {postData.image && <img src={`http://localhost:8000${postData.image}`} alt={postData.title} style={{ maxWidth: '100%', borderRadius: '8px' }} />}
         <div className={styles.infoSection}>
           <h2 className={styles.title}>{postData.title}</h2>
           <p className={styles.artist}>작성자: {authorName}</p>
         </div>
-        {postData.audio_file && <audio controls src={postData.audio_file} style={{ width: '100%' }} />}
+        {postData.audio_file && <audio controls src={`http://localhost:8000${postData.audio_file}`} style={{ width: '100%' }} />}
         <div className={styles.descriptionSection}>
           <h3 className={styles.sectionTitle}>내용</h3>
           <p className={styles.description}>{postData.content}</p>
