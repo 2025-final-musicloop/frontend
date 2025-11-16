@@ -160,6 +160,7 @@ const PostDetail: React.FC = () => {
         {/* ✅ 원본 오디오 코드 그대로 유지 */}
         {postData.audio_file ? (
           <audio 
+            key={postData.audio_file}
             controls 
             src={postData.audio_file} 
             style={{ width: '100%', marginTop: '1rem' }}
