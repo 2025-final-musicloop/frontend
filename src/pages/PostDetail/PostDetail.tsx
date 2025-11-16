@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styles from './PostDetail.module.css';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
-import { getPostById, deletePost, Post } from '../../api/posts';
+import { getPostById, getPostDetail, deletePost, togglePostLike, Post } from '../../api/posts';
 
 const PostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +13,8 @@ const PostDetail: React.FC = () => {
   const [postData, setPostData] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -28,11 +30,21 @@ const PostDetail: React.FC = () => {
           setLoading(false);
           return;
         }
-        const data = await getPostById(numericId, accessToken || undefined);
-        console.log('📋 상세 데이터:', data);
-        console.log('🎵 오디오 URL:', data.audio_file);
-        console.log('🖼️ 이미지 URL:', data.image);
-        setPostData(data);
+        
+        // 상세 정보 조회 시도 (좋아요 정보 포함)
+        try {
+          const detailData = await getPostDetail(numericId, accessToken || undefined);
+          console.log('📋 상세 데이터:', detailData);
+          setPostData(detailData);
+          setIsLiked(detailData.is_liked || false);
+          setLikesCount(detailData.likes_count || detailData.like_count || 0);
+        } catch (detailErr) {
+          // 실패시 기존 API 사용
+          const data = await getPostById(numericId, accessToken || undefined);
+          console.log('📋 상세 데이터:', data);
+          setPostData(data);
+          setLikesCount(data.like_count || 0);
+        }
       } catch (err) {
         console.error('❌ 상세 조회 실패:', err);
         setError('게시글을 불러오는 데 실패했습니다.');
@@ -59,12 +71,32 @@ const PostDetail: React.FC = () => {
     if (confirm('정말 이 게시물을 삭제하시겠습니까?')) {
       try {
         if (!accessToken) return;
-        await deletePost(postData.postId, accessToken);
+        await deletePost(postData.postId || postData.id, accessToken);
         alert('삭제되었습니다.');
         navigate('/explore');
       } catch (err) {
         alert('삭제에 실패했습니다.');
       }
+    }
+  };
+
+  // 🆕 즐겨찾기 토글
+  const handleToggleLike = async () => {
+    if (!accessToken) {
+      alert('로그인이 필요합니다.');
+      navigate('/login');
+      return;
+    }
+    
+    if (!postData) return;
+
+    try {
+      const response = await togglePostLike(postData.postId || postData.id, accessToken);
+      setIsLiked(response.is_liked);
+      setLikesCount(prev => response.is_liked ? prev + 1 : prev - 1);
+    } catch (err) {
+      console.error('좋아요 토글 실패:', err);
+      alert('좋아요 처리에 실패했습니다.');
     }
   };
 
@@ -93,10 +125,34 @@ const PostDetail: React.FC = () => {
             }} 
           />
         )}
+        
         <div className={styles.infoSection}>
-          <h2 className={styles.title}>{postData.title}</h2>
-          <p className={styles.artist}>작성자: {authorName}</p>
+          <div className={styles.titleSection}>
+            <h2 className={styles.title}>{postData.title}</h2>
+            <p className={styles.artist}>작성자: {authorName}</p>
+          </div>
+          
+          {/* 🆕 통계 섹션 */}
+          <div className={styles.statsSection}>
+            <div className={styles.stat}>
+              <span className={styles.statLabel}>좋아요</span>
+              <span className={styles.statValue}>❤️ {likesCount}</span>
+            </div>
+            {postData.view_count !== undefined && (
+              <div className={styles.stat}>
+                <span className={styles.statLabel}>조회수</span>
+                <span className={styles.statValue}>👁️ {postData.view_count}</span>
+              </div>
+            )}
+            <div className={styles.stat}>
+              <span className={styles.statLabel}>작성일</span>
+              <span className={styles.statValue}>
+                {new Date(postData.created_at).toLocaleDateString('ko-KR')}
+              </span>
+            </div>
+          </div>
         </div>
+
         {postData.audio_file ? (
           <audio 
             controls 
@@ -115,10 +171,28 @@ const PostDetail: React.FC = () => {
         ) : (
           <p style={{ color: '#999', fontStyle: 'italic' }}>첨부된 오디오 파일이 없습니다.</p>
         )}
+
         <div className={styles.descriptionSection}>
           <h3 className={styles.sectionTitle}>내용</h3>
           <p className={styles.description}>{postData.content}</p>
         </div>
+
+        {/* 🆕 즐겨찾기 버튼 (로그인한 모든 사용자) */}
+        {user && (
+          <div className={styles.actionSection}>
+            <button 
+              className={`${styles.actionButton} ${isLiked ? styles.liked : ''}`}
+              onClick={handleToggleLike}
+            >
+              <span className={styles.actionIcon}>
+                {isLiked ? '❤️' : '🤍'}
+              </span>
+              {isLiked ? '즐겨찾기 취소' : '즐겨찾기'}
+            </button>
+          </div>
+        )}
+
+        {/* 수정/삭제 버튼 (작성자에게만) */}
         {isOwner && (
           <div className={styles.footerActions}>
             <Button variant="secondary" size="md" onClick={handleEdit}>✏️ 수정</Button>
