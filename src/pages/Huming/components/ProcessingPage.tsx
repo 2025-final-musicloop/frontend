@@ -1,56 +1,138 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import { ProcessingResult } from '../../../components/common/ProcessFlow';
+import { MusicDetails } from '../../../components/common/ProcessFlow';
 import styles from './ProcessingPage.module.css';
 
 interface ProcessingPageProps {
   onProcessingComplete: (result: ProcessingResult) => void;
+  onProcessingError: (errorMessage: string) => void;
+  formData: {
+    audioFile: File;
+    details: MusicDetails;
+    modelType: 'api' | 'internal';
+  };
 }
 
-const ProcessingPage: React.FC<ProcessingPageProps> = ({ onProcessingComplete }) => {
+interface ApiResponse {
+  status: string;
+  audio_url: string;
+  duration: number;
+}
+
+const ProcessingPage: React.FC<ProcessingPageProps> = ({ onProcessingComplete, onProcessingError, formData }) => {
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isProcessing, setIsProcessing] = useState(true);
+  const isCompleteRef = useRef(false);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const stepIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const steps = ['음성 파일 분석 중...', 'AI가 음악을 생성하고 있습니다...', '악기와 반주를 추가하고 있습니다...'];
 
   useEffect(() => {
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(progressInterval);
-          setIsProcessing(false);
+    // 실제 API 호출 시작
+    const callAPI = async () => {
+      const formDataToSend = new FormData();
+      formDataToSend.append('audio', formData.audioFile);
+      
+      // 내부 모델일 때는 악기만 전송, 기존 API일 때는 장르/분위기/악기 모두 전송
+      if (formData.modelType === 'internal') {
+        formDataToSend.append('instruments[]', formData.details.instrument || '피아노');
+      } else {
+        formDataToSend.append('genre', formData.details.genre || 'Pop Ballad');
+        formDataToSend.append('mood', formData.details.mood || 'Happy');
+        formDataToSend.append('instruments[]', formData.details.instrument || 'Piano');
+        formDataToSend.append('custom_prompt', formData.details.customPrompt || '');
+      }
+      
+      formDataToSend.append('model_type', formData.modelType);
 
-          // 완료 후 결과 전달
-          setTimeout(() => {
-            const result: ProcessingResult = {
-              musicUrl: '/mock-music.mp3',
-              title: '생성된 음악',
-              duration: 180,
-            };
-            onProcessingComplete(result);
-          }, 1000);
+      try {
+        // 진행도 시뮬레이션 (0% -> 90%)
+        let simulatedProgress = 0;
+        progressIntervalRef.current = setInterval(() => {
+          if (simulatedProgress < 90 && !isCompleteRef.current) {
+            simulatedProgress += Math.random() * 3; // 랜덤하게 증가
+            if (simulatedProgress > 90) simulatedProgress = 90;
+            setProgress(Math.floor(simulatedProgress));
+          }
+        }, 200);
 
-          return 100;
+        // 단계 시뮬레이션
+        let stepIndex = 0;
+        stepIntervalRef.current = setInterval(() => {
+          if (stepIndex < steps.length - 1 && !isCompleteRef.current) {
+            stepIndex++;
+            setCurrentStep(stepIndex);
+          }
+        }, 3000);
+
+        // 실제 API 호출
+        const response = await axios.post<ApiResponse>('http://localhost:5000/generate-from-humming', formDataToSend, {
+          timeout: 300000, // 5분 타임아웃
+        });
+
+        // API 호출 완료 - 진행도를 100%로 설정
+        isCompleteRef.current = true;
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
         }
-        return prev + 2;
-      });
-    }, 100);
-
-    const stepInterval = setInterval(() => {
-      setCurrentStep((prev) => {
-        if (prev >= steps.length - 1) {
-          clearInterval(stepInterval);
-          return steps.length - 1;
+        if (stepIntervalRef.current) {
+          clearInterval(stepIntervalRef.current);
         }
-        return prev + 1;
-      });
-    }, 2000);
+        
+        // 진행도를 100%로 만들기
+        setProgress(100);
+        setCurrentStep(steps.length - 1);
+        
+        // 바가 100%가 될 때까지 약간의 딜레이 후 완료 처리
+        setTimeout(() => {
+          const backendUrl = 'http://localhost:5000';
+          const result: ProcessingResult = {
+            musicUrl: backendUrl + response.data.audio_url,
+            title: '새로운 허밍 음악',
+            duration: response.data.duration,
+          };
+          onProcessingComplete(result);
+        }, 500); // 0.5초 딜레이
+
+      } catch (err: any) {
+        // 오류 발생 시 진행도 정지
+        isCompleteRef.current = true;
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+        }
+        if (stepIntervalRef.current) {
+          clearInterval(stepIntervalRef.current);
+        }
+
+        // 오류 메시지 추출
+        let errorMessage = '알 수 없는 서버 오류가 발생했습니다.';
+
+        if (err.response?.data?.error) {
+          errorMessage = err.response.data.error;
+        } else if (!err.response && err.request) {
+          errorMessage = '백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.';
+        } else if (err.message) {
+          errorMessage = err.message;
+        }
+
+        onProcessingError(errorMessage);
+      }
+    };
+
+    callAPI();
 
     return () => {
-      clearInterval(progressInterval);
-      clearInterval(stepInterval);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+      if (stepIntervalRef.current) {
+        clearInterval(stepIntervalRef.current);
+      }
     };
-  }, [onProcessingComplete, steps.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   const handleSkipProcessing = () => {
     const mockResult: ProcessingResult = {

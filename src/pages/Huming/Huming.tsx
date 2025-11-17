@@ -56,7 +56,7 @@ const Huming: React.FC = () => {
     setCurrentStep(3); // 세부사항 선택 단계로
   };
 
-  const handleDetailsSubmit = async (details: MusicDetails) => {
+  const handleDetailsSubmit = (details: MusicDetails) => {
     setSelectedDetails(details);
     setCurrentStep(4); // 처리 단계로
 
@@ -66,65 +66,8 @@ const Huming: React.FC = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('audio', uploadedAudioFile);
-
-    // 내부 모델일 때는 악기만 전송, 기존 API일 때는 장르/분위기/악기 모두 전송
-    if (selectedModelType === 'internal') {
-      // 내부 모델: 악기만 지원
-      formData.append('instruments[]', details.instrument || '피아노');
-    } else {
-      // 기존 API: 장르, 분위기, 악기 모두 지원
-      formData.append('genre', details.genre || 'Pop Ballad');
-      formData.append('mood', details.mood || 'Happy');
-      formData.append('instruments[]', details.instrument || 'Piano');
-      formData.append('custom_prompt', details.customPrompt || '');
-    }
-
-    // 모델 타입 추가 (선택한 모델 사용)
-    formData.append('model_type', selectedModelType || 'api');
-
-    try {
-      // --- 여기가 수정되었습니다 ---
-      // 1. axios.post 뒤에 <ApiResponse>를 추가하여, TypeScript에게 응답 데이터의 타입을 알려줍니다.
-      // 2. API 호출 주소를 '/generate-from-humming'으로 명확히 지정합니다.
-      const response = await axios.post<ApiResponse>('http://localhost:5000/generate-from-humming', formData);
-
-      const backendUrl = 'http://localhost:5000';
-
-      // 3. 이제 TypeScript는 response.data가 ApiResponse 타입임을 알고 있으므로,
-      //    오류 없이 .audio_url, .duration 속성에 안전하게 접근할 수 있습니다.
-      const result: ProcessingResult = {
-        musicUrl: backendUrl + response.data.audio_url,
-        title: '새로운 허밍 음악',
-        duration: response.data.duration,
-      };
-
-      setCompletionResult(result);
-      setCurrentStep(5);
-    } catch (err: any) {
-      // 오류 메시지 추출
-      let errorMessage = '알 수 없는 서버 오류가 발생했습니다.';
-
-      if (err.response?.data?.error) {
-        errorMessage = err.response.data.error;
-      } else if (!err.response && err.request) {
-        errorMessage = '백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.';
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-
-      // 알림 표시
-      alert(`오류가 발생했습니다:\n${errorMessage}`);
-
-      // 첫 화면으로 돌아가기
-      setCurrentStep(1);
-      setSelectedModelType(null);
-      setUploadedAudioFile(null);
-      setSelectedDetails({});
-      setProcessingError('');
-      setCompletionResult(null);
-    }
+    // API 호출은 ProcessingPage에서 처리하도록 변경
+    // 결과는 ProcessingPage의 콜백을 통해 받음
   };
 
   const handleRegenerate = () => {
@@ -167,7 +110,28 @@ const Huming: React.FC = () => {
         );
       case 4:
         // 처리 중
-        return <ProcessingPage onProcessingComplete={() => {}} />;
+        return (
+          <ProcessingPage
+            onProcessingComplete={(result) => {
+              setCompletionResult(result);
+              setCurrentStep(5);
+            }}
+            onProcessingError={(errorMessage) => {
+              alert(`오류가 발생했습니다:\n${errorMessage}`);
+              setCurrentStep(1);
+              setSelectedModelType(null);
+              setUploadedAudioFile(null);
+              setSelectedDetails({});
+              setProcessingError('');
+              setCompletionResult(null);
+            }}
+            formData={{
+              audioFile: uploadedAudioFile!,
+              details: selectedDetails,
+              modelType: selectedModelType || 'api',
+            }}
+          />
+        );
       case 5:
         // 완료
         return (

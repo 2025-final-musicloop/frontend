@@ -37,7 +37,7 @@ const ModelSelection: React.FC<ModelSelectionProps> = ({ onModelSelect }) => {
           <p className={styles.modelDescription}>Google Cloud AI를 사용한 고품질 음악 생성</p>
           <div className={styles.modelFeatures}>
             <span className={styles.feature}>고품질</span>
-            <span className={styles.feature}>다양한 형식 지원</span>
+            <span className={styles.feature}>자유로운 옵션</span>
           </div>
         </button>
 
@@ -49,9 +49,9 @@ const ModelSelection: React.FC<ModelSelectionProps> = ({ onModelSelect }) => {
             <span className="material-icons">memory</span>
           </div>
           <h3 className={styles.modelTitle}>내부 모델</h3>
-          <p className={styles.modelDescription}>로컬 모델을 사용한 빠른 음악 생성</p>
+          <p className={styles.modelDescription}>학습 모델을 사용한 빠른 음악 생성</p>
           <div className={styles.modelFeatures}>
-            <span className={styles.feature}>빠른 처리</span>
+            <span className={styles.feature}>저품질</span>
             <span className={styles.feature}>WAV 형식</span>
           </div>
           <div className={styles.warning}>

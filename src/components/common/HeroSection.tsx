@@ -24,17 +24,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartClick, onIntroC
           'to-secondary-purple',
         )}
       >
-        AI 반주 생성
+        HUM-MY
       </h1>
 
       {/* 부제목 */}
-      <p className={styles.subTitle}>문구</p>
+      <p className={styles.subTitle}>음악 생성 서비스 허미</p>
 
       {/* 설명 문구 */}
       <p className={styles.description}>
-        서비스 소개
+        HUM-MY는 여러분의 흥얼거림으로
         <br />
-        서비스 설명
+        멋진 음악을 만드는 서비스입니다.
+        <br />
+        쉽고 빠르게 나만의 음악을 완성하세요.
       </p>
 
       {/* "지금 시작하기" 버튼 */}
