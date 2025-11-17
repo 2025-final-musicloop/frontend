@@ -53,7 +53,7 @@ const Huming: React.FC = () => {
     setCurrentStep(3);
 
     if (!uploadedAudioFile) {
-      setProcessingError("오류: 오디오 파일이 없습니다.");
+      setProcessingError('오류: 오디오 파일이 없습니다.');
       setCurrentStep(4);
       return;
     }
@@ -73,28 +73,43 @@ const Huming: React.FC = () => {
       // 1. axios.post 뒤에 <ApiResponse>를 추가하여, TypeScript에게 응답 데이터의 타입을 알려줍니다.
       // 2. API 호출 주소를 '/generate-from-humming'으로 명확히 지정합니다.
       const response = await axios.post<ApiResponse>('http://localhost:5000/generate-from-humming', formData);
-      
+
       const backendUrl = 'http://localhost:5000';
-      
+
       // 3. 이제 TypeScript는 response.data가 ApiResponse 타입임을 알고 있으므로,
       //    오류 없이 .audio_url, .duration 속성에 안전하게 접근할 수 있습니다.
       const result: ProcessingResult = {
         musicUrl: backendUrl + response.data.audio_url,
-        title: "새로운 허밍 음악",
-        duration: response.data.duration
+        title: '새로운 허밍 음악',
+        duration: response.data.duration,
       };
-      
+
       setCompletionResult(result);
       setCurrentStep(4);
-
     } catch (err: any) {
-      // (에러 처리 로직은 이전과 동일)
-      const errorMessage = err.response?.data?.error || '알 수 없는 서버 오류가 발생했습니다.';
-      setProcessingError(errorMessage);
-      setCurrentStep(4);
+      // 오류 메시지 추출
+      let errorMessage = '알 수 없는 서버 오류가 발생했습니다.';
+
+      if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (!err.response && err.request) {
+        errorMessage = '백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      // 알림 표시
+      alert(`오류가 발생했습니다:\n${errorMessage}`);
+
+      // 첫 화면으로 돌아가기
+      setCurrentStep(1);
+      setUploadedAudioFile(null);
+      setSelectedDetails({});
+      setProcessingError('');
+      setCompletionResult(null);
     }
   };
-  
+
   const handleRegenerate = () => {
     // (이전과 동일)
     setCurrentStep(1);
@@ -106,28 +121,48 @@ const Huming: React.FC = () => {
 
   // 화면 렌더링 함수 (이전과 동일)
   const renderCurrentStep = () => {
+    // --- 추가: GenreConversion 페이지와 동일한 중앙 정렬 Wrapper ---
+    const CenteredWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+      <div className="flex min-h-screen items-center justify-center">{children}</div>
+    );
+
     switch (currentStep) {
       case 1:
-        return <AudioUpload onAudioUpload={handleAudioUpload} />;
+        return (
+          <CenteredWrapper>
+            <AudioUpload onAudioUpload={handleAudioUpload} />
+          </CenteredWrapper>
+        );
       case 2:
-        return <DetailSelection onDetailsSubmit={handleDetailsSubmit} />;
+        // 다음 단계인 DetailSelection도 동일하게 중앙 정렬을 적용합니다.
+        return (
+          <CenteredWrapper>
+            <DetailSelection onDetailsSubmit={handleDetailsSubmit} />
+          </CenteredWrapper>
+        );
       case 3:
+        // ProcessingPage는 전체 화면을 사용하므로 Wrapper를 적용하지 않습니다.
         return <ProcessingPage onProcessingComplete={() => {}} />;
       case 4:
-        if (processingError) {
-          return <CompletionPage onRegenerate={handleRegenerate} result={{musicUrl: '', title: `오류: ${processingError}`, duration: 0}} details={selectedDetails} />;
-        }
-        return <CompletionPage onRegenerate={handleRegenerate} result={completionResult!} details={selectedDetails} />;
+        // 오류가 있으면 첫 화면으로 이미 돌아갔으므로 여기서는 성공 케이스만 처리
+        return (
+          <CompletionPage
+            onRegenerate={handleRegenerate}
+            result={completionResult!}
+            details={selectedDetails}
+            audioFile={uploadedAudioFile || undefined}
+          />
+        );
       default:
-        return <AudioUpload onAudioUpload={handleAudioUpload} />;
+        return (
+          <CenteredWrapper>
+            <AudioUpload onAudioUpload={handleAudioUpload} />
+          </CenteredWrapper>
+        );
     }
   };
 
-  return (
-    <div>
-      {renderCurrentStep()}
-    </div>
-  );
+  return <div>{renderCurrentStep()}</div>;
 };
 
 export default Huming;

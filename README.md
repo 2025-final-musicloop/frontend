@@ -46,11 +46,49 @@ cd music-hicc
 npm install
 ```
 
-### 3. 개발 서버 실행
+### 3. 백엔드 서버 설정 (Backend Setup)
+
+백엔드 서버는 Python으로 작성되었으며, 독립된 가상 환경에서 실행하는 것을 권장합니다.
+
+```bash
+# 1. (선택사항) Python 가상 환경을 생성합니다.
+# 이 명령어는 'venv'라는 이름의 가상 환경 폴더를 생성합니다.
+python -m venv venv
+
+# 2. 생성한 가상 환경을 활성화합니다.
+# Windows (PowerShell):
+./venv/Scripts/Activate.ps1
+
+# macOS / Linux (bash):
+source venv/bin/activate
+
+# 3. 백엔드 의존성 패키지를 설치합니다.
+# (가상 환경이 활성화된 상태에서 실행해야 합니다.)
+pip install -r backend_genre/requirements.txt
+```
+
+### 4. 개발 서버 실행
+
+이제 프론트엔드와 백엔드 서버를 각각 실행할 준비가 되었습니다. **두 개의 터미널 창**을 열어주세요.
+
+**첫 번째 터미널 (프론트엔드):**
 
 ```bash
 # 개발 서버를 시작합니다.
 npm run dev
+```
+
+**두 번째 터미널 (백엔드):**
+
+```bash
+# 1. 백엔드 폴더로 이동합니다.
+cd backend_genre
+
+# 2. (가상 환경을 사용한다면) 가상 환경이 활성화된 상태인지 확인합니다.
+# 프롬프트 앞에 (venv)가 보여야 합니다.
+
+# 3. 백엔드 서버를 시작합니다.
+python server.py
 ```
 
 이제 브라우저에서 `http://localhost:5173` (또는 터미널에 표시된 주소)으로 접속하여 애플리케이션을 확인할 수 있습니다.

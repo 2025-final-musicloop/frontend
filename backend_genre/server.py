@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 import os
 import random
 import base64
+import time
 import werkzeug.utils
 import subprocess # Demucs를 실행하기 위해 추가
 
@@ -42,15 +43,20 @@ from google.protobuf.struct_pb2 import Value
 app = Flask(__name__)
 CORS(app) # 다른 주소(React 앱)에서의 요청을 허용
 
-# 파일 저장을 위한 폴더 설정
-UPLOAD_FOLDER = 'uploads'
-GENERATED_FOLDER = 'generated'
-SEPARATED_FOLDER = 'demucs_output' # Demucs 결과물 폴더
-FINAL_OUTPUT_FOLDER = 'final_output' # 병합된 최종 결과물 폴더
+# --- 수정: 파일 경로를 스크립트 위치 기준으로 절대 경로로 설정 ---
+# 이 스크립트(server.py)가 있는 폴더의 절대 경로를 찾습니다.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 파일 저장을 위한 폴더 설정 (server.py와 같은 폴더 내에 생성되도록 경로 수정)
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+GENERATED_FOLDER = os.path.join(BASE_DIR, 'generated')
+SEPARATED_FOLDER = os.path.join(BASE_DIR, 'demucs_output') # Demucs 결과물 폴더
+FINAL_OUTPUT_FOLDER = os.path.join(BASE_DIR, 'final_output') # 병합된 최종 결과물 폴더
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(GENERATED_FOLDER, exist_ok=True)
 os.makedirs(SEPARATED_FOLDER, exist_ok=True)
 os.makedirs(FINAL_OUTPUT_FOLDER, exist_ok=True)
+
 
 # --- 3. Helper 함수 ---
 NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -107,7 +113,44 @@ def separate_vocals_demucs(input_path, output_path):
 def audio_to_midi(input_audio_path, output_midi_path):
     """[공통 파이프라인] 오디오(허밍/보컬) -> MIDI 변환"""
     print(f"오디오 분석 및 MIDI 변환 시작: {input_audio_path}")
-    y, sr = librosa.load(input_audio_path, sr=22050)
+    
+    # 파일 존재 확인
+    if not os.path.exists(input_audio_path):
+        raise Exception(f"오디오 파일을 찾을 수 없습니다: {input_audio_path}")
+    
+    # 파일 크기 확인 (빈 파일 체크)
+    file_size = os.path.getsize(input_audio_path)
+    if file_size == 0:
+        raise Exception(f"오디오 파일이 비어있습니다: {input_audio_path}")
+    
+    # 오디오 파일 로드 (여러 방법 시도)
+    try:
+        # 먼저 기본 방법으로 시도
+        y, sr = librosa.load(input_audio_path, sr=22050, mono=True)
+    except Exception as e1:
+        print(f"기본 로딩 실패, 대체 방법 시도 중... (오류: {e1})")
+        try:
+            # offset과 duration 없이 시도
+            y, sr = librosa.load(input_audio_path, sr=22050, mono=True, offset=0.0)
+        except Exception as e2:
+            print(f"대체 로딩 실패, 원본 샘플링 레이트로 시도 중... (오류: {e2})")
+            try:
+                # 샘플링 레이트 지정 없이 시도
+                y, sr = librosa.load(input_audio_path, sr=None, mono=True)
+                # 샘플링 레이트가 너무 높으면 다운샘플링
+                if sr > 22050:
+                    y = librosa.resample(y, orig_sr=sr, target_sr=22050)
+                    sr = 22050
+            except Exception as e3:
+                error_msg = f"오디오 파일을 로드할 수 없습니다. 파일이 손상되었거나 지원되지 않는 형식일 수 있습니다. (오류: {e3})"
+                print(f"!!! {error_msg} !!!")
+                raise Exception(error_msg)
+    
+    # 로드된 오디오 데이터 검증
+    if y is None or len(y) == 0:
+        raise Exception("오디오 파일에서 데이터를 읽을 수 없습니다. 파일이 손상되었을 수 있습니다.")
+    
+    print(f"오디오 로드 성공: 샘플링 레이트={sr}Hz, 길이={len(y)/sr:.2f}초")
     f0, _, _ = librosa.pyin(y, fmin=librosa.note_to_hz('C2'), fmax=librosa.note_to_hz('C7'))
     times = librosa.times_like(f0, sr=sr)
     notes = []
@@ -311,13 +354,35 @@ def generate_from_humming_endpoint():
     try:
         if 'audio' not in request.files: return jsonify({"error": "오디오 파일이 없습니다."}), 400
         audio_file = request.files['audio']
+        
+        # 파일명 검증
+        if not audio_file.filename or audio_file.filename == '':
+            return jsonify({"error": "파일명이 없습니다."}), 400
+        
         genre, mood, instruments, custom_prompt = (
             request.form.get('genre'), request.form.get('mood'), 
             request.form.getlist('instruments[]'), request.form.get('custom_prompt')
         )
-        filename = werkzeug.utils.secure_filename(audio_file.filename)
+        
+        # 고유한 파일명 생성 (중복 방지)
+        timestamp = int(time.time() * 1000)
+        original_filename = werkzeug.utils.secure_filename(audio_file.filename)
+        file_ext = os.path.splitext(original_filename)[1] or '.mp3'  # 확장자가 없으면 기본값
+        filename = f"temp-audio-{timestamp}{file_ext}"
         audio_path = os.path.join(UPLOAD_FOLDER, filename)
+        
+        # 파일 저장
         audio_file.save(audio_path)
+        
+        # 저장된 파일 검증
+        if not os.path.exists(audio_path):
+            return jsonify({"error": "파일 저장에 실패했습니다."}), 500
+        
+        file_size = os.path.getsize(audio_path)
+        if file_size == 0:
+            return jsonify({"error": "업로드된 파일이 비어있습니다."}), 400
+        
+        print(f"파일 저장 완료: {filename} (크기: {file_size} bytes)")
         
         temp_midi_path = os.path.join(GENERATED_FOLDER, "temp_humming.mid")
         audio_to_midi(audio_path, temp_midi_path)

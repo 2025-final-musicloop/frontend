@@ -22,8 +22,57 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+venv/
 
 # Google Cloud Service Account Keys
 # 'my-music-project-471519-'로 시작하고 '.json'으로 끝나는 모든 파일을 무시합니다.
 my-music-project-471519-*.json
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 백엔드 생성 파일 및 업로드 파일
+backend_genre/uploads/
+backend_genre/generated/
+backend_genre/final_output/
+backend_genre/demucs_output/
+uploads/
+generated/
+final_output/
+demucs_output/
+
+# 임시 파일
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.cursor/
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 빌드 산출물
+build/
+dist/
+*.tsbuildinfo
+
+# 테스트 커버리지
+coverage/
+.nyc_output/
