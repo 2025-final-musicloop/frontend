@@ -12,6 +12,8 @@ interface ProcessingPageProps {
     details: MusicDetails;
     modelType: 'api' | 'internal';
   };
+  endpoint?: string; // 기본값: '/generate-from-humming', 장르변환: '/convert-genre'
+  resultTitle?: string; // 기본값: '새로운 허밍 음악'
 }
 
 interface ApiResponse {
@@ -20,7 +22,13 @@ interface ApiResponse {
   duration: number;
 }
 
-const ProcessingPage: React.FC<ProcessingPageProps> = ({ onProcessingComplete, onProcessingError, formData }) => {
+const ProcessingPage: React.FC<ProcessingPageProps> = ({ 
+  onProcessingComplete, 
+  onProcessingError, 
+  formData,
+  endpoint = '/generate-from-humming',
+  resultTitle = '새로운 허밍 음악'
+}) => {
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const isCompleteRef = useRef(false);
@@ -35,17 +43,24 @@ const ProcessingPage: React.FC<ProcessingPageProps> = ({ onProcessingComplete, o
       const formDataToSend = new FormData();
       formDataToSend.append('audio', formData.audioFile);
       
-      // 내부 모델일 때는 악기만 전송, 기존 API일 때는 장르/분위기/악기 모두 전송
-      if (formData.modelType === 'internal') {
-        formDataToSend.append('instruments[]', formData.details.instrument || '피아노');
-      } else {
-        formDataToSend.append('genre', formData.details.genre || 'Pop Ballad');
-        formDataToSend.append('mood', formData.details.mood || 'Happy');
-        formDataToSend.append('instruments[]', formData.details.instrument || 'Piano');
+      // 엔드포인트에 따라 다른 데이터 전송
+      if (endpoint === '/convert-genre') {
+        // 장르변환: 장르, 분위기, 커스텀 프롬프트만 전송
+        formDataToSend.append('genre', formData.details.genre || 'Rock');
+        formDataToSend.append('mood', formData.details.mood || 'Energetic');
         formDataToSend.append('custom_prompt', formData.details.customPrompt || '');
+      } else {
+        // 허밍 기반 생성: 내부 모델일 때는 악기만, API일 때는 장르/분위기/악기 모두 전송
+        if (formData.modelType === 'internal') {
+          formDataToSend.append('instruments[]', formData.details.instrument || '피아노');
+        } else {
+          formDataToSend.append('genre', formData.details.genre || 'Pop Ballad');
+          formDataToSend.append('mood', formData.details.mood || 'Happy');
+          formDataToSend.append('instruments[]', formData.details.instrument || 'Piano');
+          formDataToSend.append('custom_prompt', formData.details.customPrompt || '');
+        }
+        formDataToSend.append('model_type', formData.modelType);
       }
-      
-      formDataToSend.append('model_type', formData.modelType);
 
       try {
         // 진행도 시뮬레이션 (0% -> 90%)
@@ -68,7 +83,7 @@ const ProcessingPage: React.FC<ProcessingPageProps> = ({ onProcessingComplete, o
         }, 3000);
 
         // 실제 API 호출
-        const response = await axios.post<ApiResponse>('http://localhost:5000/generate-from-humming', formDataToSend, {
+        const response = await axios.post<ApiResponse>(`http://localhost:5000${endpoint}`, formDataToSend, {
           timeout: 300000, // 5분 타임아웃
         });
 
@@ -90,7 +105,7 @@ const ProcessingPage: React.FC<ProcessingPageProps> = ({ onProcessingComplete, o
           const backendUrl = 'http://localhost:5000';
           const result: ProcessingResult = {
             musicUrl: backendUrl + response.data.audio_url,
-            title: '새로운 허밍 음악',
+            title: resultTitle,
             duration: response.data.duration,
           };
           onProcessingComplete(result);

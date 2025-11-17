@@ -146,66 +146,18 @@ const GenreConversion: React.FC = () => {
     setCurrentStep(2);
   };
 
-  const handleDetailsSubmit = async (details: MusicDetails) => {
+  const handleDetailsSubmit = (details: MusicDetails) => {
     setSelectedDetails(details);
-    setCurrentStep(3);
-    setProcessingError(''); // 에러 상태 초기화
+    setCurrentStep(3); // 처리 단계로
 
     if (!uploadedAudioFile) {
       setProcessingError('오류: 오디오 파일이 없습니다.');
       setCurrentStep(4);
       return;
     }
-    const formData = new FormData();
-    formData.append('audio', uploadedAudioFile);
-    formData.append('genre', details.genre || 'Rock');
-    formData.append('mood', details.mood || 'Energetic');
-    formData.append('custom_prompt', details.customPrompt || '');
 
-    try {
-      const response = await axios.post<ApiResponse>('http://localhost:5000/convert-genre', formData);
-      const backendUrl = 'http://localhost:5000';
-      const result: ProcessingResult = {
-        musicUrl: backendUrl + response.data.audio_url,
-        title: '장르 변환 결과',
-        duration: response.data.duration,
-      };
-      setCompletionResult(result);
-      setCurrentStep(4);
-    } catch (err: any) {
-      // 디버깅 로그는 유지하는 것이 좋습니다.
-      console.error('API Error Object:', err);
-      if (err.response) {
-        console.log('Received Error Response Data:', err.response.data);
-      }
-
-      let displayErrorMessage = '음악 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-
-      // --- Recitation Check 오류만 특별히 확인 ---
-      if (err.response?.data?.error_type === 'recitation_error') {
-        displayErrorMessage =
-          '⚠️ AI가 기존 곡과 유사한 음악을 생성하여 저작권 보호를 위해 차단되었습니다. 스타일이나 추가 요청을 조금 바꿔서 다시 시도해 주세요.';
-      }
-      // 그 외 모든 오류 (서버 응답 오류, 연결 실패 등)는 좀 더 일반적인 메시지 표시
-      else if (err.response?.data?.error) {
-        // 서버가 보낸 다른 오류 메시지가 있다면 표시
-        displayErrorMessage = `오류: ${err.response.data.error}`;
-      } else if (!err.response && err.request) {
-        // 서버 연결 실패 시
-        displayErrorMessage = '오류: 백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.';
-      }
-      // (다른 자잘한 오류는 기본 메시지 사용)
-
-      // 알림 표시
-      alert(`오류가 발생했습니다:\n${displayErrorMessage}`);
-
-      // 첫 화면으로 돌아가기
-      setCurrentStep(1);
-      setUploadedAudioFile(null);
-      setSelectedDetails({});
-      setProcessingError('');
-      setCompletionResult(null);
-    }
+    // API 호출은 ProcessingPage에서 처리하도록 변경
+    // 결과는 ProcessingPage의 콜백을 통해 받음
   };
 
   const handleRegenerate = () => {
@@ -237,8 +189,48 @@ const GenreConversion: React.FC = () => {
           </CenteredWrapper>
         );
       case 3:
-        // ProcessingPage는 자체적으로 전체 화면을 사용하므로 Wrapper 불필요
-        return <ProcessingPage onProcessingComplete={() => {}} />;
+        // 처리 중
+        return (
+          <ProcessingPage
+            onProcessingComplete={(result) => {
+              setCompletionResult(result);
+              setCurrentStep(4);
+            }}
+            onProcessingError={(errorMessage) => {
+              // 디버깅 로그
+              console.error('API Error:', errorMessage);
+
+              let displayErrorMessage = '음악 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+
+              // Recitation Check 오류만 특별히 확인
+              if (errorMessage.includes('recitation_error') || errorMessage.includes('저작권')) {
+                displayErrorMessage =
+                  '⚠️ AI가 기존 곡과 유사한 음악을 생성하여 저작권 보호를 위해 차단되었습니다. 스타일이나 추가 요청을 조금 바꿔서 다시 시도해 주세요.';
+              } else if (errorMessage.includes('서버에 연결')) {
+                displayErrorMessage = '오류: 백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.';
+              } else {
+                displayErrorMessage = `오류: ${errorMessage}`;
+              }
+
+              // 알림 표시
+              alert(`오류가 발생했습니다:\n${displayErrorMessage}`);
+
+              // 첫 화면으로 돌아가기
+              setCurrentStep(1);
+              setUploadedAudioFile(null);
+              setSelectedDetails({});
+              setProcessingError('');
+              setCompletionResult(null);
+            }}
+            formData={{
+              audioFile: uploadedAudioFile!,
+              details: selectedDetails,
+              modelType: 'api', // 장르변환은 항상 API 사용
+            }}
+            endpoint="/convert-genre"
+            resultTitle="장르 변환 결과"
+          />
+        );
       case 4:
         // 오류가 있으면 첫 화면으로 이미 돌아갔으므로 여기서는 성공 케이스만 처리
         return (
