@@ -47,6 +47,23 @@ CORS(app) # 다른 주소(React 앱)에서의 요청을 허용
 # 이 스크립트(server.py)가 있는 폴더의 절대 경로를 찾습니다.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Backend Model (내부 모델)
+import sys
+BACKEND_MODEL_DIR = os.path.join(os.path.dirname(BASE_DIR), 'backend_model')
+if os.path.exists(BACKEND_MODEL_DIR):
+    sys.path.insert(0, BACKEND_MODEL_DIR)
+    try:
+        from main import HumToMusicPipeline
+        from config import INSTRUMENT_PRESETS
+        BACKEND_MODEL_AVAILABLE = True
+        print(f"[OK] backend_model 사용 가능: {BACKEND_MODEL_DIR}")
+    except ImportError as e:
+        print(f"Warning: backend_model을 import할 수 없습니다: {e}")
+        BACKEND_MODEL_AVAILABLE = False
+else:
+    BACKEND_MODEL_AVAILABLE = False
+    print(f"Warning: backend_model 디렉토리를 찾을 수 없습니다: {BACKEND_MODEL_DIR}")
+
 # 파일 저장을 위한 폴더 설정 (server.py와 같은 폴더 내에 생성되도록 경로 수정)
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 GENERATED_FOLDER = os.path.join(BASE_DIR, 'generated')
@@ -359,10 +376,13 @@ def generate_from_humming_endpoint():
         if not audio_file.filename or audio_file.filename == '':
             return jsonify({"error": "파일명이 없습니다."}), 400
         
-        genre, mood, instruments, custom_prompt = (
+        genre, mood, instruments, custom_prompt, model_type = (
             request.form.get('genre'), request.form.get('mood'), 
-            request.form.getlist('instruments[]'), request.form.get('custom_prompt')
+            request.form.getlist('instruments[]'), request.form.get('custom_prompt'),
+            request.form.get('model_type', 'api')  # 기본값: 'api'
         )
+        
+        print(f"모델 타입: {model_type}")
         
         # 고유한 파일명 생성 (중복 방지)
         timestamp = int(time.time() * 1000)
@@ -384,25 +404,90 @@ def generate_from_humming_endpoint():
         
         print(f"파일 저장 완료: {filename} (크기: {file_size} bytes)")
         
-        temp_midi_path = os.path.join(GENERATED_FOLDER, "temp_humming.mid")
-        audio_to_midi(audio_path, temp_midi_path)
+        # 내부 모델인 경우 WAV 파일만 허용
+        if model_type == 'internal':
+            file_ext = os.path.splitext(filename)[1].lower()
+            if file_ext != '.wav':
+                return jsonify({
+                    "error": "내부 모델은 WAV 파일만 지원합니다. WAV 형식의 파일을 업로드해주세요.",
+                    "error_type": "invalid_file_format"
+                }), 400
         
-        text_prompt = midi_to_text_prompt_advanced(temp_midi_path, genre, mood, instruments, custom_prompt)
+        # 모델 타입에 따라 분기 처리
+        if model_type == 'internal' and BACKEND_MODEL_AVAILABLE:
+            # 내부 모델 사용
+            print("--- 내부 모델 사용 ---")
+            try:
+                # 악기 매핑 (프론트엔드 악기 이름 → MIDI 프로그램 번호)
+                instrument_name = instruments[0] if instruments else '피아노'
+                instrument_mapping = {
+                    '피아노': 0, '기타': 24, '드럼': 0, '베이스': 32,
+                    '바이올린': 40, '트럼펫': 56, '색소폰': 64, '플루트': 73,
+                    '오르간': 19, '신디사이저': 80
+                }
+                instrument_program = instrument_mapping.get(instrument_name, 0)
+                
+                # 내부 모델 파이프라인 실행
+                pipeline = HumToMusicPipeline()
+                result = pipeline.process_humming(
+                    input_audio_path=audio_path,
+                    output_dir=FINAL_OUTPUT_FOLDER,
+                    instrument_program=instrument_program,
+                    confidence_threshold=0.5,
+                    use_fluidsynth=True
+                )
+                
+                if result.get("success"):
+                    # 생성된 오디오 파일 경로
+                    generated_audio_path = result["audio_path"]
+                    # 파일명 추출
+                    final_audio_filename = os.path.basename(generated_audio_path)
+                    # FINAL_OUTPUT_FOLDER로 이동 (이미 있으면 그대로 사용)
+                    if os.path.dirname(generated_audio_path) != FINAL_OUTPUT_FOLDER:
+                        import shutil
+                        final_audio_path = os.path.join(FINAL_OUTPUT_FOLDER, final_audio_filename)
+                        shutil.move(generated_audio_path, final_audio_path)
+                    else:
+                        final_audio_path = generated_audio_path
+                    
+                    duration = librosa.get_duration(path=final_audio_path)
+                    
+                    return jsonify({
+                        "status": "success",
+                        "audio_url": f"/final_music/{final_audio_filename}",
+                        "duration": duration
+                    })
+                else:
+                    raise Exception(result.get("error", "내부 모델 처리 실패"))
+                    
+            except Exception as e:
+                print(f"!!! 내부 모델 처리 중 오류: {e} !!!")
+                # 내부 모델 실패 시 기존 API로 폴백
+                print("기존 API로 폴백합니다...")
+                model_type = 'api'
         
-        gcp_project_id = os.environ.get('GCP_PROJECT_ID')
-        if not gcp_project_id: raise Exception("GCP_PROJECT_ID 환경 변수가 설정되지 않았습니다.")
-        
-        final_audio_filename = f"humming_based_{random.randint(1000,9999)}.wav"
-        final_audio_path = os.path.join(FINAL_OUTPUT_FOLDER, final_audio_filename)
+        # 기존 API 사용 (model_type == 'api' 또는 내부 모델 실패 시)
+        if model_type == 'api':
+            print("--- 기존 API (GCP) 사용 ---")
+            temp_midi_path = os.path.join(GENERATED_FOLDER, "temp_humming.mid")
+            audio_to_midi(audio_path, temp_midi_path)
+            
+            text_prompt = midi_to_text_prompt_advanced(temp_midi_path, genre, mood, instruments, custom_prompt)
+            
+            gcp_project_id = os.environ.get('GCP_PROJECT_ID')
+            if not gcp_project_id: raise Exception("GCP_PROJECT_ID 환경 변수가 설정되지 않았습니다.")
+            
+            final_audio_filename = f"humming_based_{random.randint(1000,9999)}.wav"
+            final_audio_path = os.path.join(FINAL_OUTPUT_FOLDER, final_audio_filename)
 
-        generate_music_with_api(text_prompt, final_audio_path, gcp_project_id)
-        duration = librosa.get_duration(path=final_audio_path)
-        
-        return jsonify({
-            "status": "success", 
-            "audio_url": f"/final_music/{final_audio_filename}",
-            "duration": duration 
-        })
+            generate_music_with_api(text_prompt, final_audio_path, gcp_project_id)
+            duration = librosa.get_duration(path=final_audio_path)
+            
+            return jsonify({
+                "status": "success", 
+                "audio_url": f"/final_music/{final_audio_filename}",
+                "duration": duration 
+            })
     except Exception as e:
         print(f"!!! 허밍 기반 생성 중 오류 발생: {e} !!!")
         return jsonify({"error": str(e)}), 500

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 // 자식 컴포넌트들을 불러옵니다.
+import ModelSelection from './components/ModelSelection';
 import AudioUpload from './components/AudioUpload';
 import DetailSelection from './components/DetailSelection';
 import ProcessingPage from './components/ProcessingPage';
@@ -35,26 +36,33 @@ interface MusicDetails {
 
 // '매니저' 역할을 하는 Huming 컴포넌트
 const Huming: React.FC = () => {
-  // 상태 관리 변수들 (이전과 동일)
-  const [currentStep, setCurrentStep] = useState(1);
+  // 상태 관리 변수들
+  const [currentStep, setCurrentStep] = useState(1); // 1: 모델 선택, 2: 오디오 업로드, 3: 세부사항, 4: 처리, 5: 완료
+  const [selectedModelType, setSelectedModelType] = useState<'api' | 'internal' | null>(null);
   const [uploadedAudioFile, setUploadedAudioFile] = useState<File | null>(null);
   const [selectedDetails, setSelectedDetails] = useState<MusicDetails>({});
   const [processingError, setProcessingError] = useState('');
   const [completionResult, setCompletionResult] = useState<ProcessingResult | null>(null);
 
-  // 이벤트 핸들러들 (이전과 동일)
+  // 모델 선택 핸들러
+  const handleModelSelect = (modelType: 'api' | 'internal') => {
+    setSelectedModelType(modelType);
+    setCurrentStep(2); // 오디오 업로드 단계로
+  };
+
+  // 오디오 업로드 핸들러
   const handleAudioUpload = (file: File) => {
     setUploadedAudioFile(file);
-    setCurrentStep(2);
+    setCurrentStep(3); // 세부사항 선택 단계로
   };
 
   const handleDetailsSubmit = async (details: MusicDetails) => {
     setSelectedDetails(details);
-    setCurrentStep(3);
+    setCurrentStep(4); // 처리 단계로
 
     if (!uploadedAudioFile) {
       setProcessingError('오류: 오디오 파일이 없습니다.');
-      setCurrentStep(4);
+      setCurrentStep(5);
       return;
     }
 
@@ -67,6 +75,9 @@ const Huming: React.FC = () => {
     // 만약 다중 선택으로 변경했다면 이 부분을 수정해야 합니다.
     formData.append('instruments[]', details.instrument || 'Piano');
     formData.append('custom_prompt', details.customPrompt || '');
+
+    // 모델 타입 추가 (선택한 모델 사용)
+    formData.append('model_type', selectedModelType || 'api');
 
     try {
       // --- 여기가 수정되었습니다 ---
@@ -85,7 +96,7 @@ const Huming: React.FC = () => {
       };
 
       setCompletionResult(result);
-      setCurrentStep(4);
+      setCurrentStep(5);
     } catch (err: any) {
       // 오류 메시지 추출
       let errorMessage = '알 수 없는 서버 오류가 발생했습니다.';
@@ -103,6 +114,7 @@ const Huming: React.FC = () => {
 
       // 첫 화면으로 돌아가기
       setCurrentStep(1);
+      setSelectedModelType(null);
       setUploadedAudioFile(null);
       setSelectedDetails({});
       setProcessingError('');
@@ -111,8 +123,8 @@ const Huming: React.FC = () => {
   };
 
   const handleRegenerate = () => {
-    // (이전과 동일)
     setCurrentStep(1);
+    setSelectedModelType(null);
     setUploadedAudioFile(null);
     setSelectedDetails({});
     setProcessingError('');
@@ -128,23 +140,31 @@ const Huming: React.FC = () => {
 
     switch (currentStep) {
       case 1:
+        // 모델 선택
         return (
           <CenteredWrapper>
-            <AudioUpload onAudioUpload={handleAudioUpload} />
+            <ModelSelection onModelSelect={handleModelSelect} />
           </CenteredWrapper>
         );
       case 2:
-        // 다음 단계인 DetailSelection도 동일하게 중앙 정렬을 적용합니다.
+        // 오디오 업로드
+        return (
+          <CenteredWrapper>
+            <AudioUpload onAudioUpload={handleAudioUpload} modelType={selectedModelType} />
+          </CenteredWrapper>
+        );
+      case 3:
+        // 세부사항 선택
         return (
           <CenteredWrapper>
             <DetailSelection onDetailsSubmit={handleDetailsSubmit} />
           </CenteredWrapper>
         );
-      case 3:
-        // ProcessingPage는 전체 화면을 사용하므로 Wrapper를 적용하지 않습니다.
-        return <ProcessingPage onProcessingComplete={() => {}} />;
       case 4:
-        // 오류가 있으면 첫 화면으로 이미 돌아갔으므로 여기서는 성공 케이스만 처리
+        // 처리 중
+        return <ProcessingPage onProcessingComplete={() => {}} />;
+      case 5:
+        // 완료
         return (
           <CompletionPage
             onRegenerate={handleRegenerate}
@@ -156,7 +176,7 @@ const Huming: React.FC = () => {
       default:
         return (
           <CenteredWrapper>
-            <AudioUpload onAudioUpload={handleAudioUpload} />
+            <ModelSelection onModelSelect={handleModelSelect} />
           </CenteredWrapper>
         );
     }

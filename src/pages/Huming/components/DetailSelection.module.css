@@ -84,6 +84,61 @@
   margin-bottom: 0.75rem;
 }
 
+/* 모델 선택 스타일 */
+.modelSelection {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.modelButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e1e5f2;
+  border-radius: 8px;
+  background: white;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modelButton:hover {
+  border-color: #667eea;
+  background: #f0f2ff;
+  transform: translateY(-1px);
+}
+
+.modelButtonActive {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.modelButtonActive:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.modelButton .material-icons {
+  font-size: 1.2rem;
+}
+
+.modelDescription {
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
 .sectionTitle {
   font-size: 0.9rem;
   font-weight: 600;

@@ -3,15 +3,25 @@ import styles from './AudioUpload.module.css';
 
 interface AudioUploadProps {
   onAudioUpload: (file: File) => void;
+  modelType?: 'api' | 'internal' | null;
 }
 
-const AudioUpload: React.FC<AudioUploadProps> = ({ onAudioUpload }) => {
+const AudioUpload: React.FC<AudioUploadProps> = ({ onAudioUpload, modelType }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): boolean => {
+    // 내부 모델인 경우 WAV 파일만 허용
+    if (modelType === 'internal') {
+      const isWav = file.name.toLowerCase().endsWith('.wav') || file.type === 'audio/wav' || file.type === 'audio/wave';
+      if (!isWav) {
+        setError('내부 모델은 WAV 파일만 지원합니다. WAV 형식의 파일을 업로드해주세요.');
+        return false;
+      }
+    }
+
     // 파일 타입 검증
     if (!file.type.startsWith('audio/')) {
       setError('오디오 파일만 업로드 가능합니다.');
@@ -95,14 +105,18 @@ const AudioUpload: React.FC<AudioUploadProps> = ({ onAudioUpload }) => {
             <span className={`material-icons ${styles.uploadIcon}`}>mic</span>
             <h3 className={styles.uploadTitle}>음성 파일 업로드</h3>
             <p className={styles.uploadText}>드래그 앤 드롭으로 파일을 업로드하거나 클릭하여 파일을 선택하세요</p>
-            <p className={styles.uploadHint}>지원 형식: MP3, WAV, M4A (최대 30초)</p>
+            <p className={styles.uploadHint}>
+              {modelType === 'internal' 
+                ? '지원 형식: WAV만 지원 (최대 30초)'
+                : '지원 형식: MP3, WAV, M4A (최대 30초)'}
+            </p>
           </div>
         </div>
 
         <input
           ref={fileInputRef}
           type="file"
-          accept="audio/*"
+          accept={modelType === 'internal' ? 'audio/wav,.wav' : 'audio/*'}
           onChange={handleFileInputChange}
           className={styles.hiddenInput}
         />

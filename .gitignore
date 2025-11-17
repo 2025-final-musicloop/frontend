@@ -45,10 +45,16 @@ backend_genre/uploads/
 backend_genre/generated/
 backend_genre/final_output/
 backend_genre/demucs_output/
+backend_model/__pycache__/
+backend_model/*.pyc
+backend_model/soundfonts/*.sf2
+backend_model/soundfonts/*.dls
 uploads/
 generated/
 final_output/
 demucs_output/
+data/
+outputs/
 
 # 임시 파일
 *.tmp
