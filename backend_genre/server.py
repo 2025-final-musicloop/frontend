@@ -442,6 +442,25 @@ def generate_from_humming_endpoint():
                 if result.get("success"):
                     # 생성된 오디오 파일 경로
                     generated_audio_path = result["audio_path"]
+                    
+                    # 2배속 처리 (템포만 빠르게, 음높이 유지) - librosa 사용
+                    print("내부 모델 결과물 2배속 처리 중...")
+                    try:
+                        # librosa로 오디오 로드
+                        y, sr = librosa.load(generated_audio_path, sr=None)
+                        
+                        # time_stretch: 템포만 변경 (음높이 유지)
+                        # rate=2.0이면 2배속
+                        y_stretched = librosa.effects.time_stretch(y, rate=2.0)
+                        
+                        # soundfile로 저장 (librosa는 soundfile을 사용)
+                        import soundfile as sf
+                        sf.write(generated_audio_path, y_stretched, sr)
+                        print("2배속 처리 완료 (음높이 유지, librosa 사용)")
+                    except Exception as e:
+                        print(f"!!! 2배속 처리 오류: {e} !!!")
+                        print("원본 파일을 그대로 사용합니다.")
+                    
                     # 파일명 추출
                     final_audio_filename = os.path.basename(generated_audio_path)
                     # FINAL_OUTPUT_FOLDER로 이동 (이미 있으면 그대로 사용)
