@@ -418,13 +418,15 @@ def generate_from_humming_endpoint():
             # 내부 모델 사용
             print("--- 내부 모델 사용 ---")
             try:
-                # 악기 매핑 (프론트엔드 악기 이름 → MIDI 프로그램 번호)
+                # 내부 모델 악기 매핑 (4개만 지원: 피아노(0), 바이올린(40), 기타(24), 색소폰(64))
                 instrument_name = instruments[0] if instruments else '피아노'
                 instrument_mapping = {
-                    '피아노': 0, '기타': 24, '드럼': 0, '베이스': 32,
-                    '바이올린': 40, '트럼펫': 56, '색소폰': 64, '플루트': 73,
-                    '오르간': 19, '신디사이저': 80
+                    '피아노': 0,
+                    '바이올린': 40,
+                    '기타': 24,
+                    '색소폰': 64
                 }
+                # 매핑에 없는 악기는 피아노로 기본값 설정
                 instrument_program = instrument_mapping.get(instrument_name, 0)
                 
                 # 내부 모델 파이프라인 실행

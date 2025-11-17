@@ -68,13 +68,18 @@ const Huming: React.FC = () => {
 
     const formData = new FormData();
     formData.append('audio', uploadedAudioFile);
-    formData.append('genre', details.genre || 'Pop Ballad');
-    formData.append('mood', details.mood || 'Happy');
 
-    // DetailSelection은 단일 악기 선택이므로, instruments[] 대신 instrument로 보냅니다.
-    // 만약 다중 선택으로 변경했다면 이 부분을 수정해야 합니다.
-    formData.append('instruments[]', details.instrument || 'Piano');
-    formData.append('custom_prompt', details.customPrompt || '');
+    // 내부 모델일 때는 악기만 전송, 기존 API일 때는 장르/분위기/악기 모두 전송
+    if (selectedModelType === 'internal') {
+      // 내부 모델: 악기만 지원
+      formData.append('instruments[]', details.instrument || '피아노');
+    } else {
+      // 기존 API: 장르, 분위기, 악기 모두 지원
+      formData.append('genre', details.genre || 'Pop Ballad');
+      formData.append('mood', details.mood || 'Happy');
+      formData.append('instruments[]', details.instrument || 'Piano');
+      formData.append('custom_prompt', details.customPrompt || '');
+    }
 
     // 모델 타입 추가 (선택한 모델 사용)
     formData.append('model_type', selectedModelType || 'api');
@@ -157,7 +162,7 @@ const Huming: React.FC = () => {
         // 세부사항 선택
         return (
           <CenteredWrapper>
-            <DetailSelection onDetailsSubmit={handleDetailsSubmit} />
+            <DetailSelection onDetailsSubmit={handleDetailsSubmit} modelType={selectedModelType} />
           </CenteredWrapper>
         );
       case 4:
