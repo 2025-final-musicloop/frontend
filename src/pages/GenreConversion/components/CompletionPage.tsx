@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';  // ⬅️ 추가!
 import { ProcessingResult, MusicDetails } from '../../../components/common/ProcessFlow';
 import styles from './CompletionPage.module.css';
 import { useAuth } from '../../../hooks/useAuth';
