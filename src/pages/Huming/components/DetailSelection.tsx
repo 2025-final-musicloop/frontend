@@ -4,27 +4,34 @@ import styles from './DetailSelection.module.css';
 
 interface DetailSelectionProps {
   onDetailsSubmit: (details: MusicDetails) => void;
+  modelType?: 'api' | 'internal' | null;
 }
 
-const DetailSelection: React.FC<DetailSelectionProps> = ({ onDetailsSubmit }) => {
-  const [selectedDetails, setSelectedDetails] = useState<MusicDetails>({});
+const DetailSelection: React.FC<DetailSelectionProps> = ({ onDetailsSubmit, modelType }) => {
+  // 피아노를 기본값으로 설정
+  const [selectedDetails, setSelectedDetails] = useState<MusicDetails>({ instrument: '피아노' });
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  // 내부 모델일 때는 악기만 지원하고 4개로 제한
+  const isInternalModel = modelType === 'internal';
 
   const genres = ['선택안함', '팝', '록', '재즈', '클래식', '힙합', 'R&B', '일렉트로닉', '컨트리', '레게', '블루스'];
 
-  const instruments = [
-    '선택안함',
-    '피아노',
-    '기타',
-    '드럼',
-    '베이스',
-    '바이올린',
-    '트럼펫',
-    '색소폰',
-    '플루트',
-    '오르간',
-    '신디사이저',
-  ];
+  // 내부 모델: 피아노(0), 바이올린(40), 기타(24), 색소폰(64)만 지원
+  const instruments = isInternalModel
+    ? ['피아노', '바이올린', '기타', '색소폰']
+    : [
+        '피아노',
+        '기타',
+        '드럼',
+        '베이스',
+        '바이올린',
+        '트럼펫',
+        '색소폰',
+        '플루트',
+        '오르간',
+        '신디사이저',
+      ];
 
   const moods = [
     '선택안함',
@@ -58,6 +65,10 @@ const DetailSelection: React.FC<DetailSelectionProps> = ({ onDetailsSubmit }) =>
 
   const getDisplayValue = (category: keyof MusicDetails) => {
     const value = selectedDetails[category];
+    // 악기는 기본값 '피아노', 다른 항목은 '선택안함'
+    if (category === 'instrument') {
+      return value || '피아노';
+    }
     return value || '선택안함';
   };
 
@@ -81,38 +92,42 @@ const DetailSelection: React.FC<DetailSelectionProps> = ({ onDetailsSubmit }) =>
       <div className={styles.header}>
         <h1 className={styles.title}>세부사항 선택</h1>
         <p className={styles.description}>
-          원하는 장르, 악기, 분위기를 선택하세요. 선택하지 않아도 AI가 자동으로 결정합니다.
+          {isInternalModel
+            ? '원하는 악기를 선택하세요. 내부 모델은 악기만 지원합니다.'
+            : '원하는 장르, 악기, 분위기를 선택하세요. 선택하지 않아도 AI가 자동으로 결정합니다.'}
         </p>
       </div>
 
       <div className={styles.selectionContainer}>
-        {/* 장르 선택 */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>장르</h2>
-          <div className={styles.dropdownContainer}>
-            <button className={styles.dropdownButton} onClick={() => toggleDropdown('genre')}>
-              <span>{getDisplayValue('genre')}</span>
-              <span
-                className={`material-icons ${styles.dropdownIcon} ${openDropdown === 'genre' ? styles.rotated : ''}`}
-              >
-                expand_more
-              </span>
-            </button>
-            {openDropdown === 'genre' && (
-              <div className={styles.dropdownList}>
-                {genres.map((genre) => (
-                  <button
-                    key={genre}
-                    className={`${styles.dropdownItem} ${getDisplayValue('genre') === genre ? styles.selected : ''}`}
-                    onClick={() => handleSelection('genre', genre)}
-                  >
-                    {genre}
-                  </button>
-                ))}
-              </div>
-            )}
+        {/* 장르 선택 - 내부 모델에서는 숨김 */}
+        {!isInternalModel && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>장르</h2>
+            <div className={styles.dropdownContainer}>
+              <button className={styles.dropdownButton} onClick={() => toggleDropdown('genre')}>
+                <span>{getDisplayValue('genre')}</span>
+                <span
+                  className={`material-icons ${styles.dropdownIcon} ${openDropdown === 'genre' ? styles.rotated : ''}`}
+                >
+                  expand_more
+                </span>
+              </button>
+              {openDropdown === 'genre' && (
+                <div className={styles.dropdownList}>
+                  {genres.map((genre) => (
+                    <button
+                      key={genre}
+                      className={`${styles.dropdownItem} ${getDisplayValue('genre') === genre ? styles.selected : ''}`}
+                      onClick={() => handleSelection('genre', genre)}
+                    >
+                      {genre}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 악기 선택 */}
         <div className={styles.section}>
@@ -144,33 +159,35 @@ const DetailSelection: React.FC<DetailSelectionProps> = ({ onDetailsSubmit }) =>
           </div>
         </div>
 
-        {/* 분위기 선택 */}
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>분위기</h2>
-          <div className={styles.dropdownContainer}>
-            <button className={styles.dropdownButton} onClick={() => toggleDropdown('mood')}>
-              <span>{getDisplayValue('mood')}</span>
-              <span
-                className={`material-icons ${styles.dropdownIcon} ${openDropdown === 'mood' ? styles.rotated : ''}`}
-              >
-                expand_more
-              </span>
-            </button>
-            {openDropdown === 'mood' && (
-              <div className={styles.dropdownList}>
-                {moods.map((mood) => (
-                  <button
-                    key={mood}
-                    className={`${styles.dropdownItem} ${getDisplayValue('mood') === mood ? styles.selected : ''}`}
-                    onClick={() => handleSelection('mood', mood)}
-                  >
-                    {mood}
-                  </button>
-                ))}
-              </div>
-            )}
+        {/* 분위기 선택 - 내부 모델에서는 숨김 */}
+        {!isInternalModel && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>분위기</h2>
+            <div className={styles.dropdownContainer}>
+              <button className={styles.dropdownButton} onClick={() => toggleDropdown('mood')}>
+                <span>{getDisplayValue('mood')}</span>
+                <span
+                  className={`material-icons ${styles.dropdownIcon} ${openDropdown === 'mood' ? styles.rotated : ''}`}
+                >
+                  expand_more
+                </span>
+              </button>
+              {openDropdown === 'mood' && (
+                <div className={styles.dropdownList}>
+                  {moods.map((mood) => (
+                    <button
+                      key={mood}
+                      className={`${styles.dropdownItem} ${getDisplayValue('mood') === mood ? styles.selected : ''}`}
+                      onClick={() => handleSelection('mood', mood)}
+                    >
+                      {mood}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className={styles.footer}>
@@ -183,11 +200,15 @@ const DetailSelection: React.FC<DetailSelectionProps> = ({ onDetailsSubmit }) =>
           <div className={styles.selectedInfo}>
             <h3>선택된 옵션:</h3>
             <div className={styles.selectedItems}>
-              {selectedDetails.genre && <span className={styles.selectedItem}>장르: {selectedDetails.genre}</span>}
+              {!isInternalModel && selectedDetails.genre && (
+                <span className={styles.selectedItem}>장르: {selectedDetails.genre}</span>
+              )}
               {selectedDetails.instrument && (
                 <span className={styles.selectedItem}>악기: {selectedDetails.instrument}</span>
               )}
-              {selectedDetails.mood && <span className={styles.selectedItem}>분위기: {selectedDetails.mood}</span>}
+              {!isInternalModel && selectedDetails.mood && (
+                <span className={styles.selectedItem}>분위기: {selectedDetails.mood}</span>
+              )}
             </div>
           </div>
         )}
