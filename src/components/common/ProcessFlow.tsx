@@ -5,6 +5,7 @@ export interface MusicDetails {
   genre?: string;
   mood?: string;
   instrument?: string;
+  modelType?: 'api' | 'internal';
 }
 
 export interface ProcessingResult {
