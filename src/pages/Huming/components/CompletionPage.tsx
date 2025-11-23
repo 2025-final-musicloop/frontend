@@ -105,11 +105,11 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
 
       console.log('✅ 게시글 자동 등록 완료!');
       
-      // 🎯 Alert만 띄우고 페이지는 유지!
-      alert('게시글이 등록되었습니다!');
+      // 🎯 Alert 없이 그냥 넘어감!
 
     } catch (error) {
       console.error('❌ 자동 게시글 등록 실패:', error);
+      // 에러 시에만 alert
       alert('게시글 등록에 실패했습니다. 다시 시도해주세요.');
       hasPublished.current = false;
     } finally {
@@ -179,7 +179,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
 
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // 🔄 로딩 화면만 표시
+  // 로딩 화면
   if (autoPublishing) {
     return (
       <div className={styles.container}>
@@ -196,12 +196,12 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     );
   }
 
-  // ✅ 메인 화면 (alert 후 여기로 돌아옴!)
+  // 메인 화면 (Alert 없이 바로 표시!)
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>음악 제작 완료!</h1>
-        <p className={styles.description}>음악이 자동으로 게시판에 등록되었습니다</p>
+        <p className={styles.description}>✅ 게시판에 등록되었습니다</p>
       </div>
 
       <div className={styles.scrollableContent}>
@@ -263,8 +263,8 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
           </div>
 
           <div className={styles.infoBox}>
-            <span className="material-icons" style={{ color: '#667eea' }}>info</span>
-            <span>게시글은 게시판에서 수정할 수 있습니다.</span>
+            <span className="material-icons" style={{ color: '#10b981' }}>check_circle</span>
+            <span>게시판에 등록이 완료되었습니다! 아래 버튼으로 확인하세요.</span>
           </div>
         </div>
 
@@ -280,7 +280,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
             다시 만들기
           </button>
 
-          {/* 🎯 이 버튼으로 게시판 이동! */}
+          {/* 게시판으로 이동 버튼 */}
           <button 
             className={styles.exploreButton}
             onClick={() => navigate('/explore')}
