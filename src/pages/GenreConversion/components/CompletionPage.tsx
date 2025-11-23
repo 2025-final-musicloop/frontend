@@ -21,9 +21,8 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
   const navigate = useNavigate();
   
   const [autoPublishing, setAutoPublishing] = useState(false);
-  const [publishSuccess, setPublishSuccess] = useState(false);
   
-  // 🔥 중복 실행 방지!
+  // 중복 실행 방지
   const hasPublished = useRef(false);
 
   const generateTitle = (): string => {
@@ -48,9 +47,9 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
   };
 
   const handleAutoPublish = async () => {
-    // 🔥 중복 방지: 이미 실행되었으면 중단
+    // 중복 방지
     if (hasPublished.current) {
-      console.log('⚠️ 중복 실행 방지! 게시글은 이미 등록되었습니다.');
+      console.log('⚠️ 중복 실행 방지!');
       return;
     }
 
@@ -65,7 +64,6 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     }
 
     try {
-      // 🔥 실행 표시 (가장 먼저!)
       hasPublished.current = true;
       setAutoPublishing(true);
       console.log('🎵 자동 게시글 등록 시작...');
@@ -84,7 +82,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
 
       if (!fileToUpload) {
         console.error('❌ 업로드할 파일을 생성하지 못했습니다.');
-        hasPublished.current = false; // 실패 시 재시도 가능
+        hasPublished.current = false;
         return;
       }
 
@@ -106,16 +104,14 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
       );
 
       console.log('✅ 게시글 자동 등록 완료!');
-      setPublishSuccess(true);
-
-      setTimeout(() => {
-        navigate('/explore');
-      }, 3000);
+      
+      // 🎯 Alert만 띄우고 페이지는 유지!
+      alert('게시글이 등록되었습니다!');
 
     } catch (error) {
       console.error('❌ 자동 게시글 등록 실패:', error);
       alert('게시글 등록에 실패했습니다. 다시 시도해주세요.');
-      hasPublished.current = false; // 실패 시 재시도 가능
+      hasPublished.current = false;
     } finally {
       setAutoPublishing(false);
     }
@@ -125,7 +121,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     if (result?.musicUrl || audioFile) {
       handleAutoPublish();
     }
-  }, []); // 빈 배열: 마운트 시 한 번만
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -183,7 +179,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
 
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // 로딩 화면
+  // 🔄 로딩 화면만 표시
   if (autoPublishing) {
     return (
       <div className={styles.container}>
@@ -200,31 +196,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     );
   }
 
-  // 성공 화면
-  if (publishSuccess) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.successContainer}>
-          <div className={styles.successIcon}>
-            <span className="material-icons" style={{ fontSize: '5rem', color: '#10b981' }}>
-              check_circle
-            </span>
-          </div>
-          <h2 className={styles.successTitle}>✨ 게시글이 등록되었습니다!</h2>
-          <p className={styles.successText}>3초 후 게시판으로 이동합니다...</p>
-          <button 
-            className={styles.goToExploreButton}
-            onClick={() => navigate('/explore')}
-          >
-            <span className="material-icons">arrow_forward</span>
-            지금 바로 확인하기
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 메인 화면
+  // ✅ 메인 화면 (alert 후 여기로 돌아옴!)
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -233,6 +205,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
       </div>
 
       <div className={styles.scrollableContent}>
+        {/* 음악 플레이어 */}
         <div className={styles.unifiedMusicPlayer}>
           <div className={styles.playerHeader}>
             <div className={styles.albumArt}>
@@ -265,6 +238,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
           </div>
         </div>
 
+        {/* 자동 생성된 정보 */}
         <div className={styles.formSection}>
           <h3 className={styles.formTitle}>📝 자동 생성된 게시글 정보</h3>
 
@@ -294,6 +268,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
           </div>
         </div>
 
+        {/* 버튼들 */}
         <div className={styles.actionButtons}>
           <button className={styles.downloadButton} onClick={handleDownload}>
             <span className="material-icons">download</span>
@@ -305,6 +280,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
             다시 만들기
           </button>
 
+          {/* 🎯 이 버튼으로 게시판 이동! */}
           <button 
             className={styles.exploreButton}
             onClick={() => navigate('/explore')}
