@@ -20,11 +20,12 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
   const { accessToken, user } = useAuth();
   const navigate = useNavigate();
   
-  // 🆕 자동 등록 관련 상태
   const [autoPublishing, setAutoPublishing] = useState(false);
   const [publishSuccess, setPublishSuccess] = useState(false);
+  
+  // 🔥 중복 실행 방지!
+  const hasPublished = useRef(false);
 
-  // 🆕 제목 자동 생성 함수
   const generateTitle = (): string => {
     const now = new Date();
     const year = now.getFullYear();
@@ -36,7 +37,6 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     return `생성된 음악 - ${year}.${month}.${day} ${hours}:${minutes}`;
   };
 
-  // 🆕 설명 자동 생성 함수
   const generateDescription = (): string => {
     if (details?.genre || details?.mood) {
       const parts: string[] = [];
@@ -47,8 +47,13 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     return 'AI로 생성된 음악입니다.';
   };
 
-  // 🆕 자동 게시글 등록 함수
   const handleAutoPublish = async () => {
+    // 🔥 중복 방지: 이미 실행되었으면 중단
+    if (hasPublished.current) {
+      console.log('⚠️ 중복 실행 방지! 게시글은 이미 등록되었습니다.');
+      return;
+    }
+
     if (!accessToken) {
       console.log('⚠️ 로그인되지 않아 자동 등록을 건너뜁니다.');
       return;
@@ -60,10 +65,12 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     }
 
     try {
+      // 🔥 실행 표시 (가장 먼저!)
+      hasPublished.current = true;
       setAutoPublishing(true);
       console.log('🎵 자동 게시글 등록 시작...');
 
-      // 1. 오디오 파일 준비
+      // 오디오 파일 준비
       let fileToUpload: File | null = null;
       if (audioFile) {
         fileToUpload = audioFile;
@@ -77,17 +84,16 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
 
       if (!fileToUpload) {
         console.error('❌ 업로드할 파일을 생성하지 못했습니다.');
+        hasPublished.current = false; // 실패 시 재시도 가능
         return;
       }
 
-      // 2. 제목과 설명 자동 생성
       const autoTitle = generateTitle();
       const autoDescription = generateDescription();
 
-      console.log('📝 자동 생성된 제목:', autoTitle);
-      console.log('📝 자동 생성된 설명:', autoDescription);
+      console.log('📝 제목:', autoTitle);
+      console.log('📝 설명:', autoDescription);
 
-      // 3. 게시글 등록
       await createMusicPost(
         {
           title: autoTitle,
@@ -102,7 +108,6 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
       console.log('✅ 게시글 자동 등록 완료!');
       setPublishSuccess(true);
 
-      // 4. 3초 후 Explore 페이지로 이동
       setTimeout(() => {
         navigate('/explore');
       }, 3000);
@@ -110,19 +115,18 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     } catch (error) {
       console.error('❌ 자동 게시글 등록 실패:', error);
       alert('게시글 등록에 실패했습니다. 다시 시도해주세요.');
+      hasPublished.current = false; // 실패 시 재시도 가능
     } finally {
       setAutoPublishing(false);
     }
   };
 
-  // 🆕 컴포넌트 마운트 시 자동 등록 실행
   useEffect(() => {
     if (result?.musicUrl || audioFile) {
       handleAutoPublish();
     }
-  }, []); // 한 번만 실행
+  }, []); // 빈 배열: 마운트 시 한 번만
 
-  // 오디오 이벤트 리스너
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -179,7 +183,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
 
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  // 🆕 로딩/완료 화면
+  // 로딩 화면
   if (autoPublishing) {
     return (
       <div className={styles.container}>
@@ -196,6 +200,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     );
   }
 
+  // 성공 화면
   if (publishSuccess) {
     return (
       <div className={styles.container}>
@@ -219,6 +224,7 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
     );
   }
 
+  // 메인 화면
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -227,14 +233,12 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
       </div>
 
       <div className={styles.scrollableContent}>
-        {/* 통합된 뮤직 플레이어 */}
         <div className={styles.unifiedMusicPlayer}>
           <div className={styles.playerHeader}>
             <div className={styles.albumArt}>
               <span className="material-icons">music_note</span>
             </div>
 
-            {/* 진행 바 섹션 */}
             <div className={styles.progressSection}>
               <div className={styles.progressBar}>
                 <input
@@ -261,7 +265,6 @@ const CompletionPage: React.FC<CompletionPageProps> = ({ onRegenerate, result, a
           </div>
         </div>
 
-        {/* 자동 생성된 정보 표시 */}
         <div className={styles.formSection}>
           <h3 className={styles.formTitle}>📝 자동 생성된 게시글 정보</h3>
 
