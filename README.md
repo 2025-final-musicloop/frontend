@@ -67,7 +67,52 @@ source venv/bin/activate
 pip install -r backend_genre/requirements.txt
 ```
 
-### 4. 개발 서버 실행
+### 4. 추가 설정: FFmpeg 및 환경 변수 (매우 중요)
+
+백엔드 서버의 모든 기능을 정상적으로 사용하려면 FFmpeg 설치와 `.env` 파일 설정이 반드시 필요합니다.
+
+#### FFmpeg 설치
+
+FFmpeg는 오디오 파일을 처리하는 데 사용되는 필수 도구입니다.
+
+**- Windows의 경우:**
+
+1.  **FFmpeg 다운로드**: [FFmpeg 공식 홈페이지](https://ffmpeg.org/download.html)에서 "Windows builds from gyan.dev"를 통해 `full_build` 버전을 다운로드합니다.
+2.  **압축 해제**: 다운로드한 파일의 압축을 `C:\` 와 같이 경로가 단순한 곳에 해제합니다. (예: `C:\ffmpeg`)
+3.  **환경 변수 설정**: '시스템 환경 변수 편집'을 실행하여 `Path` 시스템 변수에 `ffmpeg.exe` 파일이 위치한 `bin` 폴더 경로(예: `C:\ffmpeg\bin`)를 추가합니다.
+    - **중요:** 환경 변수를 수정한 후에는 모든 터미널과 VSCode를 완전히 재시작해야 적용됩니다.
+
+**- macOS의 경우:**
+
+1.  **Homebrew 설치**: 터미널에 `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`를 붙여넣어 [Homebrew](https://brew.sh/index_ko)를 설치합니다.
+2.  **FFmpeg 설치**: 터미널에 다음 명령어를 입력하여 간단하게 설치합니다.
+    ```bash
+    brew install ffmpeg
+    ```
+    - Homebrew로 설치하면 환경 변수(PATH)가 자동으로 설정되어 편리합니다.
+
+#### 환경 변수 (`.env`) 파일 설정
+
+프로젝트 루트 디렉터리(이 `README.md` 파일이 있는 위치)에 `.env` 라는 이름의 파일을 생성하고 아래 내용을 채워주세요.
+
+```.env
+# Google Cloud Platform 프로젝트 ID
+GCP_PROJECT_ID="your-gcp-project-id"
+
+# Google Cloud 인증 JSON 키 파일의 경로
+GOOGLE_APPLICATION_CREDENTIALS="path/to/your/gcp-credentials.json"
+
+# (선택사항) FFmpeg를 환경 변수(Path)에 등록하지 않았거나 다른 경로에 설치한 경우,
+# ffmpeg 실행 파일의 전체 경로를 직접 지정할 수 있습니다.
+# 예시 (macOS, homebrew): FFMPEG_PATH=/opt/homebrew/bin/ffmpeg
+# 예시 (Windows): FFMPEG_PATH=C:/ffmpeg/bin/ffmpeg.exe
+FFMPEG_PATH=
+```
+
+- `your-gcp-project-id`: 실제 사용하시는 GCP 프로젝트의 ID를 입력합니다.
+- `path/to/your/gcp-credentials.json`: 다운로드한 GCP 서비스 계정 키(JSON 파일)의 상대 경로 또는 절대 경로를 입력합니다.
+
+### 5. 개발 서버 실행
 
 이제 프론트엔드와 백엔드 서버를 각각 실행할 준비가 되었습니다. **두 개의 터미널 창**을 열어주세요.
 
