@@ -11,6 +11,5 @@ export const MENUS: MenuItem[] = [
   { id: 'huming', icon: 'mic', label: 'HUMING' },
   { id: 'genre', icon: 'music_note', label: 'GENRE' },
   { id: 'explore', icon: 'travel_explore', label: 'EXPLORE' },
-  { id: 'build', icon: 'construction', label: 'BUILD' },
   { id: 'my', icon: 'account_circle', label: 'MY' },
 ];

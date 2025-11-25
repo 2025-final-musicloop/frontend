@@ -13,6 +13,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.30",
     "axios": "^1.12.2",
+    "browser-image-compression": "^2.0.2",
     "classnames": "^2.5.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
