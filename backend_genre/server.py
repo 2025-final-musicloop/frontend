@@ -43,6 +43,11 @@ from google.protobuf.struct_pb2 import Value
 app = Flask(__name__)
 CORS(app) # 다른 주소(React 앱)에서의 요청을 허용
 
+# --- 추가: FFmpeg 실행 파일 경로 설정 ---
+# FFMPEG_PATH 환경 변수가 있으면 그 값을 사용하고, 없으면 'ffmpeg'를 기본값으로 사용합니다.
+# 시스템 PATH에 ffmpeg가 없는 경우, .env 파일에 FFMPEG_PATH="C:/path/to/ffmpeg.exe" 와 같이 설정할 수 있습니다.
+FFMPEG_EXE = os.environ.get("FFMPEG_PATH", "ffmpeg")
+
 # --- 수정: 파일 경로를 스크립트 위치 기준으로 절대 경로로 설정 ---
 # 이 스크립트(server.py)가 있는 폴더의 절대 경로를 찾습니다.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -319,7 +324,7 @@ def pad_and_merge_audio(vocals_path, accompaniment_path, output_path, silence_du
     silence_duration_ms = int(silence_duration_sec * 1000) # 밀리초로 변환
     
     pad_command = [
-        "ffmpeg",
+        FFMPEG_EXE,
         "-i", accompaniment_path,
         # adelay 필터: 모든 채널에 지정된 시간(ms)만큼 딜레이 추가
         "-af", f"adelay={silence_duration_ms}|{silence_duration_ms}", 
@@ -336,7 +341,7 @@ def pad_and_merge_audio(vocals_path, accompaniment_path, output_path, silence_du
 
     # 2. 원본 보컬과 '무음이 추가된' 반주를 병합
     merge_command = [
-        "ffmpeg",
+        FFMPEG_EXE,
         "-i", vocals_path,
         "-i", padded_accompaniment_path, # 무음 추가된 반주 사용
         "-filter_complex", "amerge",
@@ -651,6 +656,32 @@ if __name__ == '__main__':
     # GCP 인증을 위한 환경 변수를 설정합니다. 
     load_dotenv() # .env
     
+    # --- 추가: FFmpeg 경로 최종 확인 및 로그 출력 ---
+    ffmpeg_path_from_env = os.environ.get('FFMPEG_PATH')
+    if ffmpeg_path_from_env:
+        print(f"[INFO] .env loaded FFMPEG_PATH: {ffmpeg_path_from_env}")
+        FFMPEG_EXE = ffmpeg_path_from_env
+        if not os.path.exists(FFMPEG_EXE):
+            print(f"[CRITICAL ERROR] FFMPEG_PATH is set, but file not found at: {FFMPEG_EXE}")
+            print("[CRITICAL ERROR] Please check the path in your .env file.")
+    else:
+        print("[INFO] FFMPEG_PATH not found in .env. Trying to use 'ffmpeg' from system PATH.")
+    # --- 확인 로직 끝 ---
+
+    # --- 추가: GCP 인증 파일 경로 보정 ---
+    gcp_credential_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+    if gcp_credential_path and not os.path.isabs(gcp_credential_path):
+        # server.py의 위치는 BASE_DIR, 프로젝트 루트는 그 상위 폴더
+        project_root = os.path.dirname(BASE_DIR)
+        abs_path = os.path.join(project_root, gcp_credential_path)
+        
+        if os.path.exists(abs_path):
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = abs_path
+            print(f"[INFO] GCP credential path set to: {abs_path}")
+        else:
+            print(f"[WARNING] GCP credential file not found at: {abs_path}")
+    # --- 경로 보정 끝 ---
+
     # 서버를 실행합니다. debug=True는 개발 중에 코드가 바뀌면 서버가 자동 재시작되게 합니다.
     # host='0.0.0.0'은 컴퓨터의 모든 IP 주소에서 접속을 허용합니다.
     app.run(host='0.0.0.0', port=5000, debug=True,use_reloader=False)
