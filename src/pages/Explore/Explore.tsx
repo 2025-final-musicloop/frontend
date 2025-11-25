@@ -100,19 +100,19 @@ const Explore: React.FC = () => {
           <div className={styles.postsGrid}>
             {posts.map((post) => (
               <MusicCard
-                key={post.postId}
-                id={post.postId}
+                key={post.id}
+                id={post.id}
                 title={post.title}
-                artist={post.author}
+                artist={typeof post.author === 'string' ? post.author : post.author?.username}
                 music={{
-                  id: post.postId,
+                  id: post.id,
                   title: post.title,
-                  artist: post.author,
+                  artist: typeof post.author === 'string' ? post.author : post.author?.username,
                   duration: 0,
-                  file_url: '',
-                  cover_image: '',
+                  audio_file: post.audio_file || '',
+                  cover_image: post.image || '',
                   created_at: post.created_at,
-                  updated_at: post.created_at,
+                  updated_at: post.updated_at || post.created_at,
                 }}
               />
             ))}
