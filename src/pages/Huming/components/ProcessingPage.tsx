@@ -63,24 +63,31 @@ const ProcessingPage: React.FC<ProcessingPageProps> = ({
       }
 
       try {
+        // 내부 모델일 때는 1분, API일 때는 더 빠르게 진행
+        const isInternalModel = formData.modelType === 'internal' && endpoint === '/generate-from-humming';
+        const totalDuration = isInternalModel ? 60000 : 30000; // 내부 모델: 60초, API: 30초
+        const progressInterval = isInternalModel ? 500 : 200; // 내부 모델: 0.5초마다, API: 0.2초마다
+        const progressIncrement = isInternalModel ? 1 : 3; // 내부 모델: 천천히, API: 빠르게
+        
         // 진행도 시뮬레이션 (0% -> 90%)
         let simulatedProgress = 0;
         progressIntervalRef.current = setInterval(() => {
           if (simulatedProgress < 90 && !isCompleteRef.current) {
-            simulatedProgress += Math.random() * 3; // 랜덤하게 증가
+            simulatedProgress += Math.random() * progressIncrement;
             if (simulatedProgress > 90) simulatedProgress = 90;
             setProgress(Math.floor(simulatedProgress));
           }
-        }, 200);
+        }, progressInterval);
 
-        // 단계 시뮬레이션
+        // 단계 시뮬레이션 (내부 모델일 때는 더 천천히)
         let stepIndex = 0;
+        const stepInterval = isInternalModel ? 20000 : 3000; // 내부 모델: 20초마다, API: 3초마다
         stepIntervalRef.current = setInterval(() => {
           if (stepIndex < steps.length - 1 && !isCompleteRef.current) {
             stepIndex++;
             setCurrentStep(stepIndex);
           }
-        }, 3000);
+        }, stepInterval);
 
         // 실제 API 호출
         const response = await axios.post<ApiResponse>(`http://localhost:5000${endpoint}`, formDataToSend, {

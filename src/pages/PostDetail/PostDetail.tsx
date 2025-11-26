@@ -18,28 +18,55 @@ const PostDetail: React.FC = () => {
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (!id) {
+      console.log('🔍 PostDetail - ID 파라미터:', id);
+      console.log('🔍 PostDetail - ID 타입:', typeof id);
+      
+      if (!id || id === 'undefined' || id === 'null') {
+        console.error('❌ ID가 없습니다:', id);
         setError('게시글 ID가 없습니다.');
         setLoading(false);
         return;
       }
+      
       try {
         const numericId = Number(id);
-        if (isNaN(numericId)) {
-          setError('유효하지 않은 게시글 ID입니다.');
+        console.log('🔍 변환된 숫자 ID:', numericId);
+        
+        if (isNaN(numericId) || numericId <= 0) {
+          console.error('❌ 유효하지 않은 ID:', id, '->', numericId);
+          setError(`유효하지 않은 게시글 ID입니다: ${id}`);
           setLoading(false);
           return;
         }
+        
+        console.log('📡 API 호출 시작 - ID:', numericId);
         const data = await getPostById(numericId, accessToken || undefined);
         console.log('📋 상세 데이터:', data);
         console.log('🆔 ID:', data.id);
         console.log('🆔 PostID:', data.postId);
+        
+        if (!data) {
+          throw new Error('게시글 데이터가 비어있습니다.');
+        }
+        
         setPostData(data);
         setIsLiked(data.is_liked || false);
         setLikesCount(data.likes_count || 0);
-      } catch (err) {
+      } catch (err: any) {
         console.error('❌ 상세 조회 실패:', err);
-        setError('게시글을 불러오는 데 실패했습니다.');
+        console.error('❌ 에러 상세:', err.response?.data || err.message);
+        console.error('❌ 에러 상태:', err.response?.status);
+        
+        // API 에러 응답에 따른 상세 메시지
+        if (err.response?.status === 404) {
+          setError(`게시글을 찾을 수 없습니다. (ID: ${id})`);
+        } else if (err.response?.status === 401) {
+          setError('로그인이 필요합니다.');
+        } else if (err.response?.status === 403) {
+          setError('접근 권한이 없습니다.');
+        } else {
+          setError(`게시글을 불러오는 데 실패했습니다: ${err.response?.data?.detail || err.message || '알 수 없는 오류'}`);
+        }
       } finally {
         setLoading(false);
       }

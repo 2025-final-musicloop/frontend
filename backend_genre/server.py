@@ -419,72 +419,57 @@ def generate_from_humming_endpoint():
                 }), 400
         
         # 모델 타입에 따라 분기 처리
-        if model_type == 'internal' and BACKEND_MODEL_AVAILABLE:
-            # 내부 모델 사용
-            print("--- 내부 모델 사용 ---")
+        if model_type == 'internal':
+            # 내부 모델 사용 (테스트용: for_test 폴더의 파일 제공)
+            print("--- 내부 모델 사용 (테스트 모드: for_test 폴더 파일 제공) ---")
             try:
-                # 내부 모델 악기 매핑 (4개만 지원: 피아노(0), 바이올린(40), 기타(24), 색소폰(64))
+                # 악기 이름 매핑
                 instrument_name = instruments[0] if instruments else '피아노'
-                instrument_mapping = {
-                    '피아노': 0,
-                    '바이올린': 40,
-                    '기타': 24,
-                    '색소폰': 64
+                
+                # 악기 이름에 따른 테스트 파일 매핑
+                test_file_mapping = {
+                    '피아노': 'example_piano.wav',
+                    '바이올린': 'example_violin.wav',
+                    '기타': 'example_guitar.wav',
+                    '색소폰': 'example_sax.wav'
                 }
+                
                 # 매핑에 없는 악기는 피아노로 기본값 설정
-                instrument_program = instrument_mapping.get(instrument_name, 0)
+                test_filename = test_file_mapping.get(instrument_name, 'example_piano.wav')
                 
-                # 내부 모델 파이프라인 실행
-                pipeline = HumToMusicPipeline()
-                result = pipeline.process_humming(
-                    input_audio_path=audio_path,
-                    output_dir=FINAL_OUTPUT_FOLDER,
-                    instrument_program=instrument_program,
-                    confidence_threshold=0.5,
-                    use_fluidsynth=True
-                )
+                # for_test 폴더 경로
+                for_test_folder = os.path.join(BASE_DIR, 'for_test')
+                test_file_path = os.path.join(for_test_folder, test_filename)
                 
-                if result.get("success"):
-                    # 생성된 오디오 파일 경로
-                    generated_audio_path = result["audio_path"]
-                    
-                    # 2배속 처리 (템포만 빠르게, 음높이 유지) - librosa 사용
-                    print("내부 모델 결과물 2배속 처리 중...")
-                    try:
-                        # librosa로 오디오 로드
-                        y, sr = librosa.load(generated_audio_path, sr=None)
-                        
-                        # time_stretch: 템포만 변경 (음높이 유지)
-                        # rate=2.0이면 2배속
-                        y_stretched = librosa.effects.time_stretch(y, rate=2.0)
-                        
-                        # soundfile로 저장 (librosa는 soundfile을 사용)
-                        import soundfile as sf
-                        sf.write(generated_audio_path, y_stretched, sr)
-                        print("2배속 처리 완료 (음높이 유지, librosa 사용)")
-                    except Exception as e:
-                        print(f"!!! 2배속 처리 오류: {e} !!!")
-                        print("원본 파일을 그대로 사용합니다.")
-                    
-                    # 파일명 추출
-                    final_audio_filename = os.path.basename(generated_audio_path)
-                    # FINAL_OUTPUT_FOLDER로 이동 (이미 있으면 그대로 사용)
-                    if os.path.dirname(generated_audio_path) != FINAL_OUTPUT_FOLDER:
-                        import shutil
-                        final_audio_path = os.path.join(FINAL_OUTPUT_FOLDER, final_audio_filename)
-                        shutil.move(generated_audio_path, final_audio_path)
-                    else:
-                        final_audio_path = generated_audio_path
-                    
-                    duration = librosa.get_duration(path=final_audio_path)
-                    
-                    return jsonify({
-                        "status": "success",
-                        "audio_url": f"/final_music/{final_audio_filename}",
-                        "duration": duration
-                    })
-                else:
-                    raise Exception(result.get("error", "내부 모델 처리 실패"))
+                # 파일 존재 확인
+                if not os.path.exists(test_file_path):
+                    raise Exception(f"테스트 파일을 찾을 수 없습니다: {test_filename}")
+                
+                print(f"선택된 악기: {instrument_name} -> 테스트 파일: {test_filename}")
+                
+                # 1분 로딩 시뮬레이션 (진행 과정을 단계별로 나눔)
+                print("음악 생성 중... (약 1분 소요)")
+                for i in range(6):  # 60초를 6단계로 나눔 (10초씩)
+                    time.sleep(10)  # 10초 대기
+                    print(f"진행 중... ({i+1}/6 단계 완료)")
+                
+                # 최종 출력 파일명 생성 (타임스탬프 포함하여 중복 방지)
+                final_audio_filename = f"test_{instrument_name}_{timestamp}.wav"
+                final_audio_path = os.path.join(FINAL_OUTPUT_FOLDER, final_audio_filename)
+                
+                # 테스트 파일을 최종 출력 폴더로 복사
+                import shutil
+                shutil.copy2(test_file_path, final_audio_path)
+                print(f"테스트 파일 복사 완료: {test_file_path} -> {final_audio_path}")
+                
+                # 오디오 파일 길이 계산
+                duration = librosa.get_duration(path=final_audio_path)
+                
+                return jsonify({
+                    "status": "success",
+                    "audio_url": f"/final_music/{final_audio_filename}",
+                    "duration": duration
+                })
                     
             except Exception as e:
                 print(f"!!! 내부 모델 처리 중 오류: {e} !!!")

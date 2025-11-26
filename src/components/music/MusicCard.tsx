@@ -62,8 +62,25 @@ const MusicCard: React.FC<MusicCardProps> = ({ id, title, artist, music }) => {
   const handleDetailClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // ID 추출 (여러 소스 확인)
+    const postId = id || music?.id || null;
+    
+    // ID 검증
+    if (!postId || postId === undefined || postId === null || postId === 0) {
+      console.error('❌ MusicCard - 유효하지 않은 ID:', {
+        id,
+        musicId: music?.id,
+        postId,
+        전체_props: { id, title, artist, music }
+      });
+      alert('게시글 ID가 없습니다.');
+      return;
+    }
+    
+    console.log('🔗 MusicCard - 상세보기로 이동:', postId, typeof postId);
     // 상세 페이지로 이동
-    navigate(`/post/${id}`);
+    navigate(`/post/${postId}`);
   };
   // ⭐️ 진행률 계산
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;

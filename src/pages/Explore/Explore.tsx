@@ -24,6 +24,17 @@ const Explore: React.FC = () => {
 
         const postsData = await getPosts(orderBy);
         console.log('📋 받은 게시글:', postsData);
+        
+        // 각 게시글의 ID 검증
+        postsData.forEach((post, index) => {
+          console.log(`📋 게시글 ${index}:`, {
+            id: post.id,
+            postId: post.postId,
+            title: post.title,
+            hasId: !!post.id,
+            idType: typeof post.id
+          });
+        });
 
         setPosts(postsData);
         console.log('✅ 게시글 조회 성공:', postsData.length, '개');
@@ -98,24 +109,40 @@ const Explore: React.FC = () => {
           </div>
         ) : (
           <div className={styles.postsGrid}>
-            {posts.map((post) => (
-              <MusicCard
-                key={post.id}
-                id={post.id}
-                title={post.title}
-                artist={typeof post.author === 'string' ? post.author : post.author?.username}
-                music={{
+            {posts.map((post) => {
+              // ID 추출 (여러 소스 확인)
+              const postId = post.id || post.postId || null;
+              
+              // ID가 없는 게시글은 렌더링하지 않음
+              if (!postId) {
+                console.error('❌ ID가 없는 게시글 발견:', {
+                  post,
                   id: post.id,
-                  title: post.title,
-                  artist: typeof post.author === 'string' ? post.author : post.author?.username,
-                  duration: 0,
-                  audio_file: post.audio_file || '',
-                  cover_image: post.image || '',
-                  created_at: post.created_at,
-                  updated_at: post.updated_at || post.created_at,
-                }}
-              />
-            ))}
+                  postId: post.postId,
+                  모든_키: Object.keys(post)
+                });
+                return null;
+              }
+              
+              return (
+                <MusicCard
+                  key={postId}
+                  id={postId}
+                  title={post.title || '제목 없음'}
+                  artist={typeof post.author === 'string' ? post.author : post.author?.username || '작성자 미상'}
+                  music={{
+                    id: postId,
+                    title: post.title || '제목 없음',
+                    artist: typeof post.author === 'string' ? post.author : post.author?.username || '작성자 미상',
+                    duration: 0,
+                    audio_file: post.audio_file || '',
+                    cover_image: post.image || '',
+                    created_at: post.created_at,
+                    updated_at: post.updated_at || post.created_at,
+                  }}
+                />
+              );
+            })}
           </div>
         )}
       </div>
