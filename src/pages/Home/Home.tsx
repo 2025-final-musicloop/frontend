@@ -12,8 +12,8 @@ const Home: React.FC = () => {
   };
 
   const handleStart = () => {
-    // ✨ 회원가입 페이지로 이동!
-    navigate('/register');
+    // ✨ 허밍 페이지로 이동!
+    navigate('/huming');
   };
 
   const handleIntro = () => {

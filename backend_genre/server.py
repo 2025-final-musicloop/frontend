@@ -641,6 +641,26 @@ if __name__ == '__main__':
     # GCP 인증을 위한 환경 변수를 설정합니다. 
     load_dotenv() # .env
     
+    # --- 추가: multiprocessing 리소스 정리를 위한 설정 ---
+    import atexit
+    import warnings
+    import multiprocessing
+    
+    # multiprocessing 경고 필터링 (치명적이지 않은 경고)
+    warnings.filterwarnings('ignore', category=UserWarning, module='multiprocessing.resource_tracker')
+    
+    # 서버 종료 시 리소스 정리 함수
+    def cleanup_resources():
+        try:
+            # multiprocessing 리소스 정리
+            import multiprocessing
+            multiprocessing.active_children()
+        except Exception as e:
+            print(f"[INFO] 리소스 정리 중 오류 (무시 가능): {e}")
+    
+    # 종료 시 정리 함수 등록
+    atexit.register(cleanup_resources)
+    
     # --- 추가: FFmpeg 경로 최종 확인 및 로그 출력 ---
     ffmpeg_path_from_env = os.environ.get('FFMPEG_PATH')
     if ffmpeg_path_from_env:
@@ -669,4 +689,12 @@ if __name__ == '__main__':
 
     # 서버를 실행합니다. debug=True는 개발 중에 코드가 바뀌면 서버가 자동 재시작되게 합니다.
     # host='0.0.0.0'은 컴퓨터의 모든 IP 주소에서 접속을 허용합니다.
-    app.run(host='0.0.0.0', port=5000, debug=True,use_reloader=False)
+    try:
+        app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)
+    except KeyboardInterrupt:
+        print("\n[INFO] 서버 종료 중...")
+        cleanup_resources()
+    except Exception as e:
+        print(f"\n[ERROR] 서버 오류: {e}")
+        cleanup_resources()
+        raise
