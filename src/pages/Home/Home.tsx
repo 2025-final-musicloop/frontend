@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import styles from './Home.module.css';
 import Header from '../../components/layout/Header';
 import HeroSection from '../../components/common/HeroSection';
