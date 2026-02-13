@@ -1,0 +1,368 @@
+# Utility Functions Best Practices
+
+## 🎯 Utility Function Design Principles
+
+### MUST DO:
+
+- **ALWAYS** create single-purpose utility functions
+- **ALWAYS** use proper TypeScript generics for reusability
+- **ALWAYS** handle errors gracefully with try-catch blocks
+- **ALWAYS** provide JSDoc comments for complex functions
+- **ALWAYS** export functions from `src/utils/index.ts`
+
+### NEVER DO:
+
+- ❌ Create utility functions directly in component files
+- ❌ Duplicate utility functions across different files
+- ❌ Use `any` type in utility functions
+- ❌ Ignore error handling in utility functions
+
+## 📅 Date Utilities (`src/utils/date.ts`)
+
+### MUST DO:
+
+```typescript
+/**
+ * 날짜를 상대적 시간으로 변환 (예: "3분 전", "1시간 전")
+ * @param date - 변환할 날짜
+ * @returns 상대적 시간 문자열
+ */
+export const formatRelativeTime = (date: string | Date): string => {
+  const now = new Date();
+  const targetDate = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - targetDate.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return '방금 전';
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}시간 전`;
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) return `${diffInDays}일 전`;
+
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) return `${diffInWeeks}주 전`;
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) return `${diffInMonths}개월 전`;
+
+  const diffInYears = Math.floor(diffInDays / 365);
+  return `${diffInYears}년 전`;
+};
+
+/**
+ * 초를 MM:SS 형식으로 변환
+ * @param seconds - 변환할 초
+ * @returns MM:SS 형식의 문자열
+ */
+export const formatDuration = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export const formatTime = (date: any): any => {
+  // Don't use any
+  return 'some time ago';
+};
+
+export const formatSeconds = (sec: any): string => {
+  // Don't use any
+  return `${sec}:00`;
+};
+```
+
+## 📝 String Utilities (`src/utils/string.ts`)
+
+### MUST DO:
+
+```typescript
+/**
+ * 텍스트를 지정된 길이로 자르고 말줄임표 추가
+ * @param text - 자를 텍스트
+ * @param maxLength - 최대 길이
+ * @returns 잘린 텍스트
+ */
+export const truncateText = (text: string, maxLength: number): string => {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
+};
+
+/**
+ * 텍스트를 카멜케이스로 변환
+ * @param str - 변환할 문자열
+ * @returns 카멜케이스 문자열
+ */
+export const toCamelCase = (str: string): string => {
+  return str
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
+      return index === 0 ? word.toLowerCase() : word.toUpperCase();
+    })
+    .replace(/\s+/g, '');
+};
+
+/**
+ * 텍스트가 이메일 형식인지 확인
+ * @param email - 확인할 이메일
+ * @returns 이메일 형식 여부
+ */
+export const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export const truncate = (text: any, length: any): any => {
+  // Don't use any
+  return text.substring(0, length);
+};
+
+export const checkEmail = (email: any): any => {
+  // Don't use any
+  return email.includes('@');
+};
+```
+
+## ✅ Validation Utilities (`src/utils/validation.ts`)
+
+### MUST DO:
+
+```typescript
+/**
+ * 패스워드 강도 검사
+ * @param password - 검사할 패스워드
+ * @returns 검사 결과와 오류 메시지
+ */
+export const validatePassword = (
+  password: string,
+): {
+  isValid: boolean;
+  errors: string[];
+} => {
+  const errors: string[] = [];
+
+  if (password.length < 8) {
+    errors.push('비밀번호는 최소 8자 이상이어야 합니다.');
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    errors.push('비밀번호는 대문자를 포함해야 합니다.');
+  }
+
+  if (!/[a-z]/.test(password)) {
+    errors.push('비밀번호는 소문자를 포함해야 합니다.');
+  }
+
+  if (!/\d/.test(password)) {
+    errors.push('비밀번호는 숫자를 포함해야 합니다.');
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    errors.push('비밀번호는 특수문자를 포함해야 합니다.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+};
+
+/**
+ * 사용자명 유효성 검사
+ * @param username - 검사할 사용자명
+ * @returns 검사 결과와 오류 메시지
+ */
+export const validateUsername = (
+  username: string,
+): {
+  isValid: boolean;
+  errors: string[];
+} => {
+  const errors: string[] = [];
+
+  if (username.length < 3) {
+    errors.push('사용자명은 최소 3자 이상이어야 합니다.');
+  }
+
+  if (username.length > 20) {
+    errors.push('사용자명은 최대 20자까지 가능합니다.');
+  }
+
+  if (!/^[a-zA-Z0-9가-힣_]+$/.test(username)) {
+    errors.push('사용자명은 영문, 숫자, 한글, 언더스코어만 사용 가능합니다.');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export const checkPassword = (pass: any): any => {
+  // Don't use any
+  return pass.length > 5;
+};
+
+export const validateUser = (user: any): any => {
+  // Don't use any
+  return user && user.length > 2;
+};
+```
+
+## 💾 Storage Utilities (`src/utils/storage.ts`)
+
+### MUST DO:
+
+```typescript
+/**
+ * 로컬 스토리지에 데이터 저장
+ * @param key - 저장할 키
+ * @param value - 저장할 값
+ */
+export const setStorageItem = <T>(key: string, value: T): void => {
+  try {
+    const serializedValue = JSON.stringify(value);
+    localStorage.setItem(key, serializedValue);
+  } catch (error) {
+    console.error('로컬 스토리지 저장 실패:', error);
+  }
+};
+
+/**
+ * 로컬 스토리지에서 데이터 가져오기
+ * @param key - 가져올 키
+ * @param defaultValue - 기본값
+ * @returns 저장된 값 또는 기본값
+ */
+export const getStorageItem = <T>(key: string, defaultValue?: T): T | null => {
+  try {
+    const item = localStorage.getItem(key);
+    if (item === null) {
+      return defaultValue || null;
+    }
+    return JSON.parse(item);
+  } catch (error) {
+    console.error('로컬 스토리지 읽기 실패:', error);
+    return defaultValue || null;
+  }
+};
+
+/**
+ * 토큰 관련 편의 함수들
+ */
+export const setAccessToken = (token: string): void => {
+  setStorageItem('accessToken', token);
+};
+
+export const getAccessToken = (): string | null => {
+  return getStorageItem<string>('accessToken');
+};
+
+export const removeTokens = (): void => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+};
+```
+
+### NEVER DO:
+
+```typescript
+// ❌ WRONG - Avoid these patterns
+export const saveToStorage = (key: string, value: any): void => {
+  // Don't use any
+  localStorage.setItem(key, JSON.stringify(value));
+};
+
+export const getFromStorage = (key: string): any => {
+  // Don't use any
+  return JSON.parse(localStorage.getItem(key));
+};
+```
+
+## 🔄 Common Utilities (`src/utils/index.ts`)
+
+### MUST DO:
+
+```typescript
+// 날짜 관련 유틸리티
+export * from './date';
+
+// 문자열 관련 유틸리티
+export * from './string';
+
+// 유효성 검사 관련 유틸리티
+export * from './validation';
+
+// 스토리지 관련 유틸리티
+export * from './storage';
+
+// 공통 유틸리티 함수들
+export const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  wait: number,
+): ((...args: Parameters<T>) => void) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
+
+export const throttle = <T extends (...args: any[]) => any>(
+  func: T,
+  limit: number,
+): ((...args: Parameters<T>) => void) => {
+  let inThrottle: boolean;
+  return (...args: Parameters<T>) => {
+    if (!inThrottle) {
+      func(...args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+};
+
+export const generateId = (): string => {
+  return Math.random().toString(36).substr(2, 9);
+};
+```
+
+## 🚨 Critical Utility Rules
+
+### IMMEDIATE ACTIONS REQUIRED:
+
+1. **NEVER** create utility functions in component files
+2. **ALWAYS** use proper TypeScript generics for reusability
+3. **ALWAYS** handle errors gracefully with try-catch blocks
+4. **ALWAYS** provide JSDoc comments for complex functions
+5. **NEVER** use `any` type in utility functions
+
+### ENFORCEMENT:
+
+- All utility functions MUST be placed in appropriate utils folders
+- All utility functions MUST have proper TypeScript types
+- All utility functions MUST include error handling
+- All utility functions MUST be exported from `src/utils/index.ts`
+- All complex utility functions MUST have JSDoc comments
+  description:
+  globs:
+  alwaysApply: false
+
+---

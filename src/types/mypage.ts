@@ -1,78 +1,88 @@
-// 사용자 프로필
+// src/types/mypage.ts
+import { User, Post, Music } from './api';
+
+// ========== mypage 전용 타입들만 정의 ==========
+
+// ✅ User 프로필 확장
 export interface UserProfile {
   id: number;
-  email: string;
   username: string;
-  nickname: string;
-  profile_image: string | null;
+  email: string;
   bio: string;
-  date_joined: string;
-  loops_count: number;
-  favorites_count: number;
-}
-
-// 음악 루프
-export interface MusicLoop {
-  id: number;
-  user_email: string;
-  user_nickname: string;
-  title: string;
-  description: string;
-  audio_file: string;
-  thumbnail: string | null;
-  bpm: number | null;
-  duration: number | null;
-  genre: string;
-  tags: string[];
-  is_public: boolean;
-  play_count: number;
-  is_favorited: boolean;
-  favorites_count: number;
-  is_mine: boolean;
+  profile_image: string | null;
   created_at: string;
-  updated_at: string;
+  posts_count?: number;
+  favorites_count?: number;
+  followers_count?: number;
+  following_count?: number;
 }
 
-// 루프 생성/수정 데이터
-export interface MusicLoopFormData {
-  title: string;
-  description?: string;
-  audio_file?: File;
-  thumbnail?: File;
-  bpm?: number;
-  duration?: number;
-  genre?: string;
-  tags?: string[];
-  is_public?: boolean;
-}
-
-// 좋아요
-export interface Favorite {
-  id: number;
-  loop: MusicLoop;
-  created_at: string;
-}
-
-// 루프 통계
-export interface LoopStatistics {
-  total_loops: number;
-  total_plays: number;
+// ✅ 통계 정보
+export interface UserStatistics {
+  total_posts: number;
+  total_likes: number;
+  total_comments: number;
+  total_music: number;
   total_favorites: number;
-  public_loops: number;
-  private_loops: number;
 }
 
-// API 응답
-export interface ApiResponse<T> {
-  message?: string;
-  data?: T;
-  count?: number;
-  results?: T[];
+// ✅ 내 게시물 조회 파라미터
+export interface MyPostsParams {
+  ordering?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
 }
 
-// 비밀번호 변경
-export interface PasswordChangeData {
+// ✅ 내 음악 조회 파라미터
+export interface MyMusicParams {
+  ordering?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+// ✅ 프로필 업데이트 요청
+export interface UpdateProfileRequest {
+  username?: string;
+  email?: string;
+  bio?: string;
+  profile_image?: File;
+}
+
+// ✅ 비밀번호 변경 요청
+export interface ChangePasswordRequest {
   old_password: string;
   new_password: string;
   new_password_confirm: string;
+}
+
+// ✅ 좋아요한 게시물
+export interface FavoritePost {
+  id: number;
+  post: {
+    id: number;
+    title: string;
+    content: string;
+    author?: {
+      username: string;
+    };
+    created_at: string;
+  };
+  created_at: string;
+}
+
+// ✅ 좋아요한 음악
+export interface FavoriteMusic {
+  id: number;
+  music: {
+    id: number;
+    title: string;
+    author?: {
+      username: string;
+    };
+    genre?: string;
+    created_at: string;
+  };
+  created_at: string;
 }

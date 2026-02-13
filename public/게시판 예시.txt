@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Music Board</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F3F4F6;}
+        .sidebar-icon {
+            font-size: 28px;
+        }
+        .play-button {
+            transition: transform 0.1s ease-in-out;
+        }
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+        .nav-item:hover {
+            background-color: #E0E7FF;}
+        .nav-item.active {
+            background-color: #DBEAFE;border-left: 4px solid #3B82F6;}
+        .nav-item.active span, .nav-item.active .material-icons {
+            color: #3B82F6;}
+    </style>
+</head>
+<body class="flex h-screen">
+<aside class="w-24 bg-white flex flex-col items-center py-8 space-y-6 shadow-lg">
+<div class="nav-item flex flex-col items-center space-y-1 p-3 rounded-lg cursor-pointer">
+<span class="material-icons sidebar-icon text-gray-600">home</span>
+<span class="text-xs text-gray-600 font-medium">HOME</span>
+</div>
+<div class="nav-item flex flex-col items-center space-y-1 p-3 rounded-lg cursor-pointer">
+<span class="material-icons sidebar-icon text-gray-600">music_note</span>
+<span class="text-xs text-gray-600 font-medium">HUMING</span>
+</div>
+<div class="nav-item flex flex-col items-center space-y-1 p-3 rounded-lg cursor-pointer">
+<span class="material-icons sidebar-icon text-gray-600">album</span>
+<span class="text-xs text-gray-600 font-medium">GENRE</span>
+</div>
+<div class="nav-item active flex flex-col items-center space-y-1 p-3 rounded-lg cursor-pointer">
+<span class="material-icons sidebar-icon">explore</span>
+<span class="text-xs font-medium">EXPLORE</span>
+</div>
+<div class="nav-item flex flex-col items-center space-y-1 p-3 rounded-lg cursor-pointer">
+<span class="material-icons sidebar-icon text-gray-600">build</span>
+<span class="text-xs text-gray-600 font-medium">BUILD</span>
+</div>
+<div class="mt-auto nav-item flex flex-col items-center space-y-1 p-3 rounded-lg cursor-pointer">
+<span class="material-icons sidebar-icon text-gray-600">person</span>
+<span class="text-xs text-gray-600 font-medium">MY</span>
+</div>
+</aside>
+<main class="flex-1 p-8 overflow-y-auto">
+<header class="flex justify-between items-center mb-8">
+<div class="relative w-2/3">
+<input class="w-full py-3 px-6 text-lg bg-white border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow" placeholder="검색창" type="text"/>
+<span class="material-icons absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400">search</span>
+</div>
+<button class="p-3 bg-white rounded-full shadow-md hover:bg-gray-100 transition">
+<span class="material-icons text-gray-700">notifications</span>
+</button>
+</header>
+<div class="space-y-6">
+<div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-6 hover:shadow-xl transition-shadow duration-300">
+<img alt="Artist profile picture" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_Bz3g7qStJ7IPQQAktB8x5VYcmhhrswaI5V9JxEdCV72lOmXCICRt7Hys_b0QPOXzeDYDdFfHyOgR2B2pWwibxplIg9bqpcAHyw6jwy6O9dqBzsuB6__8uHv2cNBGFk8sztnPbdA2BpvQ0y28mXf5eefBvPOKthLfQpTq_x0R7oAwTQhyfzZ3sJS-qVKZMSzgDGWdmA5teIZCw-NdRjOoeZCcf6dC0JPEwR2wiBc2n5fA_tAtrLwV_YPmQ0F_wC6em4DcvD1D5Qwz"/>
+<div class="flex-1">
+<h2 class="text-2xl font-semibold text-gray-800 mb-1">제목 1</h2>
+<div class="h-2 bg-gray-200 rounded-full w-3/4 mb-2">
+<div class="h-2 bg-blue-500 rounded-full" style="width: 60%;"></div>
+</div>
+<a class="text-sm text-blue-600 hover:underline font-medium" href="#">상세보기</a>
+</div>
+<button class="play-button p-4 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+<span class="material-icons text-3xl">play_arrow</span>
+</button>
+</div>
+<div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-6 hover:shadow-xl transition-shadow duration-300">
+<img alt="Artist profile picture" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiprSgnKjitl_cYhLXVgAKd-uEGodMPzhcY6U8_u_9Ra0k7Rb7B30_gzvfYCMuDhZmAQjuG43uRayuqI6loHf30TCGIIkrLqasqEUekKVIs6yfUGtDEtIxlxiRPaCR1kjKEXXZOVgRGRihAjLnxglRdhbEa-QnAYnuXqa1iZjZ-2GVwjm3zyEkCz1aTkI57PiaTX2QNyS2S-g79obSGSDnc78O1GODigCdpy0KbdsKBTRmYAImiUh17uAfns5bzfGDePZIZ-BWr9r-"/>
+<div class="flex-1">
+<h2 class="text-2xl font-semibold text-gray-800 mb-1">제목 2</h2>
+<div class="h-2 bg-gray-200 rounded-full w-3/4 mb-2">
+<div class="h-2 bg-pink-500 rounded-full" style="width: 40%;"></div>
+</div>
+<a class="text-sm text-blue-600 hover:underline font-medium" href="#">상세보기</a>
+</div>
+<button class="play-button p-4 bg-pink-500 text-white rounded-full shadow-md hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75">
+<span class="material-icons text-3xl">play_arrow</span>
+</button>
+</div>
+<div class="bg-white rounded-xl shadow-lg p-6 flex items-center space-x-6 hover:shadow-xl transition-shadow duration-300">
+<img alt="Artist profile picture" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk4BCW4I-qgO4eyLkyMHbj_JBu6OylNyOVRaRC_-FIZPWVhkBsBACuojieJ9GpXoE0hlNSPv_UercX8WtyI06Mp0Jhqrd8zYfx2gwAaBDSbvDCwUgJUIySVi2NcmJMOXlkS-pKRxCVkmeEQYEtS7NtgR051yXAG_6-jNNyw4AstCvcrJ0f4PNXJUpb4l7V7Zp4L9ABrkQGX5w0gMRxXT0BdCbaMuQs5DZzKqwLv66dBZPn5SYXsogQZS0TRJi7p6oNA3sqzP_Al8ff"/>
+<div class="flex-1">
+<h2 class="text-2xl font-semibold text-gray-800 mb-1">제목 3</h2>
+<div class="h-2 bg-gray-200 rounded-full w-3/4 mb-2">
+<div class="h-2 bg-green-500 rounded-full" style="width: 80%;"></div>
+</div>
+<a class="text-sm text-blue-600 hover:underline font-medium" href="#">상세보기</a>
+</div>
+<button class="play-button p-4 bg-green-500 text-white rounded-full shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75">
+<span class="material-icons text-3xl">play_arrow</span>
+</button>
+</div>
+</div>
+</main>
+
+</body></html>

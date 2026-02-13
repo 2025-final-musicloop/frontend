@@ -1,0 +1,202 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 80vh;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  color: #333;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
+}
+
+.description {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+.modelOptions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.modelCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  border: 3px solid #e1e5f2;
+  border-radius: 16px;
+  background: #f8f9ff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.modelCard:hover {
+  border-color: #667eea;
+  background: #f0f2ff;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+}
+
+.modelCard.selected {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.modelIcon {
+  color: #eef2ff;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.modelCard.selected .modelIcon {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.modelIcon .material-icons {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.modelTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #3b3b3b;
+  margin-bottom: 0.5rem;
+}
+
+.modelDescription {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.modelFeatures {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.feature {
+  padding: 0.25rem 0.75rem;
+  background: white;
+  border: 1px solid #e1e5f2;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #667eea;
+  font-weight: 500;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #fff3cd;
+  border: 1px solid #f5d678;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.warning .material-icons {
+  font-size: 1.2rem;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 0rem;
+}
+
+.nextButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 25px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  margin: 0 auto;
+}
+
+.nextButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.nextButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .modelOptions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .modelCard {
+    padding: 1.5rem;
+  }
+
+  .modelIcon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .modelIcon .material-icons {
+    font-size: 2rem;
+  }
+
+  .modelTitle {
+    font-size: 1.2rem;
+  }
+
+  .modelDescription {
+    font-size: 0.8rem;
+  }
+}

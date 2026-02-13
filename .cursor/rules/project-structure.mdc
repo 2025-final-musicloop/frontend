@@ -1,0 +1,179 @@
+# React Project Structure Rules
+
+## 🏗️ Component Organization
+
+### MUST DO:
+
+- **ALWAYS** organize components by their purpose in the correct folders:
+  - `src/components/ui/` - Reusable UI components (Button, Input, Modal, etc.)
+  - `src/components/layout/` - Layout components (Header, Sidebar, Footer, etc.)
+  - `src/components/[domain]/` - Domain-specific components (MusicCard, UserProfile, etc.)
+  - `src/components/common/` - Shared section components (HeroSection, BlobBackground, etc.)
+
+### NEVER DO:
+
+- ❌ Place components directly in `src/components/` without proper categorization
+- ❌ Mix UI components with domain-specific components
+- ❌ Create flat structure with all components in one folder
+
+### Import Paths:
+
+```typescript
+// ✅ CORRECT
+import Button from '../../components/ui/Button';
+import Header from '../../components/layout/Header';
+import MusicCard from '../../components/music/MusicCard';
+
+// ❌ WRONG
+import Button from '../../components/Button';
+```
+
+## 🔧 TypeScript Type System
+
+### MUST DO:
+
+- **ALWAYS** define proper TypeScript interfaces for all components
+- **ALWAYS** use the type system structure:
+  - `src/types/api.ts` - API response types
+  - `src/types/components.ts` - Component Props interfaces
+  - `src/types/index.ts` - Export all types
+
+### NEVER DO:
+
+- ❌ Use `any` type without proper justification
+- ❌ Create components without TypeScript interfaces
+- ❌ Mix type definitions across different files randomly
+
+### Type Definition Pattern:
+
+```typescript
+// ✅ CORRECT
+export interface ButtonProps {
+  children: ReactNode;
+  onClick?: () => void;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  className?: string;
+}
+
+const Button: React.FC<ButtonProps> = ({ variant = 'primary', size = 'md', ... }) => {
+  // Component implementation
+};
+```
+
+## 🛠️ Utility Functions
+
+### MUST DO:
+
+- **ALWAYS** create utility functions in `src/utils/` with proper categorization:
+  - `src/utils/date.ts` - Date manipulation utilities
+  - `src/utils/string.ts` - String manipulation utilities
+  - `src/utils/validation.ts` - Form validation utilities
+  - `src/utils/storage.ts` - Local storage utilities
+  - `src/utils/index.ts` - Export all utilities
+
+### NEVER DO:
+
+- ❌ Create utility functions directly in component files
+- ❌ Duplicate utility functions across different files
+- ❌ Use inline utility logic when a reusable function exists
+
+### Utility Function Pattern:
+
+```typescript
+// ✅ CORRECT
+export const formatRelativeTime = (date: string | Date): string => {
+  const now = new Date();
+  const targetDate = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - targetDate.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return '방금 전';
+  // ... more logic
+};
+```
+
+## 📁 File Naming Conventions
+
+### MUST DO:
+
+- **ALWAYS** use PascalCase for component files: `Button.tsx`, `MusicCard.tsx`
+- **ALWAYS** use camelCase for utility files: `date.ts`, `validation.ts`
+- **ALWAYS** use kebab-case for CSS modules: `Button.module.css`
+
+### NEVER DO:
+
+- ❌ Use inconsistent naming conventions
+- ❌ Mix different naming styles in the same project
+
+## 🔄 Import Management
+
+### MUST DO:
+
+- **ALWAYS** update import paths when moving components
+- **ALWAYS** use relative paths from the importing file
+- **ALWAYS** import types using `import type` syntax
+
+### NEVER DO:
+
+- ❌ Use absolute paths without proper configuration
+- ❌ Import types without the `type` keyword
+- ❌ Leave broken import paths after refactoring
+
+## 🎯 Code Quality Standards
+
+### MUST DO:
+
+- **ALWAYS** provide default values for optional props
+- **ALWAYS** use proper TypeScript generics for utility functions
+- **ALWAYS** handle errors gracefully in utility functions
+- **ALWAYS** add JSDoc comments for complex functions
+
+### NEVER DO:
+
+- ❌ Use `any` type without proper type guards
+- ❌ Ignore TypeScript errors
+- ❌ Create functions without proper error handling
+
+## 📋 Project Structure Reference
+
+```
+src/
+├── components/
+│   ├── ui/           # Reusable UI components
+│   ├── layout/       # Layout components
+│   ├── music/        # Domain-specific components
+│   └── common/       # Shared section components
+├── types/
+│   ├── api.ts        # API response types
+│   ├── components.ts # Component Props types
+│   └── index.ts      # Export all types
+├── utils/
+│   ├── date.ts       # Date utilities
+│   ├── string.ts     # String utilities
+│   ├── validation.ts # Validation utilities
+│   ├── storage.ts    # Storage utilities
+│   └── index.ts      # Export all utilities
+└── pages/            # Page components
+```
+
+## 🚨 Critical Rules
+
+### IMMEDIATE ACTIONS REQUIRED:
+
+1. **NEVER** create components outside the proper folder structure
+2. **ALWAYS** define TypeScript interfaces before implementing components
+3. **ALWAYS** use the established utility functions instead of creating new ones
+4. **NEVER** break the existing folder organization
+
+### ENFORCEMENT:
+
+- All new components MUST follow the established folder structure
+- All component props MUST have proper TypeScript interfaces
+- All utility functions MUST be placed in the appropriate utils folder
+- Import paths MUST be updated when components are moved
+  description:
+  globs:
+  alwaysApply: false
+
+---

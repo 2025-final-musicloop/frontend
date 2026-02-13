@@ -1,194 +1,199 @@
-import api from './client';
+// src/api/mypage.ts
+import axios from 'axios';
 import {
   UserProfile,
-  MusicLoop,
-  MusicLoopFormData,
-  Favorite,
-  LoopStatistics,
-  PasswordChangeData,
-  ApiResponse,
+  UserStatistics,
+  MyPostsParams,
+  MyMusicParams,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
+  FavoritePost,
+  FavoriteMusic,
 } from '../types/mypage';
+import { Post, Music, PaginatedResponse } from '../types/api';
+
+const API_BASE = 'http://localhost:8000/api';
+
+// localStorage에서 토큰 가져오기
+const getAccessToken = (): string => {
+  return localStorage.getItem('accessToken') || ''; // ✅ 'access_token' → 'accessToken'
+};
 
 // ========== 프로필 관련 ==========
 
 // 내 프로필 조회
-export const getMyProfile = async (): Promise<UserProfile> => {
-  const response = await api.get<UserProfile>('/mypage/profile/');
-  return response.data;
+export const getMyProfile = async (accessToken?: string): Promise<UserProfile> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.get<UserProfile>(`${API_BASE}/users/me/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
 // 프로필 수정
-export const updateProfile = async (
-  data: Partial<UserProfile>
-): Promise<ApiResponse<UserProfile>> => {
-  const response = await api.put<ApiResponse<UserProfile>>(
-    '/mypage/profile/update/',
-    data
-  );
-  return response.data;
-};
+export const updateProfile = async (data: UpdateProfileRequest, accessToken?: string): Promise<UserProfile> => {
+  const token = accessToken || getAccessToken();
 
-// 프로필 이미지 업로드
-export const uploadProfileImage = async (
-  file: File
-): Promise<ApiResponse<UserProfile>> => {
-  const formData = new FormData();
-  formData.append('profile_image', file);
+  // 이미지가 있으면 FormData 사용
+  if (data.profile_image) {
+    const formData = new FormData();
+    if (data.username) formData.append('username', data.username);
+    if (data.email) formData.append('email', data.email);
+    if (data.bio) formData.append('bio', data.bio);
+    formData.append('profile_image', data.profile_image);
 
-  const response = await api.post<ApiResponse<UserProfile>>(
-    '/mypage/profile/image/upload/',
-    formData,
-    {
+    const res = await axios.put<UserProfile>(`${API_BASE}/users/me/`, formData, {
       headers: {
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
       },
-    }
-  );
-  return response.data;
-};
-
-// 프로필 이미지 삭제
-export const deleteProfileImage = async (): Promise<ApiResponse<null>> => {
-  const response = await api.delete<ApiResponse<null>>(
-    '/mypage/profile/image/delete/'
-  );
-  return response.data;
+    });
+    return res.data;
+  } else {
+    // 일반 JSON 데이터
+    const res = await axios.put<UserProfile>(`${API_BASE}/users/me/`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  }
 };
 
 // 비밀번호 변경
 export const changePassword = async (
-  data: PasswordChangeData
-): Promise<ApiResponse<null>> => {
-  const response = await api.post<ApiResponse<null>>(
-    '/mypage/profile/password/',
-    data
-  );
-  return response.data;
-};
-
-// ========== 내 루프 관련 ==========
-
-// 내 루프 목록 조회
-export const getMyLoops = async (params?: {
-  is_public?: boolean;
-  genre?: string;
-  search?: string;
-}): Promise<ApiResponse<MusicLoop[]>> => {
-  const response = await api.get<ApiResponse<MusicLoop[]>>('/mypage/myloops/', {
-    params,
+  data: ChangePasswordRequest,
+  accessToken?: string,
+): Promise<{ message: string }> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.post<{ message: string }>(`${API_BASE}/users/change-password/`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
-  return response.data;
+  return res.data;
 };
 
-// 특정 루프 조회
-export const getLoop = async (id: number): Promise<MusicLoop> => {
-  const response = await api.get<MusicLoop>(`/mypage/myloops/${id}/`);
-  return response.data;
+// 통계 조회
+export const getMyStatistics = async (accessToken?: string): Promise<UserStatistics> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.get<UserStatistics>(`${API_BASE}/users/me/statistics/`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
-// 루프 생성
-export const createLoop = async (
-  data: MusicLoopFormData
-): Promise<ApiResponse<MusicLoop>> => {
-  const formData = new FormData();
+// ========== 내 게시물 관련 ==========
 
-  formData.append('title', data.title);
-  if (data.description) formData.append('description', data.description);
-  if (data.audio_file) formData.append('audio_file', data.audio_file);
-  if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-  if (data.bpm) formData.append('bpm', data.bpm.toString());
-  if (data.duration) formData.append('duration', data.duration.toString());
-  if (data.genre) formData.append('genre', data.genre);
-  if (data.tags) formData.append('tags', JSON.stringify(data.tags));
-  if (data.is_public !== undefined)
-    formData.append('is_public', data.is_public.toString());
+// 🆕 다시 추가! MyPosts에서 사용하므로 필요해요
+export const getMyPosts = async (params?: MyPostsParams, accessToken?: string): Promise<PaginatedResponse<Post>> => {
+  const token = accessToken || getAccessToken();
 
-  const response = await api.post<ApiResponse<MusicLoop>>(
-    '/mypage/myloops/',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
-  return response.data;
+  const queryParams = new URLSearchParams();
+  if (params?.ordering) queryParams.append('ordering', params.ordering);
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const queryString = queryParams.toString();
+  const url = `${API_BASE}/posts/my-posts/${queryString ? `?${queryString}` : ''}`;
+
+  const res = await axios.get<PaginatedResponse<Post>>(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
-// 루프 수정
-export const updateLoop = async (
-  id: number,
-  data: Partial<MusicLoopFormData>
-): Promise<ApiResponse<MusicLoop>> => {
-  const formData = new FormData();
+// 내 음악 게시물 조회
+export const getMyMusic = async (params?: MyMusicParams, accessToken?: string): Promise<PaginatedResponse<Music>> => {
+  const token = accessToken || getAccessToken();
 
-  if (data.title) formData.append('title', data.title);
-  if (data.description) formData.append('description', data.description);
-  if (data.audio_file) formData.append('audio_file', data.audio_file);
-  if (data.thumbnail) formData.append('thumbnail', data.thumbnail);
-  if (data.bpm) formData.append('bpm', data.bpm.toString());
-  if (data.duration) formData.append('duration', data.duration.toString());
-  if (data.genre) formData.append('genre', data.genre);
-  if (data.tags) formData.append('tags', JSON.stringify(data.tags));
-  if (data.is_public !== undefined)
-    formData.append('is_public', data.is_public.toString());
+  const queryParams = new URLSearchParams();
+  if (params?.ordering) queryParams.append('ordering', params.ordering);
+  if (params?.search) queryParams.append('search', params.search);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
 
-  const response = await api.patch<ApiResponse<MusicLoop>>(
-    `/mypage/myloops/${id}/`,
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }
-  );
-  return response.data;
-};
+  const queryString = queryParams.toString();
+  const url = `${API_BASE}/music/my-music/${queryString ? `?${queryString}` : ''}`;
 
-// 루프 삭제
-export const deleteLoop = async (id: number): Promise<ApiResponse<null>> => {
-  const response = await api.delete<ApiResponse<null>>(
-    `/mypage/myloops/${id}/`
-  );
-  return response.data;
-};
-
-// 루프 통계
-export const getLoopStatistics = async (): Promise<LoopStatistics> => {
-  const response = await api.get<LoopStatistics>('/mypage/loops/statistics/');
-  return response.data;
+  const res = await axios.get<PaginatedResponse<Music>>(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
 // ========== 좋아요 관련 ==========
 
-// 좋아요 목록
-export const getFavorites = async (params?: {
-  search?: string;
-}): Promise<ApiResponse<Favorite[]>> => {
-  const response = await api.get<ApiResponse<Favorite[]>>('/mypage/favorites/', {
-    params,
+// 내가 좋아요한 게시물 조회
+export const getMyFavoritePosts = async (
+  page: number = 1,
+  accessToken?: string,
+): Promise<PaginatedResponse<FavoritePost>> => {
+  // ✅ 반환 타입 수정!
+  const token = accessToken || getAccessToken();
+  const res = await axios.get<PaginatedResponse<FavoritePost>>(`${API_BASE}/posts/favorites/?page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
-  return response.data;
+  return res.data;
 };
 
-// 좋아요 토글
-export const toggleFavorite = async (
-  loopId: number
-): Promise<{ message: string; is_favorited: boolean }> => {
-  const response = await api.post<{ message: string; is_favorited: boolean }>(
-    '/mypage/favorites/toggle/',
-    { loop_id: loopId }
-  );
-  return response.data;
+// 내가 좋아요한 음악 조회
+export const getMyFavoriteMusic = async (
+  page: number = 1,
+  accessToken?: string,
+): Promise<PaginatedResponse<FavoriteMusic>> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.get<PaginatedResponse<FavoriteMusic>>(`${API_BASE}/music/favorites/?page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
-// 좋아요 상태 확인
-export const checkFavorite = async (
-  loopId: number
-): Promise<{ loop_id: number; is_favorited: boolean }> => {
-  const response = await api.get<{ loop_id: number; is_favorited: boolean }>(
-    '/mypage/favorites/check/',
-    { params: { loop_id: loopId } }
+// 🆕 게시물 좋아요 토글 (Favorites에서 사용)
+export const togglePostLike = async (
+  postId: number,
+  accessToken?: string,
+): Promise<{ message: string; is_liked: boolean }> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.post<{ message: string; is_liked: boolean }>(
+    `${API_BASE}/posts/${postId}/like/`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
-  return response.data;
+  return res.data;
+};
+
+// 음악 좋아요 토글
+export const toggleMusicLike = async (
+  musicId: number,
+  accessToken?: string,
+): Promise<{ message: string; is_liked: boolean }> => {
+  const token = accessToken || getAccessToken();
+  const res = await axios.post<{ message: string; is_liked: boolean }>(
+    `${API_BASE}/music/${musicId}/like/`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  return res.data;
 };

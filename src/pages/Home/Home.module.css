@@ -59,3 +59,7 @@
   background-color: #000;
   color: #fff;
 }
+
+.mainContent {
+  @apply flex flex-1 flex-col overflow-hidden;
+}

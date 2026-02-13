@@ -1,145 +1,97 @@
-import { useState, useEffect } from 'react';
-import { UserProfile, LoopStatistics } from '../../types/mypage';
-import { getMyProfile, getLoopStatistics } from '../../api/mypage';
-import ProfileSection from './ProfileSection';
-import MyLoopsSection from './MyLoopsSection';
-import FavoritesSection from './FavoritesSection';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import styles from './MyPage.module.css';
 
-type TabType = 'profile' | 'loops' | 'favorites';
+const MyPage: React.FC = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-const MyPage = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('profile');
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [statistics, setStatistics] = useState<LoopStatistics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
-
-  // 초기 데이터 로드
-  useEffect(() => {
-    loadInitialData();
-  }, []);
-
-  const loadInitialData = async () => {
-    try {
-      setLoading(true);
-      const [profileData, statsData] = await Promise.all([
-        getMyProfile(),
-        getLoopStatistics(),
-      ]);
-      setProfile(profileData);
-      setStatistics(statsData);
-    } catch (err: any) {
-      setError(err.response?.data?.error || '데이터를 불러오는데 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
-  // 프로필 업데이트 콜백
-  const handleProfileUpdate = (updatedProfile: UserProfile) => {
-    setProfile(updatedProfile);
+  const handleEditProfile = () => {
+    navigate('/my/profile/edit');
   };
 
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>로딩 중...</div>
-      </div>
-    );
-  }
+  const handleMyWorks = () => {
+    navigate('/my/works');
+  };
 
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>
-          <p>{error}</p>
-          <button onClick={loadInitialData}>다시 시도</button>
-        </div>
-      </div>
-    );
-  }
+  // ❌ 삭제: handleCollaborations 함수 제거
+  // const handleCollaborations = () => {
+  //   navigate('/collaborations');
+  // };
 
-  if (!profile) return null;
+  const handleMyPosts = () => {
+    navigate('/my/posts');
+  };
+
+  const handleFavorites = () => {
+    navigate('/my/favorites');
+  };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.pageContainer}>
       {/* 헤더 */}
-      <header className={styles.header}>
-        <div className={styles.profileSummary}>
-          <div className={styles.profileImage}>
-            {profile.profile_image ? (
-              <img src={profile.profile_image} alt={profile.nickname} />
-            ) : (
-              <div className={styles.profilePlaceholder}>
-                {profile.nickname?.charAt(0) || profile.username.charAt(0)}
-              </div>
-            )}
-          </div>
-          <div className={styles.profileInfo}>
-            <h1>{profile.nickname || profile.username}</h1>
-            <p className={styles.email}>{profile.email}</p>
-            {profile.bio && <p className={styles.bio}>{profile.bio}</p>}
+      <div className={styles.header}>
+        <h1 className={styles.pageTitle}>마이페이지</h1>
+        <button onClick={handleLogout} className={styles.logoutButton}>
+          로그아웃
+        </button>
+      </div>
+
+      {/* 메인 콘텐츠 */}
+      <div className={styles.mainContent}>
+        {/* 사용자 정보 */}
+        <div className={styles.userSection}>
+          <div className={styles.userInfo}>
+            <div className={styles.profileImage}>
+              {user?.profileImage ? (
+                <img src={user.profileImage} alt="프로필" />
+              ) : (
+                <div className={styles.profilePlaceholder}>
+                  <span>{(user?.name || user?.username || 'U').charAt(0)}</span>
+                </div>
+              )}
+            </div>
+            <div className={styles.userDetails}>
+              <h2 className={styles.userName}>{user?.name || user?.username || '사용자'}</h2>
+              <p className={styles.userEmail}>{user?.email || 'user@example.com'}</p>
+            </div>
           </div>
         </div>
 
-        {/* 통계 */}
-        {statistics && (
-          <div className={styles.statistics}>
-            <div className={styles.statItem}>
-              <span className={styles.statValue}>{statistics.total_loops}</span>
-              <span className={styles.statLabel}>내 루프</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statValue}>{statistics.total_plays}</span>
-              <span className={styles.statLabel}>총 재생</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statValue}>{statistics.total_favorites}</span>
-              <span className={styles.statLabel}>받은 좋아요</span>
-            </div>
-            <div className={styles.statItem}>
-              <span className={styles.statValue}>{profile.favorites_count}</span>
-              <span className={styles.statLabel}>좋아요한 루프</span>
-            </div>
+        {/* 메뉴 섹션 */}
+        <div className={styles.menuSection}>
+          <div className={styles.menuItem} onClick={handleMyWorks}>
+            <span className={styles.menuText}>내 작업물 리스트</span>
+            <div className={styles.menuArrow}>→</div>
           </div>
-        )}
-      </header>
 
-      {/* 탭 네비게이션 */}
-      <nav className={styles.tabs}>
-        <button
-          className={activeTab === 'profile' ? styles.active : ''}
-          onClick={() => setActiveTab('profile')}
-        >
-          프로필 설정
-        </button>
-        <button
-          className={activeTab === 'loops' ? styles.active : ''}
-          onClick={() => setActiveTab('loops')}
-        >
-          내 루프
-        </button>
-        <button
-          className={activeTab === 'favorites' ? styles.active : ''}
-          onClick={() => setActiveTab('favorites')}
-        >
-          좋아요
-        </button>
-      </nav>
+          {/* ❌ 삭제: 공동 제작 메뉴 아이템 제거 */}
+          {/* <div className={styles.menuItem} onClick={handleCollaborations}>
+            <span className={styles.menuText}>공동 제작</span>
+            <div className={styles.menuArrow}>→</div>
+          </div> */}
 
-      {/* 탭 콘텐츠 */}
-      <div className={styles.content}>
-        {activeTab === 'profile' && (
-          <ProfileSection
-            profile={profile}
-            onProfileUpdate={handleProfileUpdate}
-          />
-        )}
-        {activeTab === 'loops' && (
-          <MyLoopsSection onLoopChange={loadInitialData} />
-        )}
-        {activeTab === 'favorites' && <FavoritesSection />}
+          <div className={styles.menuItem} onClick={handleMyPosts}>
+            <span className={styles.menuText}>내 게시물 리스트</span>
+            <div className={styles.menuArrow}>→</div>
+          </div>
+
+          <div className={styles.menuItem} onClick={handleFavorites}>
+            <span className={styles.menuText}>내 즐겨찾기 리스트</span>
+            <div className={styles.menuArrow}>→</div>
+          </div>
+
+          <div className={styles.menuItem} onClick={handleEditProfile}>
+            <span className={styles.menuText}>내 정보 수정</span>
+            <div className={styles.menuArrow}>→</div>
+          </div>
+        </div>
       </div>
     </div>
   );
